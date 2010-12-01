@@ -1,1 +1,2 @@
-I have edited this file. I promise.
+I have a web account that gives me a bit of storage but no server side scripting is possible. So I want to modify my existing old school static HTML pages to be dynamically built by HTML, CSS, and JavaScript. The idea is that a JSON formatted data file will define all the stuff to serve up and JavaScript magic will do the rest. Over time I will add more bells and whistles but it's really just a way for me to learn these technologies.
+
