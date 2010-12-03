@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+		<title>Tom Willekes Landscape and Nature Photography</title>		
+		<!--link rel="stylesheet" type="text/css" href="styles.css" /-->
+        <script src="http://code.jquery.com/jquery-1.4.4.js"></script>
+        
+        <style type="text/css">
+            body
+                {
+                margin: 0; /* margin and padding only necessary to cater for Mac IE5 */
+                padding: 0;
+                background-image: url("GreenLeafs.jpg");
+                /*\*/	overflow: hidden; /* because Mac IE5 don't understand */
+                }
+            div
+                {
+                margin: 0;
+                padding: 0;
+                }
+            #content
+                {
+                /*\*/
+                position: absolute;
+                top: 26%;
+                right: 31%;
+                bottom: 16%;
+                left: 21%;
+                /* Exclude all previous props for Mac IE5 */
+                margin: 26% 31% 1% 21%; /* Cater for Mac IE5 */
+                /*\*/ margin: 0; /* Put back for all the rest */
+                /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
+                }
+            #sidebar-left
+                {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                width: 20%;
+                overflow: auto;
+                }
+            #sidebar-right
+                {
+                position: absolute;
+                top:  0;
+                right: 0;
+                bottom: 0;
+                overflow: auto;
+                width: 30%;
+                }
+            #header
+                {
+                position: absolute;
+                top: 0;
+                /*\*/right: 31%;
+                left: 21%;   /* Exclude right and left props for Mac IE5 */
+                margin: 0 31% 0 21%;
+                /*\*/ margin: 0; /* */
+                height: 25%;
+                }
+            #footer
+                {
+                /*\*/ position: absolute;  /* Exclude for Mac IE5 */
+                right: 31%;
+                bottom: 0;
+                left: 21%;
+                height: 15%;
+                margin: 0 31% 0 21%; /* Cater for Mac IE5 */
+                /*\*/ margin: 0; /* Put back for all the rest */
+                }
+            #footer h4
+                {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                }
+        </style>
+        <!--[if lt IE 7]>
+            <style type="text/css" media="screen">
+                /* let the IE expressions commence */
+                #sidebar-left
+                    {
+                    height: expression(document.body.clientHeight + "px");
+                    }
+                #sidebar-right
+                    {
+                    height: expression(document.body.clientHeight + "px");
+                    }
+                #content
+                    {
+                    height: expression(document.body.clientHeight - ( (document.body.clientHeight * 15 / 100) + (document.body.clientHeight * 25 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");
+                    width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+                    }
+                #header
+                    {
+                    width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+                    }
+                #footer
+                    {
+                    width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+                    }
+            </style>
+        <![endif]-->
+        <style type="text/css">
+            /* settings for appearance alone */
+            /*
+            body { background: #666666; }
+            #content { background: #cccccc; }
+            #sidebar-left { background: #cc9999; }
+            #sidebar-right { background: #ffcc99; }
+            #header { background: #9999cc; }
+            #footer { background: #99cc99; }
+            #footer h4 { background: #ccffcc; }
+            */
+            
+            /* convenience div for padding inside positioned divs */
+            div.paddingwrap
+                {
+                margin: 0;
+                padding: 1em;
+                }
+            p, h1, h2, h4, li
+                {
+                margin: 0;
+                padding: 0;
+                }
+            h3
+                {
+                margin: 1em 0 0 0;
+                }
+            ol
+                {
+                margin: 0 0 2em 1em;
+                padding: 0;
+                }
+            code
+                {
+                display: block;
+                background-color: #dddddd;
+                }
+                
+            .centeredImage
+                {
+                    text-align: center;
+                    margin-top: 0px;
+                    margin-bottom: 0px;
+                    padding: 0px;
+                }
+        </style>
+
+    </head>
+      
+    <body style="height: 100%;">
+    
+        <div id="content">
+            <p>This is where content is</p>
+            <div class="centeredImage">
+                <img src="SampleImage.jpg"/>
+                <img src="SampleImage.jpg"/>
+            </div>
+        </div>
+        
+        <div id="sidebar-left">
+            <p>This is where sidebar-left is</p>
+            <img src="SampleImage.jpg"/>
+        </div>
+        
+        <div id="sidebar-right">
+            <p>This is where sidebar-right is</p>
+            <img src="SampleImage.jpg"/>
+        </div>
+        
+        <div id="header">
+            <p>This is where header is</p>
+            <!--img src="SampleImage.jpg"/-->
+        </div>
+        
+        <div id="footer">
+            <p>This is where footer is</p>
+            <img src="SampleImage.jpg"/>
+        </div>
+
+    </body>
+    
+</html>
