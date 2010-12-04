@@ -3,28 +3,43 @@ var imageList = new Array();
 var numImages = 0;
 
 
-function metadata( title, subject )
-{
-    this.title = title;
-    this.subject = subject;
-}
-
-function imageRecord( filePath, metadata )
-{
-    this.filePath = filePath;
-    this.metadata = metadata;
-}
-
 function initializePage()
 {
     loadImages();
-    toImageView();
+}
+
+function buildMenu()
+{
+    var theElement = document.getElementById("menuitems");
+    if ( null == theElement )
+        return;
+    
+    for ( index in imageList )
+    {
+        var adiv = document.createElement('div');
+        adiv.innerHTML = "<input type=\"button\" value=\"" + imageList[index].metadata.subject + "\" onClick=\"switchTo('" +
+                                                             imageList[index].metadata.subject + "');\">";
+        
+        theElement.appendChild(adiv);
+        
+        
+        //var thediv = document.createElement('div');
+        //thediv.innerHTML = "<img src=\"" + imageList[index].filePath + "\" class=\"thumbnailImage\"/>";
+        
+        //theElement.appendChild(thediv);
+    }
+    
+    toWelcomeView();
+}
+
+function switchTo( imageClass )
+{
+    toImageView(imageClass);
 }
 
 function toWelcomeView()
 {
-    var newdiv = document.createElement('div');
-    newdiv.innerHTML =
+    var theHTML =
      "\
             <!--\
              Front page mode\
@@ -44,12 +59,11 @@ function toWelcomeView()
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
-    theElement.appendChild(newdiv);
+    theElement.innerHTML = theHTML;
 }
 
-function toImageView()
+function toImageView(imageClass)
 {
-    //var newdiv = document.createElement('div');
     var theHTML =
      "\
             <!--\
@@ -67,7 +81,7 @@ function toImageView()
             <div id=\"copyrightfooter\">\
                 <h3 style=\"text-align: center;\">Copyright 2003-2010 Tom Willekes</h3>\
             </div>\
-\
+            \
             <div id=\"imagedisplayarea\">\
                 <div class=\"centeredImage\">\
                     <h3 style=\"text-align: center;\">Image Title Here</h3>\
@@ -78,17 +92,19 @@ function toImageView()
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
-   // theElement.appendChild(newdiv);
     theElement.innerHTML = theHTML;
     
+    var theElement = document.getElementById("thumbdisplaydiv");
+    if ( null == theElement )
+        return;
+        
     for ( index in imageList )
     {
+        if ( imageClass != imageList[index].metadata.subject )
+            continue;
+            
         var thediv = document.createElement('div');
         thediv.innerHTML = "<img src=\"" + imageList[index].filePath + "\" class=\"thumbnailImage\"/>";
-        
-        var theElement = document.getElementById("thumbdisplaydiv");
-        if ( null == theElement )
-            continue;
         
         theElement.appendChild(thediv);
     }
@@ -103,7 +119,7 @@ function loadImages()
             $.each(json.items,
                 function(i,item)
                 {
-                    alert(i+" "+item.filename+" "+item.title);
+                    //alert(i+" "+item.filename+" "+item.title);
                     var md = new metadata( item.title, item.subject );
                     var ir = new imageRecord( item.filename, md );
                     imageList[numImages++] = ir;
@@ -114,10 +130,23 @@ function loadImages()
                     //var theElement = document.getElementById("thumbdisplaydiv");
                     //theElement.appendChild(newdiv);
                     //theElement.innerHTML = "<img src=\"SampleImage4.jpg\"/>";
-      
-                    toImageView();
                 }
                 );
-     }
+       
+            buildMenu();
+        }
      );
 }
+
+function metadata( title, subject )
+{
+    this.title = title;
+    this.subject = subject;
+}
+
+function imageRecord( filePath, metadata )
+{
+    this.filePath = filePath;
+    this.metadata = metadata;
+}
+
