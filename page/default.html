@@ -4,7 +4,7 @@
 
     <head>
         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-		<title>Tom Willekes Landscape and Nature Photography</title>		
+		<title>Magpie Landscape and Nature Photography</title>		
 		<!--link rel="stylesheet" type="text/css" href="styles.css" /-->
         <script src="http://code.jquery.com/jquery-1.4.4.js"></script>
         <script src="scripts.js"></script>
@@ -22,29 +22,42 @@
                 margin: 0;
                 padding: 0;
                 }
-            #content
+            #welcome
                 {
                 /*\*/
                 position: absolute;
-                top: 26%;
-                right: 21%;
-                bottom: 16%;
+                top: 16%;
+                right: 0%;
+                bottom: 5%;
                 left: 16%;
                 /* Exclude all previous props for Mac IE5 */
-                margin: 26% 21% 1% 16%; /* Cater for Mac IE5 */
+                margin: 16% 0% 5% 16%; /* Cater for Mac IE5 */
                 /*\*/ margin: 0; /* Put back for all the rest */
                 /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
                 }
-            #sidebar-left
+            #imagedisplayarea
+                {
+                /*\*/
+                position: absolute;
+                top: 5%;
+                right: 21%;
+                bottom: 11%;
+                left: 16%;
+                /* Exclude all previous props for Mac IE5 */
+                margin: 5% 21% 11% 16%; /* Cater for Mac IE5 */
+                /*\*/ margin: 0; /* Put back for all the rest */
+                /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
+                }
+            #menubar
                 {
                 position: absolute;
-                top: 0;
+                top: 11%;
                 bottom: 0;
                 left: 0;
                 width: 15%;
                 overflow: auto;
                 }
-            #sidebar-right
+            #thumbbar
                 {
                 position: absolute;
                 top:  0;
@@ -53,27 +66,28 @@
                 overflow: auto;
                 width: 20%;
                 }
-            #header
+            #titlearea
                 {
                 position: absolute;
                 top: 0;
-                /*\*/right: 31%;
-                left: 21%;   /* Exclude right and left props for Mac IE5 */
-                margin: 0 31% 0 21%;
+                /*\*/right: 0%;
+                bottom: 95%;
+                left: 16%;   /* Exclude right and left props for Mac IE5 */
+                margin: 0% 0% 95% 16%;
                 /*\*/ margin: 0; /* */
-                height: 25%;
+                height: 10%;
                 }
-            #footer
+            #copyrightfooter
                 {
                 /*\*/ position: absolute;  /* Exclude for Mac IE5 */
                 right: 21%; /* This is 1 plus the right hand percentage */
                 bottom: 0;
                 left: 16%;
-                height: 15%;
+                height: 10%;
                 margin: 0 21% 0 16%; /* Cater for Mac IE5 */
                 /*\*/ margin: 0; /* Put back for all the rest */
                 }
-            #footer h4
+            #copyrightfooter h4
                 {
                 position: absolute;
                 bottom: 0;
@@ -164,41 +178,64 @@
 
     </head>
       
-    <body style="height: 100%;">
+    <body style="height: 100%;" onload="toWelcomeView()">
     
-        <div id="content">
-            <p>This is where content is</p>
-            <div class="centeredImage">
-                <img src="SampleImage.jpg"/>
-                <div id="imagedisplaydiv"></div>
-            </div>
-        </div>
-        
-        <div id="sidebar-left">
-            <p>This is where sidebar-left is</p>
+        <!--
+         Menu bar is always visible in the same place
+          -->
+        <div id="menubar">
+            <p>This is where menu bar is</p>
             <input type="button" value="Test my javascript by clicking here man" onClick="loadImages();">
             <img src="SampleImage.jpg"/>
         </div>
         
-        <div id="sidebar-right">
-            <p>This is where sidebar-right is</p>
-            <div class="centeredImage">
-                <img src="SampleImage.jpg" class="thumbnailImage"/>
-            
-                <div id="thumbdisplaydiv"></div>
+    
+        <div id="contentplaceholder">
+        
+            <!--
+             Front page mode
+              -->
+            <!--div id="titlearea">
+                <h1 style="text-align: center;">Magpie</h1>
+                <h2 style="text-align: center;">Landscape and Nature Photography</h2>
             </div>
-        </div>
-        
-        <div id="header">
-            <p>This is where header is</p>
-            <!--img src="SampleImage.jpg"/-->
-        </div>
-        
-        <div id="footer">
-            <p>This is where footer is</p>
-            <img src="SampleImage.jpg"/>
-        </div>
 
+            <div id="welcome">
+                <div class="centeredImage">
+                     <br/>
+                    <img src="SampleImage.jpg"/>
+                    <div id="welcomeimagedisplaydiv"></div>
+                    <p style="text-align: center;">This is where the welcome text will be</p>
+                </div>
+            </div-->
+
+            <!--
+             Image display mode
+              -->
+            <!--div id="thumbbar">
+                <p  style="text-align: center;">Image Category Name</p>
+                <div class="centeredImage">
+                    <img src="SampleImage.jpg" class="thumbnailImage"/>
+                
+                    <div id="thumbdisplaydiv"></div>
+                </div>
+            </div>
+            
+            <div id="copyrightfooter">
+                <h3 style="text-align: center;">Copyright 2003-2010 Tom Willekes</h3>
+            </div>
+
+            <div id="imagedisplayarea">
+                <div class="centeredImage">
+                    <h3 style="text-align: center;">Image Title Here</h3>
+                    <br/>
+                    <img src="SampleImage.jpg"/>
+                    <div id="imagedisplaydiv"></div>
+                </div>
+            </div-->
+        
+        </div>
+        
     </body>
     
 </html>
