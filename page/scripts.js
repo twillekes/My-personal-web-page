@@ -1,3 +1,12 @@
+//var imageJson;
+var imageList = new Array();
+var numImages = 0;
+
+function initializePage()
+{
+    loadImages();
+    toImageView();
+}
 
 function toWelcomeView()
 {
@@ -57,6 +66,18 @@ function toImageView()
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.appendChild(newdiv);
+    
+    for ( index in imageList )
+    {
+        var thediv = document.createElement('div');
+        thediv.innerHTML = "<img src=\"" + imageList[index].filename + "\" class=\"thumbnailImage\"/>";
+        
+        var theElement = document.getElementById("thumbdisplaydiv");
+        if ( null == theElement )
+            continue;
+        
+        theElement.appendChild(thediv);
+    }
 }
 
 function loadImages()
@@ -64,19 +85,35 @@ function loadImages()
     $.getJSON("images.json",
         function(json) {
             //alert("JSON Data: " + json.items[1].username);
+            //imageJson = json;
             $.each(json.items,
                 function(i,item)
                 {
                     alert(i+" "+item.filename+" "+item.title);
+                    var md = new metadata( item.title, item.subject );
+                    var ir = new imageRecord( item.filename, md );
+                    imageList[numImages++] = ir;
                     
-                    var newdiv = document.createElement('div');
-                    newdiv.innerHTML = "<img src=\"" + item.filename + "\" class=\"thumbnailImage\"/>";
+                    //var newdiv = document.createElement('div');
+                    //newdiv.innerHTML = "<img src=\"" + item.filename + "\" class=\"thumbnailImage\"/>";
                     
-                    var theElement = document.getElementById("thumbdisplaydiv");
-                    theElement.appendChild(newdiv);
+                    //var theElement = document.getElementById("thumbdisplaydiv");
+                    //theElement.appendChild(newdiv);
                     //theElement.innerHTML = "<img src=\"SampleImage4.jpg\"/>";
                 }
                 );
      }
      );
+}
+
+function metadata( title, subject )
+{
+    this.title = title;
+    this.subject = subject;
+}
+
+function imageRecord( filePath, metadata )
+{
+    this.filePath = filePath;
+    this.metadata = metadata;
 }

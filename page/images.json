@@ -1,8 +1,8 @@
 {
     "items":
     [
-        { "filename" : "SampleImage4.jpg", "title" : "Test Image 1" },
-        { "filename" : "SampleImage2.jpg", "title" : "Test Image 2" },
-        { "filename" : "SampleImage3.jpg", "title" : "Test Image 3" }
+        { "filename" : "SampleImage4.jpg", "title" : "Test Image 1", "subject" : "Sub1" },
+        { "filename" : "SampleImage2.jpg", "title" : "Test Image 2", "subject" : "Sub2" },
+        { "filename" : "SampleImage3.jpg", "title" : "Test Image 3", "subject" : "Sub3" }
     ]
 }
