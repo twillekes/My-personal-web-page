@@ -2,6 +2,19 @@
 var imageList = new Array();
 var numImages = 0;
 
+
+function metadata( title, subject )
+{
+    this.title = title;
+    this.subject = subject;
+}
+
+function imageRecord( filePath, metadata )
+{
+    this.filePath = filePath;
+    this.metadata = metadata;
+}
+
 function initializePage()
 {
     loadImages();
@@ -36,8 +49,8 @@ function toWelcomeView()
 
 function toImageView()
 {
-    var newdiv = document.createElement('div');
-    newdiv.innerHTML =
+    //var newdiv = document.createElement('div');
+    var theHTML =
      "\
             <!--\
              Image display mode\
@@ -65,12 +78,13 @@ function toImageView()
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
-    theElement.appendChild(newdiv);
+   // theElement.appendChild(newdiv);
+    theElement.innerHTML = theHTML;
     
     for ( index in imageList )
     {
         var thediv = document.createElement('div');
-        thediv.innerHTML = "<img src=\"" + imageList[index].filename + "\" class=\"thumbnailImage\"/>";
+        thediv.innerHTML = "<img src=\"" + imageList[index].filePath + "\" class=\"thumbnailImage\"/>";
         
         var theElement = document.getElementById("thumbdisplaydiv");
         if ( null == theElement )
@@ -100,20 +114,10 @@ function loadImages()
                     //var theElement = document.getElementById("thumbdisplaydiv");
                     //theElement.appendChild(newdiv);
                     //theElement.innerHTML = "<img src=\"SampleImage4.jpg\"/>";
+      
+                    toImageView();
                 }
                 );
      }
      );
-}
-
-function metadata( title, subject )
-{
-    this.title = title;
-    this.subject = subject;
-}
-
-function imageRecord( filePath, metadata )
-{
-    this.filePath = filePath;
-    this.metadata = metadata;
 }
