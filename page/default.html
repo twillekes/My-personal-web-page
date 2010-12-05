@@ -4,178 +4,10 @@
 
     <head>
         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-		<title>Magpie Landscape and Nature Photography</title>		
-		<!--link rel="stylesheet" type="text/css" href="styles.css" /-->
+		<title>Magpie Landscape and Nature Photography</title>
+		<link rel="stylesheet" type="text/css" href="styles.css" />
         <script src="http://code.jquery.com/jquery-1.4.4.js"></script>
         <script src="scripts.js"></script>
-        
-        <style type="text/css">
-            body
-                {
-                margin: 0; /* margin and padding only necessary to cater for Mac IE5 */
-                padding: 0;
-                background-image: url("GreenLeafs.jpg");
-                /*\*/	overflow: hidden; /* because Mac IE5 don't understand */
-                }
-            div
-                {
-                margin: 0;
-                padding: 0;
-                }
-            #welcome
-                {
-                /*\*/
-                position: absolute;
-                top: 16%;
-                right: 0%;
-                bottom: 5%;
-                left: 16%;
-                /* Exclude all previous props for Mac IE5 */
-                margin: 16% 0% 5% 16%; /* Cater for Mac IE5 */
-                /*\*/ margin: 0; /* Put back for all the rest */
-                /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
-                }
-            #imagedisplayarea
-                {
-                /*\*/
-                position: absolute;
-                top: 5%;
-                right: 21%;
-                bottom: 11%;
-                left: 16%;
-                /* Exclude all previous props for Mac IE5 */
-                margin: 5% 21% 11% 16%; /* Cater for Mac IE5 */
-                /*\*/ margin: 0; /* Put back for all the rest */
-                /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
-                }
-            #menubar
-                {
-                position: absolute;
-                top: 11%;
-                bottom: 0;
-                left: 0;
-                width: 15%;
-                overflow: auto;
-                }
-            #thumbbar
-                {
-                position: absolute;
-                top:  0;
-                right: 0;
-                bottom: 0;
-                overflow: auto;
-                width: 20%;
-                }
-            #titlearea
-                {
-                position: absolute;
-                top: 0;
-                /*\*/right: 0%;
-                bottom: 95%;
-                left: 16%;   /* Exclude right and left props for Mac IE5 */
-                margin: 0% 0% 95% 16%;
-                /*\*/ margin: 0; /* */
-                height: 10%;
-                }
-            #copyrightfooter
-                {
-                /*\*/ position: absolute;  /* Exclude for Mac IE5 */
-                right: 21%; /* This is 1 plus the right hand percentage */
-                bottom: 0;
-                left: 16%;
-                height: 10%;
-                margin: 0 21% 0 16%; /* Cater for Mac IE5 */
-                /*\*/ margin: 0; /* Put back for all the rest */
-                }
-            #copyrightfooter h4
-                {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-                }
-        </style>
-        <!--[if lt IE 7]>
-            <style type="text/css" media="screen">
-                /* let the IE expressions commence */
-                #sidebar-left
-                    {
-                    height: expression(document.body.clientHeight + "px");
-                    }
-                #sidebar-right
-                    {
-                    height: expression(document.body.clientHeight + "px");
-                    }
-                #content
-                    {
-                    height: expression(document.body.clientHeight - ( (document.body.clientHeight * 15 / 100) + (document.body.clientHeight * 25 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");
-                    width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-                    }
-                #header
-                    {
-                    width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-                    }
-                #footer
-                    {
-                    width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-                    }
-            </style>
-        <![endif]-->
-        <style type="text/css">
-            /* settings for appearance alone */
-            /*
-            body { background: #666666; }
-            #content { background: #cccccc; }
-            #sidebar-left { background: #cc9999; }
-            #sidebar-right { background: #ffcc99; }
-            #header { background: #9999cc; }
-            #footer { background: #99cc99; }
-            #footer h4 { background: #ccffcc; }
-            */
-            
-            /* convenience div for padding inside positioned divs */
-            div.paddingwrap
-                {
-                margin: 0;
-                padding: 1em;
-                }
-            p, h1, h2, h4, li
-                {
-                margin: 0;
-                padding: 0;
-                }
-            h3
-                {
-                margin: 1em 0 0 0;
-                }
-            ol
-                {
-                margin: 0 0 2em 1em;
-                padding: 0;
-                }
-            code
-                {
-                display: block;
-                background-color: #dddddd;
-                }
-                
-            .centeredImage
-                {
-                    text-align: center;
-                    margin-top: 0px;
-                    margin-bottom: 0px;
-                    padding: 0px;
-                }
-                
-            .thumbnailImage
-                {
-                    text-align: center;
-                    width: 80%; /*100px;*/
-                    height: auto;
-                }
-        </style>
-
     </head>
       
     <body style="height: 100%;" onload="initializePage()">
@@ -185,6 +17,7 @@
           -->
         <div id="menubar">            
             <div style="text-align: center;">
+                <input type="button" value="Home" onClick="toWelcomeView()" class="menuButton" style="font-size: larger; margin-bottom: 40px;">
                 <div id = "menuitems">
                 </div>
             </div>
@@ -213,11 +46,13 @@
             <!--
              Image display mode
               -->
-            <!--div id="thumbbar">
+            <!--div id="categorynamearea">
                 <p  style="text-align: center;">Image Category Name</p>
+            </div>
+            
+            <div id="thumbbar">
                 <div class="centeredImage">
                     <img src="SampleImage.jpg" class="thumbnailImage"/>
-                
                     <div id="thumbdisplaydiv"></div>
                 </div>
             </div>

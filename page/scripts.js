@@ -18,15 +18,9 @@ function buildMenu()
     {
         var adiv = document.createElement('div');
         adiv.innerHTML = "<input type=\"button\" value=\"" + imageList[index].metadata.subject + "\" onClick=\"switchTo('" +
-                                                             imageList[index].metadata.subject + "');\">";
+                                                             imageList[index].metadata.subject + "');\" class=\"menuButton\">";
         
         theElement.appendChild(adiv);
-        
-        
-        //var thediv = document.createElement('div');
-        //thediv.innerHTML = "<img src=\"" + imageList[index].filePath + "\" class=\"thumbnailImage\"/>";
-        
-        //theElement.appendChild(thediv);
     }
     
     toWelcomeView();
@@ -64,32 +58,36 @@ function toWelcomeView()
 
 function toImageView(imageClass)
 {
-    var theHTML =
-     "\
-            <!--\
-             Image display mode\
-              -->\
-            <div id=\"thumbbar\">\
-                <p  style=\"text-align: center;\">Image Category Name</p>\
-                <div class=\"centeredImage\">\
-                    <img src=\"SampleImage.jpg\" class=\"thumbnailImage\"/>\
-                \
-                    <div id=\"thumbdisplaydiv\"></div>\
-                </div>\
-            </div>\
-            \
-            <div id=\"copyrightfooter\">\
-                <h3 style=\"text-align: center;\">Copyright 2003-2010 Tom Willekes</h3>\
-            </div>\
-            \
-            <div id=\"imagedisplayarea\">\
-                <div class=\"centeredImage\">\
-                    <h3 style=\"text-align: center;\">Image Title Here</h3>\
-                    <br/>\
-                    <img src=\"SampleImage.jpg\"/>\
-                    <div id=\"imagedisplaydiv\"></div>\
-                </div>\
-            </div>";
+    var theCategoryNameArea =
+    "       <div id=\"categorynamearea\">\n\
+                <p  style=\"text-align: center;\">" + imageClass + "</p>\n\
+            </div>\n";
+    
+    var theThumbBar =
+     "     <div id=\"thumbbar\">\n\
+                <div class=\"centeredImage\">\n\
+                    <img src=\"SampleImage.jpg\" class=\"thumbnailImage\"/>\n\
+                \n\
+                    <div id=\"thumbdisplaydiv\"></div>\n\
+                </div>\n\
+            </div>\n";
+            
+    var theCopyrightFooter =
+     "      <div id=\"copyrightfooter\">\n\
+                <h3 style=\"text-align: center;\">Copyright 2003-2010 Tom Willekes</h3>\n\
+            </div>\n";
+     
+    var theImageDisplayArea =
+     "      <div id=\"imagedisplayarea\">\n\
+                <div class=\"centeredImage\">\n\
+                    <h3 style=\"text-align: center;\">Image Title Here</h3>\n\
+                    <br/>\n\
+                    <img src=\"SampleImage.jpg\"/>\n\
+                    <div id=\"imagedisplaydiv\"></div>\n\
+                </div>\n\
+            </div>\n";
+            
+    theHTML = theCategoryNameArea + theThumbBar + theCopyrightFooter + theImageDisplayArea;
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
