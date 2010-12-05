@@ -1,6 +1,10 @@
-//var imageJson;
-var imageList = new Array();
+// Master list of images
 var numImages = 0;
+var imageList = new Array();
+
+// Category management
+var currentCategorization = "subject";
+var categoryList = new Array();
 
 
 function initializePage()
@@ -10,15 +14,17 @@ function initializePage()
 
 function buildMenu()
 {
+    findCategories();
+    
     var theElement = document.getElementById("menuitems");
     if ( null == theElement )
         return;
     
-    for ( index in imageList )
+    for ( index in categoryList )
     {
         var adiv = document.createElement('div');
-        adiv.innerHTML = "<input type=\"button\" value=\"" + imageList[index].metadata.subject + "\" onClick=\"switchTo('" +
-                                                             imageList[index].metadata.subject + "');\" class=\"menuButton\">";
+        adiv.innerHTML = "<input type=\"button\" value=\"" + categoryList[index] + "\" onClick=\"switchTo('" +
+                                                             categoryList[index] + "');\" class=\"menuButton\">";
         
         theElement.appendChild(adiv);
     }
@@ -74,7 +80,7 @@ function toImageView(imageClass)
             
     var theCopyrightFooter =
      "      <div id=\"copyrightfooter\">\n\
-                <h3 style=\"text-align: center;\">Copyright 2003-2010 Tom Willekes</h3>\n\
+                <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
             </div>\n";
      
     var theImageDisplayArea =
@@ -140,6 +146,7 @@ function metadata( title, subject )
 {
     this.title = title;
     this.subject = subject;
+    this.getCategoryValue = getCategoryValue;
 }
 
 function imageRecord( filePath, metadata )
@@ -148,3 +155,37 @@ function imageRecord( filePath, metadata )
     this.metadata = metadata;
 }
 
+function getCategoryValue()
+{
+    if ( "subject" == currentCategorization )
+    {
+        return this.subject;
+    }
+    else
+    {
+        return "undefined";
+    }
+}
+
+function findCategories()
+{
+    categoryList.length = 0;
+    for ( index in imageList )
+    {
+        var categoryValue = imageList[index].metadata.getCategoryValue();
+        var found = 0;
+        for ( catIndex in categoryList )
+        {
+            if ( categoryList[catIndex] == categoryValue )
+            {
+                found = 1;
+                break;
+            }
+        }
+        
+        if ( !found )
+        {
+            categoryList.push(categoryValue);
+        }
+    }
+}
