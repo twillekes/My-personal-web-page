@@ -27,9 +27,9 @@ function buildMenu()
         if ( categoryList[index].numImages == 1 )
             extra = "image";
             
-        adiv.innerHTML = "<input type=\"button\" value=\"" + categoryList[index].categoryValue + " (" + 
-                                                             categoryList[index].numImages + " " + extra + ")" + "\" onClick=\"switchTo('" +
-                                                             categoryList[index].categoryValue + "');\" class=\"menuButton\">";
+        adiv.innerHTML = "<input type=\"button\" value=\"" + categoryList[index].categoryValue + "\" onClick=\"switchTo('" +
+                                                             categoryList[index].categoryValue + "');\" class=\"menuButton\" onMouseOver=\"showText('" +
+                                                             categoryList[index].numImages + " " + extra + "');\" onMouseOut=\"hideText()\" />";
         
         theElement.appendChild(adiv);
     }
@@ -72,7 +72,7 @@ function toImageView(categoryValue)
 {
     var theCategoryNameArea =
     "       <div id=\"categorynamearea\">\n\
-                <p  style=\"text-align: center;\">" + categoryValue + "</p>\n\
+                <h3  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h3>\n\
             </div>\n";
     
     var theThumbBar =
@@ -252,4 +252,16 @@ function showRandomImage( categoryValue )
         }
     }
 
+}
+
+
+function showText( theText )
+{
+    var theTextArea = document.getElementById("buttonDescription");
+    theTextArea.innerHTML = theText;
+}
+
+function hideText()
+{
+    showText("");
 }
