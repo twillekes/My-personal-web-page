@@ -5,6 +5,7 @@ var imageList = new Array();
 // Category management
 var currentCategorization = "subject";
 var categoryList = new Array();
+var currentlySelectedImage = null;
 
 
 function initializePage()
@@ -78,8 +79,6 @@ function toImageView(categoryValue)
     var theThumbBar =
      "     <div id=\"thumbbar\">\n\
                 <div class=\"centeredImage\">\n\
-                    <img src=\"SampleImage.jpg\" class=\"thumbnailImage\"/>\n\
-                \n\
                     <div id=\"thumbdisplaydiv\"></div>\n\
                 </div>\n\
             </div>\n";
@@ -113,13 +112,27 @@ function toImageView(categoryValue)
             continue;
             
         var thediv = document.createElement('div');
-        thediv.innerHTML = "<img src=\"" + imageList[index].filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                                           imageList[index].filePath + "')\"/>";
+        thediv.setAttribute('id',imageList[index].filePath);
+        thediv.innerHTML = getThumbnailHtml(imageList[index].filePath,0);
         
         theElement.appendChild(thediv);
     }
     
     showRandomImage(categoryValue);
+}
+
+function getThumbnailHtml( filePath, asSelected )
+{
+    if ( asSelected )
+    {
+        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
+                              filePath + "')\" style=\"border: 2px dotted #545565\"/>";
+    }
+    else
+    {
+        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
+                              filePath + "')\"/>";
+    }
 }
 
 function loadImages()
@@ -201,14 +214,33 @@ function findCategories()
     }
 }
 
+function hideImage()
+{
+    if ( currentlySelectedImage )
+    {
+        var theElement = document.getElementById(currentlySelectedImage);
+        if ( !theElement )
+            return;
+            
+        theElement.innerHTML = getThumbnailHtml(currentlySelectedImage,0);
+        currentlySelectedImage = null;
+    }
+}
+
 function showImage( filePath )
 {
-    var theHTML = "<img src=\"" + filePath + "\"/>";
+    hideImage();
+    
     var theElement = document.getElementById("imagedisplaydiv");
     if ( null == theElement )
         return;
         
+    var theHTML = "<img src=\"" + filePath + "\"/>";
     theElement.innerHTML = theHTML;
+    
+    theElement = document.getElementById(filePath);
+    theElement.innerHTML = getThumbnailHtml(filePath,1);
+    currentlySelectedImage = filePath;
 }
 
 function showRandomWelcomeImage()
