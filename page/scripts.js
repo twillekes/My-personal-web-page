@@ -1,5 +1,5 @@
 // Master list of images
-var numImages = 0;
+var totalNumImages = 0;
 var imageList = new Array();
 
 // Category management
@@ -23,8 +23,13 @@ function buildMenu()
     for ( index in categoryList )
     {
         var adiv = document.createElement('div');
-        adiv.innerHTML = "<input type=\"button\" value=\"" + categoryList[index] + "\" onClick=\"switchTo('" +
-                                                             categoryList[index] + "');\" class=\"menuButton\">";
+        var extra = "images";
+        if ( categoryList[index].numImages == 1 )
+            extra = "image";
+            
+        adiv.innerHTML = "<input type=\"button\" value=\"" + categoryList[index].categoryValue + " (" + 
+                                                             categoryList[index].numImages + " " + extra + ")" + "\" onClick=\"switchTo('" +
+                                                             categoryList[index].categoryValue + "');\" class=\"menuButton\">";
         
         theElement.appendChild(adiv);
     }
@@ -32,9 +37,9 @@ function buildMenu()
     toWelcomeView();
 }
 
-function switchTo( imageClass )
+function switchTo( categoryValue )
 {
-    toImageView(imageClass);
+    toImageView(categoryValue);
 }
 
 function toWelcomeView()
@@ -52,7 +57,6 @@ function toWelcomeView()
             <div id=\"welcome\">\
                 <div class=\"centeredImage\">\
                      <br/>\
-                    <img src=\"SampleImage.jpg\"/>\
                     <div id=\"welcomeimagedisplaydiv\"></div>\
                     <p style=\"text-align: center;\">This is where the welcome text will be</p>\
                 </div>\
@@ -60,13 +64,15 @@ function toWelcomeView()
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
+    
+    showRandomWelcomeImage();
 }
 
-function toImageView(imageClass)
+function toImageView(categoryValue)
 {
     var theCategoryNameArea =
     "       <div id=\"categorynamearea\">\n\
-                <p  style=\"text-align: center;\">" + imageClass + "</p>\n\
+                <p  style=\"text-align: center;\">" + categoryValue + "</p>\n\
             </div>\n";
     
     var theThumbBar =
@@ -88,7 +94,6 @@ function toImageView(imageClass)
                 <div class=\"centeredImage\">\n\
                     <h3 style=\"text-align: center;\">Image Title Here</h3>\n\
                     <br/>\n\
-                    <img src=\"SampleImage.jpg\"/>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                 </div>\n\
             </div>\n";
@@ -104,7 +109,7 @@ function toImageView(imageClass)
         
     for ( index in imageList )
     {
-        if ( imageClass != imageList[index].metadata.subject )
+        if ( categoryValue != imageList[index].metadata.getCategoryValue() )
             continue;
             
         var thediv = document.createElement('div');
@@ -113,6 +118,8 @@ function toImageView(imageClass)
         
         theElement.appendChild(thediv);
     }
+    
+    showRandomImage(categoryValue);
 }
 
 function loadImages()
@@ -124,7 +131,7 @@ function loadImages()
                 {
                     var md = new metadata( item.title, item.subject );
                     var ir = new imageRecord( item.filename, md );
-                    imageList[numImages++] = ir;
+                    imageList[totalNumImages++] = ir;
                 }
                 );
        
@@ -146,6 +153,12 @@ function imageRecord( filePath, metadata )
     this.metadata = metadata;
 }
 
+function categoryRecord( categoryValue, numImages )
+{
+    this.categoryValue = categoryValue;
+    this.numImages = numImages;
+}
+
 function getCategoryValue()
 {
     if ( "subject" == currentCategorization )
@@ -165,18 +178,25 @@ function findCategories()
     {
         var categoryValue = imageList[index].metadata.getCategoryValue();
         var found = 0;
+        var foundIndex;
         for ( catIndex in categoryList )
         {
-            if ( categoryList[catIndex] == categoryValue )
+            if ( categoryList[catIndex].categoryValue == categoryValue )
             {
                 found = 1;
+                foundIndex = catIndex;
                 break;
             }
         }
         
         if ( !found )
         {
-            categoryList.push(categoryValue);
+            var catRecord = new categoryRecord( categoryValue, 1 );
+            categoryList.push(catRecord);
+        }
+        else
+        {
+            categoryList[foundIndex].numImages++;
         }
     }
 }
@@ -189,4 +209,47 @@ function showImage( filePath )
         return;
         
     theElement.innerHTML = theHTML;
+}
+
+function showRandomWelcomeImage()
+{
+    var index = Math.floor( Math.random() * totalNumImages );
+    
+    var theHTML = "<img src=\"" + imageList[index].filePath + "\"/>";
+    var theElement = document.getElementById("welcomeimagedisplaydiv");
+    if ( null == theElement )
+        return;
+        
+    theElement.innerHTML = theHTML;
+}
+
+function showRandomImage( categoryValue )
+{
+    var numImages = 0;
+    for ( catRecordIndex in categoryList )
+    {
+        if ( categoryValue == categoryList[catRecordIndex].categoryValue )
+        {
+            numImages = categoryList[catRecordIndex].numImages;
+        }
+    }
+    
+    var index = Math.floor( Math.random() * numImages );
+    var foundIndex = 0;
+    for ( imageIndex in imageList )
+    {
+        if ( imageList[imageIndex].metadata.getCategoryValue() == categoryValue )
+        {
+            if ( foundIndex == index )
+            {
+                showImage( imageList[imageIndex].filePath );
+                break;
+            }
+            else
+            {
+                foundIndex++;
+            }
+        }
+    }
+
 }
