@@ -3,6 +3,10 @@
     [
         { "filename" : "SampleImage4.jpg", "title" : "Test Image 1", "subject" : "Sub1" },
         { "filename" : "SampleImage2.jpg", "title" : "Test Image 2", "subject" : "Sub2" },
-        { "filename" : "SampleImage3.jpg", "title" : "Test Image 3", "subject" : "Sub3" }
+        { "filename" : "SampleImage3.jpg", "title" : "Test Image 3", "subject" : "Sub3" },
+        { "filename" : "SampleImage.jpg", "title" : "Test Image 4", "subject" : "Sub3" },
+        { "filename" : "SampleImage2.jpg", "title" : "Test Image 5", "subject" : "Sub3" },
+        { "filename" : "SampleImage3.jpg", "title" : "Test Image 6", "subject" : "Sub3" },
+        { "filename" : "SampleImage4.jpg", "title" : "Test Image 7", "subject" : "Sub3" }
     ]
 }
