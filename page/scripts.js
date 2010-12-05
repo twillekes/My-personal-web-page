@@ -7,6 +7,27 @@ var currentCategorization = "subject";
 var categoryList = new Array();
 var currentlySelectedImage = null;
 
+/*
+
+Image categories:
+- Subject
+- Season
+- Camera
+- Lens
+- Film
+- Monochrome
+- Format (35mm, 6x4.5, 6x6, 6x7, 6x9, 6x12, 4x5)
+- Year captured (2003 through 2010)
+
+Image information:
+- File name
+- Title
+- Favorite (yes/no)
+- Description/notes
+- Rating (1-10)
+- Date captured
+
+*/
 
 function initializePage()
 {
@@ -54,7 +75,6 @@ function toWelcomeView()
                 <h1 style=\"text-align: center;\">Magpie</h1>\
                 <h2 style=\"text-align: center;\">Landscape and Nature Photography</h2>\
             </div>\
-\
             <div id=\"welcome\">\
                 <div class=\"centeredImage\">\
                      <br/>\
@@ -91,7 +111,7 @@ function toImageView(categoryValue)
     var theImageDisplayArea =
      "      <div id=\"imagedisplayarea\">\n\
                 <div class=\"centeredImage\">\n\
-                    <h3 style=\"text-align: center;\">Image Title Here</h3>\n\
+                    <div id=\"imagetitlediv\"></div>\n\
                     <br/>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                 </div>\n\
@@ -113,7 +133,7 @@ function toImageView(categoryValue)
             
         var thediv = document.createElement('div');
         thediv.setAttribute('id',imageList[index].filePath);
-        thediv.innerHTML = getThumbnailHtml(imageList[index].filePath,0);
+        thediv.innerHTML = getThumbnailHtml(imageList[index].filePath,imageList[index].metadata.title,0);
         
         theElement.appendChild(thediv);
     }
@@ -121,17 +141,17 @@ function toImageView(categoryValue)
     showRandomImage(categoryValue);
 }
 
-function getThumbnailHtml( filePath, asSelected )
+function getThumbnailHtml( filePath, imageTitle, asSelected )
 {
     if ( asSelected )
     {
         return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                              filePath + "')\" style=\"border: 2px dotted #545565\"/>";
+                              filePath + "','" + imageTitle + "')\" style=\"border: 2px dotted #545565\"/>";
     }
     else
     {
         return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                              filePath + "')\"/>";
+                              filePath + "','" + imageTitle + "')\"/>";
     }
 }
 
@@ -170,6 +190,12 @@ function categoryRecord( categoryValue, numImages )
 {
     this.categoryValue = categoryValue;
     this.numImages = numImages;
+}
+
+function currentlySelectedImageRecord( filePath, title )
+{
+    this.filePath = filePath;
+    this.title = title;
 }
 
 function getCategoryValue()
@@ -218,20 +244,27 @@ function hideImage()
 {
     if ( currentlySelectedImage )
     {
-        var theElement = document.getElementById(currentlySelectedImage);
+        var theElement = document.getElementById(currentlySelectedImage.filePath);
         if ( !theElement )
             return;
             
-        theElement.innerHTML = getThumbnailHtml(currentlySelectedImage,0);
+        theElement.innerHTML = getThumbnailHtml(currentlySelectedImage.filePath, currentlySelectedImage.title,0);
         currentlySelectedImage = null;
     }
 }
 
-function showImage( filePath )
+function showImage( filePath, imageTitle )
 {
     hideImage();
     
-    var theElement = document.getElementById("imagedisplaydiv");
+    var titleHTML = "<h3 style=\"text-align: center;\">" + imageTitle + "</h3>";
+    var theElement = document.getElementById("imagetitlediv");
+    if ( null == theElement )
+        return;
+        
+    theElement.innerHTML = titleHTML;
+    
+    theElement = document.getElementById("imagedisplaydiv");
     if ( null == theElement )
         return;
         
@@ -239,8 +272,9 @@ function showImage( filePath )
     theElement.innerHTML = theHTML;
     
     theElement = document.getElementById(filePath);
-    theElement.innerHTML = getThumbnailHtml(filePath,1);
-    currentlySelectedImage = filePath;
+    theElement.innerHTML = getThumbnailHtml(filePath,imageTitle,1);
+    
+    currentlySelectedImage = new currentlySelectedImageRecord( filePath, imageTitle );
 }
 
 function showRandomWelcomeImage()
@@ -274,7 +308,7 @@ function showRandomImage( categoryValue )
         {
             if ( foundIndex == index )
             {
-                showImage( imageList[imageIndex].filePath );
+                showImage( imageList[imageIndex].filePath, imageList[imageIndex].metadata.title );
                 break;
             }
             else

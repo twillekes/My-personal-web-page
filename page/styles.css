@@ -110,46 +110,7 @@ div
     -moz-opacity:0;
     margin-top: 10px;
 }
-    
-<!--[if lt IE 7]>
-<style type="text/css" media="screen">
-    /* let the IE expressions commence */
-    #sidebar-left
-        {
-        height: expression(document.body.clientHeight + "px");
-        }
-    #sidebar-right
-        {
-        height: expression(document.body.clientHeight + "px");
-        }
-    #content
-        {
-        height: expression(document.body.clientHeight - ( (document.body.clientHeight * 15 / 100) + (document.body.clientHeight * 25 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");
-        width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-        }
-    #header
-        {
-        width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-        }
-    #footer
-        {
-        width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-        }
-</style>
-<![endif]-->
-<style type="text/css">
-/* settings for appearance alone */
-/*
-body { background: #666666; }
-#content { background: #cccccc; }
-#sidebar-left { background: #cc9999; }
-#sidebar-right { background: #ffcc99; }
-#header { background: #9999cc; }
-#footer { background: #99cc99; }
-#footer h4 { background: #ccffcc; }
-*/
 
-/* convenience div for padding inside positioned divs */
 div.paddingwrap
     {
     margin: 0;
@@ -168,11 +129,6 @@ ol
     {
     margin: 0 0 2em 1em;
     padding: 0;
-    }
-code
-    {
-    display: block;
-    background-color: #dddddd;
     }
     
 .centeredImage
