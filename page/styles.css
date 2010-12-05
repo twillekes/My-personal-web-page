@@ -51,7 +51,7 @@ div
     bottom: 0;
     left: 0;
     width: 15%;
-    overflow: auto;
+    overflow: hidden;
     }
 #categorynamearea
     {
