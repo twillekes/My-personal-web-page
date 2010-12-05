@@ -23,6 +23,7 @@ Image information:
 - File name
 - Title
 - Favorite (yes/no)
+- New (yes/no)
 - Description/notes
 - Rating (1-10)
 - Date captured
