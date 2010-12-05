@@ -59,7 +59,8 @@ function toWelcomeView()
                 <div class=\"centeredImage\">\
                      <br/>\
                     <div id=\"welcomeimagedisplaydiv\"></div>\
-                    <p style=\"text-align: center;\">This is where the welcome text will be</p>\
+                    <iframe src=\"welcomeText.html\" width=\"66%\" frameborder=\"0\" height=\"100%\"></iframe>\
+                    <div id=\"welcometextdisplaydiv\"></div>\
                 </div>\
             </div>";
      
