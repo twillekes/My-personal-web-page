@@ -59,9 +59,8 @@ function toWelcomeView()
                 <div class=\"centeredImage\">\
                      <br/>\
                     <div id=\"welcomeimagedisplaydiv\"></div>\
-                    <iframe src=\"welcomeText.html\" width=\"66%\" frameborder=\"0\" height=\"100%\"></iframe>\
-                    <div id=\"welcometextdisplaydiv\"></div>\
                 </div>\
+                <iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\"></iframe>\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");

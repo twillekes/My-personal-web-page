@@ -24,6 +24,13 @@ div
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
+#welcometextdiv
+    {
+    left: 16%;
+    width: 66%;
+    height: 100%;
+    margin: 0 0 0 16%; /* Cater for Mac IE5 */
+    }
 #imagedisplayarea
     {
     /*\*/
