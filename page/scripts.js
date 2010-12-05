@@ -108,7 +108,8 @@ function toImageView(imageClass)
             continue;
             
         var thediv = document.createElement('div');
-        thediv.innerHTML = "<img src=\"" + imageList[index].filePath + "\" class=\"thumbnailImage\"/>";
+        thediv.innerHTML = "<img src=\"" + imageList[index].filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
+                                           imageList[index].filePath + "')\"/>";
         
         theElement.appendChild(thediv);
     }
@@ -118,22 +119,12 @@ function loadImages()
 {
     $.getJSON("images.json",
         function(json) {
-            //alert("JSON Data: " + json.items[1].username);
-            //imageJson = json;
             $.each(json.items,
                 function(i,item)
                 {
-                    //alert(i+" "+item.filename+" "+item.title);
                     var md = new metadata( item.title, item.subject );
                     var ir = new imageRecord( item.filename, md );
                     imageList[numImages++] = ir;
-                    
-                    //var newdiv = document.createElement('div');
-                    //newdiv.innerHTML = "<img src=\"" + item.filename + "\" class=\"thumbnailImage\"/>";
-                    
-                    //var theElement = document.getElementById("thumbdisplaydiv");
-                    //theElement.appendChild(newdiv);
-                    //theElement.innerHTML = "<img src=\"SampleImage4.jpg\"/>";
                 }
                 );
        
@@ -188,4 +179,14 @@ function findCategories()
             categoryList.push(categoryValue);
         }
     }
+}
+
+function showImage( filePath )
+{
+    var theHTML = "<img src=\"" + filePath + "\"/>";
+    var theElement = document.getElementById("imagedisplaydiv");
+    if ( null == theElement )
+        return;
+        
+    theElement.innerHTML = theHTML;
 }
