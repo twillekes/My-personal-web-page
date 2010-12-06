@@ -99,8 +99,8 @@ function toWelcomeView()
              Front page mode\
               -->\
             <div id=\"titlearea\">\
-                <h1 style=\"text-align: center;\">Magpie</h1>\
-                <h2 style=\"text-align: center;\">Landscape and Nature Photography</h2>\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Magpie</h1>\
+                <h2 style=\"text-align: center; margin: 0; padding: 0;\">Landscape and Nature Photography</h2>\
             </div>\
             <div id=\"welcome\">\
                 <div class=\"centeredImage\">\
