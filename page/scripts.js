@@ -173,7 +173,7 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
     if ( asSelected )
     {
         return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                              filePath + "','" + imageTitle + "')\" style=\"border: 2px dotted #545565\"/>";
+                              filePath + "','" + imageTitle + "')\" style=\"border: 4px dotted #545565\"/>";
     }
     else
     {
