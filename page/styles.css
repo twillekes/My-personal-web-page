@@ -35,12 +35,12 @@ div
     {
     /*\*/
     position: absolute;
-    top: 5%;
+    top: 0;
     right: 21%;
-    bottom: 11%;
+    bottom: 6%;
     left: 16%;
     /* Exclude all previous props for Mac IE5 */
-    margin: 5% 21% 11% 16%; /* Cater for Mac IE5 */
+    margin: 0 21% 6% 16%; /* Cater for Mac IE5 */
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
@@ -88,7 +88,7 @@ div
     right: 21%; /* This is 1 plus the right hand percentage */
     bottom: 0;
     left: 16%;
-    height: 10%;
+    height: 5%;
     margin: 0 21% 0 16%; /* Cater for Mac IE5 */
     /*\*/ margin: 0; /* Put back for all the rest */
     }

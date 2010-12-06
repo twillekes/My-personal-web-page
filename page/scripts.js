@@ -132,7 +132,7 @@ function toImageView(categoryValue)
             
     var theCopyrightFooter =
      "      <div id=\"copyrightfooter\">\n\
-                <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                <h3 style=\"text-align: center; margin: 0 0 0 0;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
             </div>\n";
      
     var theImageDisplayArea =
@@ -189,8 +189,12 @@ function loadImages()
             $.each(json.items,
                 function(i,item)
                 {
+                    filePath = item.filename;
+                    if ( 1 == item.bucket )
+                        filePath = "images/" + item.filename;
+                    
                     var md = new metadata( item.title, item.subject );
-                    var ir = new imageRecord( item.filename, md );
+                    var ir = new imageRecord( filePath, md );
                     imageList[totalNumImages++] = ir;
                 }
                 );
