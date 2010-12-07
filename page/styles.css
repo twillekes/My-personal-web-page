@@ -48,9 +48,9 @@ div
     }
 #displayedimage
     {
-    -moz-box-shadow: 10px 10px 5px #888;
-    -webkit-box-shadow: 10px 10px 5px #888;
-    box-shadow: 10px 10px 5px #888;
+    -moz-box-shadow: 8px 8px 6px #808080;
+    -webkit-box-shadow: 8px 8px 6px #808080;
+    box-shadow: 8px 8px 6px #808080;
     }
 #menubar
     {
