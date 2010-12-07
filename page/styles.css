@@ -56,6 +56,15 @@ div
     {
     position: absolute;
     top: 5%;
+    bottom: 11%;
+    left: 0;
+    width: 15%;
+    overflow: hidden;
+    }
+#feediconarea
+    {
+    position: absolute;
+    top: 90%;
     bottom: 0;
     left: 0;
     width: 15%;
