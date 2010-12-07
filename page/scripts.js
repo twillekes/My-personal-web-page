@@ -1,5 +1,5 @@
 // Page load actions
-var loadParameters;
+var loadParameters = null;
 
 // Master list of images
 var totalNumImages = 0;
@@ -33,7 +33,7 @@ Image information:
 
 */
 
-window.onload = initializePage();
+//window.onload = initializePage(); Doesn't work in Firefox
 
 function initializePage()
 {
@@ -46,7 +46,7 @@ function getParams()
 {
     var idx = document.URL.indexOf('?');
     if ( idx == -1 )
-        return;
+        return null;
     
     var tempParams = new Object();
     var pairs = document.URL.substring(idx+1,document.URL.length).split('&');
@@ -81,13 +81,16 @@ function buildMenu()
         
         theElement.appendChild(adiv);
     }
-    
-    for ( index in loadParameters )
+
+    if ( loadParameters != null )
     {
-        if ( index == "showImage" )
+        for ( index in loadParameters )
         {
-            toSingleImageView(loadParameters[index]);
-            return;
+            if ( index == "showImage" )
+            {
+                toSingleImageView(loadParameters[index]);
+                return;
+            }
         }
     }
 
