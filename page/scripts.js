@@ -38,10 +38,6 @@ window.onload = initializePage();
 function initializePage()
 {
     loadParameters = getParams();
-    for ( index in loadParameters )
-    {
-        alert("param " + index + " is " + loadParameters[index] );
-    }
     
     loadImages();
 }
@@ -86,7 +82,67 @@ function buildMenu()
         theElement.appendChild(adiv);
     }
     
+    for ( index in loadParameters )
+    {
+        if ( index == "showImage" )
+        {
+            toSingleImageView(loadParameters[index]);
+            return;
+        }
+    }
+
     toWelcomeView();
+}
+
+function toSingleImageView(filePath)
+{
+    var imageTitle = null;
+    for ( index in imageList )
+    {
+        if ( imageList[index].filePath == filePath )
+        {
+            imageTitle = imageList[index].metadata.title;
+            break;
+        }
+    }
+    
+    if ( imageTitle == null )
+    {
+        filePath = imageList[0].filePath;
+        imageTitle = imageList[0].metadata.title;
+    }
+    
+    var theCopyrightFooter =
+     "      <div id=\"copyrightfooter\">\n\
+                <h3 style=\"text-align: center; margin: 0 0 0 0;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+            </div>\n";
+     
+    var theImageDisplayArea =
+     "      <div id=\"imagedisplayarea\">\n\
+                <div class=\"centeredImage\">\n\
+                    <div id=\"imagetitlediv\"></div>\n\
+                    <div id=\"imagedisplaydiv\"></div>\n\
+                </div>\n\
+            </div>\n";
+            
+    theHTML = theCopyrightFooter + theImageDisplayArea;
+     
+    var theElement = document.getElementById("contentplaceholder");
+    theElement.innerHTML = theHTML;
+
+    var titleHTML = "<h3 id=\"imagetitlearea\">" + imageTitle + "</h3>";
+    var theElement = document.getElementById("imagetitlediv");
+    if ( null == theElement )
+        return;
+        
+    theElement.innerHTML = titleHTML;
+    
+    theElement = document.getElementById("imagedisplaydiv");
+    if ( null == theElement )
+        return;
+        
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
+    theElement.innerHTML = theHTML;
 }
 
 function switchTo( categoryValue )
@@ -139,14 +195,6 @@ function toImageView(categoryValue)
                 <h3 style=\"text-align: center; margin: 0 0 0 0;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
             </div>\n";
      
-    var theImageDisplayArea =
-     "      <div id=\"imagedisplayarea\">\n\
-                <div class=\"centeredImage\">\n\
-                    <div id=\"imagetitlediv\"></div>\n\
-                    <div id=\"imagedisplaydiv\"></div>\n\
-                </div>\n\
-            </div>\n";
-            
     var theImageDisplayArea =
      "      <div id=\"imagedisplayarea\">\n\
                 <div class=\"centeredImage\">\n\

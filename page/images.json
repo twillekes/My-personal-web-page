@@ -1,14 +1,6 @@
 {
     "items":
     [
-        { "bucket" : 0, "filename" : "SampleImage4.jpg", "title" : "Test Image 1", "subject" : "Sub1" },
-        { "bucket" : 0, "filename" : "SampleImage2.jpg", "title" : "Test Image 2", "subject" : "Sub2" },
-        { "bucket" : 0, "filename" : "SampleImage3.jpg", "title" : "Test Image 3", "subject" : "Sub3" },
-        { "bucket" : 0, "filename" : "SampleImage.jpg", "title" : "Test Image 4", "subject" : "Sub3" },
-        { "bucket" : 0, "filename" : "SampleImage2.jpg", "title" : "Test Image 5", "subject" : "Sub3" },
-        { "bucket" : 0, "filename" : "SampleImage3.jpg", "title" : "Test Image 6", "subject" : "Sub3" },
-        { "bucket" : 0, "filename" : "SampleImage4.jpg", "title" : "Test Image 7", "subject" : "Sub3" },
-        { "bucket" : 1, "filename" : "BarURanch.jpg", "title" : "Bar-U Ranch", "subject" : "Foothills" },
         { "bucket" : 1, "filename" : "Bounty.jpg", "title" : "Bounty", "subject" : "Foothills" },
         { "bucket" : 1, "filename" : "DawnOnTheFoothillsNo2.jpg", "title" : "Dawn on the Foothills #2", "subject" : "Foothills" },
         { "bucket" : 1, "filename" : "FoothillsFieldAtDawn.jpg", "title" : "Foothills Field at Dawn", "subject" : "Foothills" },
