@@ -167,20 +167,16 @@ function toWelcomeView()
 
 function getCopyrightAndImageDisplayHTML()
 {
-    var theCopyrightFooter =
-     "      <div id=\"copyrightfooter\">\n\
-                <h3 style=\"text-align: center; margin: 0 0 0 0;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
-            </div>\n";
-     
     var theImageDisplayArea =
      "      <div id=\"imagedisplayarea\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
+                    <h3 style=\"text-align: center;;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n";  
             
-    return theCopyrightFooter + theImageDisplayArea;
+    return theImageDisplayArea;
 }
 
 function toImageView(categoryValue)
@@ -228,7 +224,7 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
     {
         return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
                               filePath + "','" + imageTitle +
-                              "')\" style=\"border: 4px dotted #545565\" onMouseOver=\"showText('" + imageTitle +
+                              "')\" style=\"border: 4px outset #545565\" onMouseOver=\"showText('" + imageTitle +
                               "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
     }
     else

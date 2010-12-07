@@ -118,17 +118,7 @@ div
     /*\*/ margin: 0; /* */
     height: 10%;
     }
-#copyrightfooter
-    {
-    /*\*/ position: absolute;  /* Exclude for Mac IE5 */
-    right: 21%; /* This is 1 plus the right hand percentage */
-    bottom: 0;
-    left: 16%;
-    height: 5%;
-    margin: 0 21% 0 16%; /* Cater for Mac IE5 */
-    /*\*/ margin: 0; /* Put back for all the rest */
-    }
-#copyrightfooter h4
+#h4
     {
     position: absolute;
     bottom: 0;
