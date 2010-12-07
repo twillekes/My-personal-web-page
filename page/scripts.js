@@ -33,6 +33,8 @@ Image information:
 
 */
 
+window.onload = initializePage();
+
 function initializePage()
 {
     loadParameters = getParams();
@@ -78,7 +80,8 @@ function buildMenu()
             
         adiv.innerHTML = "<input type=\"button\" value=\"" + categoryList[index].categoryValue + "\" onClick=\"switchTo('" +
                                                              categoryList[index].categoryValue + "');\" class=\"menuButton\" onMouseOver=\"showText('" +
-                                                             categoryList[index].numImages + " " + extra + "');\" onMouseOut=\"hideText()\" />";
+                                                             categoryList[index].numImages + " " + extra +
+                                                             "','buttonDescription');\" onMouseOut=\"hideText('buttonDescription')\" />";
         
         theElement.appendChild(adiv);
     }
@@ -128,7 +131,8 @@ function toImageView(categoryValue)
                 <div class=\"centeredImage\">\n\
                     <div id=\"thumbdisplaydiv\"></div>\n\
                 </div>\n\
-            </div>\n";
+            </div>\n\
+            <div id=\"thumbnailDescription\"></div>\n";
             
     var theCopyrightFooter =
      "      <div id=\"copyrightfooter\">\n\
@@ -180,12 +184,16 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
     if ( asSelected )
     {
         return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                              filePath + "','" + imageTitle + "')\" style=\"border: 4px dotted #545565\"/>";
+                              filePath + "','" + imageTitle +
+                              "')\" style=\"border: 4px dotted #545565\" onMouseOver=\"showText('" + imageTitle +
+                              "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
     }
     else
     {
         return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                              filePath + "','" + imageTitle + "')\"/>";
+                              filePath + "','" + imageTitle +
+                               "')\" onMouseOver=\"showText('" + imageTitle +
+                               "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
     }
 }
 
@@ -360,13 +368,13 @@ function showRandomImage( categoryValue )
 }
 
 
-function showText( theText )
+function showText( theText, theElementId )
 {
-    var theTextArea = document.getElementById("buttonDescription");
+    var theTextArea = document.getElementById(theElementId);
     theTextArea.innerHTML = theText;
 }
 
-function hideText()
+function hideText( theElementId )
 {
-    showText("");
+    showText("", theElementId);
 }
