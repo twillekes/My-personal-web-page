@@ -183,14 +183,14 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
 {
     if ( asSelected )
     {
-        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
+        return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
                               filePath + "','" + imageTitle +
                               "')\" style=\"border: 4px dotted #545565\" onMouseOver=\"showText('" + imageTitle +
                               "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
     }
     else
     {
-        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
+        return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
                               filePath + "','" + imageTitle +
                                "')\" onMouseOver=\"showText('" + imageTitle +
                                "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
