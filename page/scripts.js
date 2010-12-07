@@ -112,20 +112,7 @@ function toSingleImageView(filePath)
         imageTitle = imageList[0].metadata.title;
     }
     
-    var theCopyrightFooter =
-     "      <div id=\"copyrightfooter\">\n\
-                <h3 style=\"text-align: center; margin: 0 0 0 0;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
-            </div>\n";
-     
-    var theImageDisplayArea =
-     "      <div id=\"imagedisplayarea\">\n\
-                <div class=\"centeredImage\">\n\
-                    <div id=\"imagetitlediv\"></div>\n\
-                    <div id=\"imagedisplaydiv\"></div>\n\
-                </div>\n\
-            </div>\n";
-            
-    theHTML = theCopyrightFooter + theImageDisplayArea;
+    theHTML = getCopyrightAndImageDisplayHTML();
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
@@ -175,6 +162,24 @@ function toWelcomeView()
     showRandomWelcomeImage();
 }
 
+function getCopyrightAndImageDisplayHTML()
+{
+    var theCopyrightFooter =
+     "      <div id=\"copyrightfooter\">\n\
+                <h3 style=\"text-align: center; margin: 0 0 0 0;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+            </div>\n";
+     
+    var theImageDisplayArea =
+     "      <div id=\"imagedisplayarea\">\n\
+                <div class=\"centeredImage\">\n\
+                    <div id=\"imagetitlediv\"></div>\n\
+                    <div id=\"imagedisplaydiv\"></div>\n\
+                </div>\n\
+            </div>\n";  
+            
+    return theCopyrightFooter + theImageDisplayArea;
+}
+
 function toImageView(categoryValue)
 {
     var theCategoryNameArea =
@@ -190,20 +195,7 @@ function toImageView(categoryValue)
             </div>\n\
             <div id=\"thumbnailDescription\"></div>\n";
             
-    var theCopyrightFooter =
-     "      <div id=\"copyrightfooter\">\n\
-                <h3 style=\"text-align: center; margin: 0 0 0 0;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
-            </div>\n";
-     
-    var theImageDisplayArea =
-     "      <div id=\"imagedisplayarea\">\n\
-                <div class=\"centeredImage\">\n\
-                    <div id=\"imagetitlediv\"></div>\n\
-                    <div id=\"imagedisplaydiv\"></div>\n\
-                </div>\n\
-            </div>\n";
-            
-    theHTML = theCategoryNameArea + theThumbBar + theCopyrightFooter + theImageDisplayArea;
+    theHTML = theCategoryNameArea + theThumbBar + getCopyrightAndImageDisplayHTML();
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
