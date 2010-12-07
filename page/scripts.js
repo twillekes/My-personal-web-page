@@ -139,7 +139,14 @@ function toImageView(categoryValue)
      "      <div id=\"imagedisplayarea\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
-                    <br/>\n\
+                    <div id=\"imagedisplaydiv\"></div>\n\
+                </div>\n\
+            </div>\n";
+            
+    var theImageDisplayArea =
+     "      <div id=\"imagedisplayarea\">\n\
+                <div class=\"centeredImage\">\n\
+                    <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                 </div>\n\
             </div>\n";
@@ -288,7 +295,7 @@ function showImage( filePath, imageTitle )
 {
     hideImage();
     
-    var titleHTML = "<h3 style=\"text-align: center;\">" + imageTitle + "</h3>";
+    var titleHTML = "<h3 id=\"imagetitlearea\">" + imageTitle + "</h3>";
     var theElement = document.getElementById("imagetitlediv");
     if ( null == theElement )
         return;
@@ -299,9 +306,10 @@ function showImage( filePath, imageTitle )
     if ( null == theElement )
         return;
         
-    var theHTML = "<img src=\"" + filePath + "\"/>";
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
     theElement.innerHTML = theHTML;
     
+ 
     theElement = document.getElementById(filePath);
     theElement.innerHTML = getThumbnailHtml(filePath,imageTitle,1);
     
@@ -312,7 +320,7 @@ function showRandomWelcomeImage()
 {
     var index = Math.floor( Math.random() * totalNumImages );
     
-    var theHTML = "<img src=\"" + imageList[index].filePath + "\"/>";
+    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\"/>";
     var theElement = document.getElementById("welcomeimagedisplaydiv");
     if ( null == theElement )
         return;

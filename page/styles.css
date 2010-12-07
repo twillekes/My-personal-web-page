@@ -26,23 +26,31 @@ div
     }
 #welcometextdiv
     {
+    top: 1%;
     left: 16%;
     width: 66%;
     height: 100%;
-    margin: 0 0 0 16%; /* Cater for Mac IE5 */
+    margin: 1% 0 0 16%; /* Cater for Mac IE5 */
     }
 #imagedisplayarea
     {
     /*\*/
     position: absolute;
-    top: 0;
+    top: 1%;
     right: 21%;
     bottom: 6%;
     left: 16%;
+    /*height: 102%;*/
     /* Exclude all previous props for Mac IE5 */
-    margin: 0 21% 6% 16%; /* Cater for Mac IE5 */
+    margin: 1% 21% 6% 16%; /* Cater for Mac IE5 */
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
+    }
+#displayedimage
+    {
+    -moz-box-shadow: 10px 10px 5px #888;
+    -webkit-box-shadow: 10px 10px 5px #888;
+    box-shadow: 10px 10px 5px #888;
     }
 #menubar
     {
@@ -71,6 +79,12 @@ div
     overflow: auto;
     width: 20%;
     }
+#imagetitlearea
+    {
+    text-align: center;
+    bottom: 1%;
+    margin: 0 0 1% 0;
+    }
 #titlearea
     {
     position: absolute;
@@ -78,7 +92,7 @@ div
     /*\*/right: 0%;
     bottom: 95%;
     left: 16%;   /* Exclude right and left props for Mac IE5 */
-    margin: 0% 0% 95% 16%;
+    margin: 1% 0% 95% 16%;
     /*\*/ margin: 0; /* */
     height: 10%;
     }
@@ -102,6 +116,16 @@ div
     }
     
 #buttonDescription
+{
+    width: 100%;
+    height: 3em;
+    padding: 2px;
+    filter:alpha(opacity=0);
+    -moz-opacity:0;
+    margin-top: 10px;
+}
+
+#thumbnailDescription
 {
     width: 100%;
     height: 3em;
