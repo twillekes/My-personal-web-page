@@ -144,19 +144,28 @@ function toWelcomeView()
 {
     var theHTML =
      "\
-            <!--\
-             Front page mode\
-              -->\
-            <div id=\"titlearea\">\
-                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Magpie</h1>\
-                <h2 style=\"text-align: center; margin: 0; padding: 0;\">Landscape and Nature Photography</h2>\
-            </div>\
-            <div id=\"welcome\">\
-                <div class=\"centeredImage\">\
-                     <br/>\
-                    <div id=\"welcomeimagedisplaydiv\"></div>\
-                </div>\
-                <iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\" allowTransparency=\"true\"></iframe>\
+            <!--\n\
+             Front page mode\n\
+              -->\n\
+            <div id=\"titlearea\">\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Magpie</h1>\n\
+                <h2 style=\"text-align: center; margin: 0; padding: 0;\">Landscape and Nature Photography</h2>\n\
+            </div>\n\
+            <div id=\"welcome\">\n\
+                <div class=\"centeredImage\">\n\
+                     <br/>\n\
+                    <div id=\"welcomeimagedisplaydiv\"></div>\n\
+                </div>\n\
+                <!--iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\" allowTransparency=\"true\"></iframe-->\n\
+                <div style=\"text-align: center\">\n\
+                    <h1>Welcome</h1>\n\
+                    <p>Welcome to my web page. I use it to display pictures that I have taken of the countryside around Calgary, Alberta, Canada.</p>\n\
+                    <p>Navigate pages through the links at the left.</p>\n\
+                    <p>More images of mine can be seen on <a href=\"http://flickr.com/photos/photonwrangler\" target=\"_top\">Flickr</a>.</p>\n\
+                    <p>Please note: I am an amateur photographer and therefore not available for hire. My photographs are not available for sale or license and cannot be used for any commercial purpose whatsoever.</p>\n\
+                    <h2>Contact Information</h2>\n\
+                    <p>Email: PhotonWrangler (at) shaw.ca</p>\n\
+                </div>\n\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
