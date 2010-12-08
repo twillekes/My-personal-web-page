@@ -148,7 +148,7 @@ function toWelcomeView()
              Front page mode\n\
               -->\n\
             <div id=\"titlearea\">\n\
-                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Magpie</h1>\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Photonwrangler</h1>\n\
                 <h2 style=\"text-align: center; margin: 0; padding: 0;\">Landscape and Nature Photography</h2>\n\
             </div>\n\
             <div id=\"welcome\">\n\
@@ -157,7 +157,7 @@ function toWelcomeView()
                     <div id=\"welcomeimagedisplaydiv\"></div>\n\
                 </div>\n\
                 <!--iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\" allowTransparency=\"true\"></iframe-->\n\
-                <div style=\"text-align: center\">\n\
+                <div style=\"text-align: center\" id=\"welcometextdiv\">\n\
                     <h1>Welcome</h1>\n\
                     <p>Welcome to my web page. I use it to display pictures that I have taken of the countryside around Calgary, Alberta, Canada.</p>\n\
                     <p>Navigate pages through the links at the left.</p>\n\
