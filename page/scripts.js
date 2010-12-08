@@ -156,7 +156,7 @@ function toWelcomeView()
                      <br/>\
                     <div id=\"welcomeimagedisplaydiv\"></div>\
                 </div>\
-                <iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\"></iframe>\
+                <iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\" allowTransparency=\"true\"></iframe>\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
@@ -224,7 +224,7 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
     {
         return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
                               filePath + "','" + imageTitle +
-                              "')\" style=\"border: 4px outset #545565\" onMouseOver=\"showText('" + imageTitle +
+                              "')\" style=\"border: 4px solid #606060\" onMouseOver=\"showText('" + imageTitle +
                               "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
     }
     else
