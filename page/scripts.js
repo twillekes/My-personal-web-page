@@ -69,6 +69,9 @@ function buildMenu()
     
     for ( index in categoryList )
     {
+        if ( categoryList[index].numImages == 0 )
+            continue;
+            
         var adiv = document.createElement('div');
         var extra = "images";
         if ( categoryList[index].numImages == 1 )
@@ -214,7 +217,12 @@ function toImageView(categoryValue)
         
     for ( index in imageList )
     {
-        if ( categoryValue != imageList[index].metadata.getCategoryValue() )
+        if (   !(
+                ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
+                ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
+                ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
+                )
+            )
             continue;
             
         var thediv = document.createElement('div');
@@ -256,7 +264,7 @@ function loadImages()
                     if ( 1 == item.bucket )
                         filePath = "images/" + item.filename;
                     
-                    var md = new metadata( item.title, item.subject );
+                    var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
                     var ir = new imageRecord( filePath, md );
                     imageList[totalNumImages++] = ir;
                 }
@@ -267,10 +275,12 @@ function loadImages()
      );
 }
 
-function metadata( title, subject )
+function metadata( title, subject, isNew, isFavorite )
 {
     this.title = title;
     this.subject = subject;
+    this.isNew = isNew;
+    this.isFavorite = isFavorite;
     this.getCategoryValue = getCategoryValue;
 }
 
@@ -307,6 +317,12 @@ function getCategoryValue()
 function findCategories()
 {
     categoryList.length = 0;
+    
+    var catRecord = new categoryRecord( "New", 0 );
+    categoryList[0] = catRecord;
+    catRecord = new categoryRecord( "Favorites", 0 );
+    categoryList[1] = catRecord;
+    
     for ( index in imageList )
     {
         var categoryValue = imageList[index].metadata.getCategoryValue();
@@ -324,12 +340,22 @@ function findCategories()
         
         if ( !found )
         {
-            var catRecord = new categoryRecord( categoryValue, 1 );
+            catRecord = new categoryRecord( categoryValue, 1 );
             categoryList.push(catRecord);
         }
         else
         {
             categoryList[foundIndex].numImages++;
+        }
+        
+        if ( imageList[index].metadata.isNew )
+        {
+            categoryList[0].numImages++;
+        }
+        
+        if ( imageList[index].metadata.isFavorite )
+        {
+            categoryList[1].numImages++;
         }
     }
 }
@@ -387,11 +413,22 @@ function showRandomWelcomeImage()
 function showRandomImage( categoryValue )
 {
     var numImages = 0;
-    for ( catRecordIndex in categoryList )
+    if ( categoryValue == "New" )
     {
-        if ( categoryValue == categoryList[catRecordIndex].categoryValue )
+        numImages = categoryList[0].numImages;
+    }
+    else if ( categoryValue == "Favorites" )
+    {
+        numImages = categoryList[1].numImages;
+    }
+    else
+    {
+        for ( catRecordIndex in categoryList )
         {
-            numImages = categoryList[catRecordIndex].numImages;
+            if ( categoryValue == categoryList[catRecordIndex].categoryValue )
+            {
+                numImages = categoryList[catRecordIndex].numImages;
+            }
         }
     }
     
@@ -399,7 +436,11 @@ function showRandomImage( categoryValue )
     var foundIndex = 0;
     for ( imageIndex in imageList )
     {
-        if ( imageList[imageIndex].metadata.getCategoryValue() == categoryValue )
+        if ( 
+                ( imageList[imageIndex].metadata.getCategoryValue() == categoryValue ) ||
+                ( imageList[imageIndex].metadata.isNew && categoryValue == "New" ) ||
+                ( imageList[imageIndex].metadata.isFavorite && categoryValue == "Favorites" )
+            )
         {
             if ( foundIndex == index )
             {
