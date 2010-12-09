@@ -263,6 +263,8 @@ function loadImages()
                     filePath = item.filename;
                     if ( 1 == item.bucket )
                         filePath = "images/" + item.filename;
+                    else if ( 2 == item.bucket )
+                        filePath = "images_2/" + item.filename;
                     
                     var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
                     var ir = new imageRecord( filePath, md );
