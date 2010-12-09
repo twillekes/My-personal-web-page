@@ -8,6 +8,56 @@
 		<link rel="stylesheet" type="text/css" href="styles.css" />
         <script src="http://code.jquery.com/jquery-1.4.4.js"></script>
         <script src="scripts.js"></script>
+
+
+<!--[if lt IE 7]>
+<style type="text/css" media="screen">
+/* let the IE expressions commence */
+/* From someone smarter than me: http://fu2k.org/alex/css/frames/percent */
+#titlearea
+	{
+	height: expression(document.body.clientHeight - ( (document.body.clientHeight * 95 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 15 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	}
+#menubar
+	{
+	height: expression(document.body.clientHeight + "px");
+	}
+#thumbbar
+	{
+	height: expression(document.body.clientHeight + "px");
+	}
+#welcome
+	{
+	height: expression(document.body.clientHeight - ( (document.body.clientHeight * 5 / 100) + (document.body.clientHeight * 10 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 15 / 100) + (document.body.clientWidth * 0 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	}
+#welcometextdiv
+	{
+	height: expression(document.body.clientHeight + "px");
+	width: expression( 66 / 100 * (document.body.clientWidth - ( (document.body.clientWidth * 15 / 100) + (document.body.clientWidth * 1 / 100 * 2) )) + "px");
+	}
+#imagetitlearea
+	{
+	/*height: expression(document.body.clientHeight - ( (document.body.clientHeight * 95 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");*/
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 35 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	}
+#imagedisplayarea
+	{
+	height: expression(document.body.clientHeight + "px");
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 33 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	}
+#header
+	{
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	}
+#footer
+	{
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	}
+</style>
+<![endif]-->
+
     </head>
       
     <body style="height: 100%;" onLoad="initializePage()">
