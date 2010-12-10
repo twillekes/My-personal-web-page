@@ -1,6 +1,10 @@
 // Page load actions
 var loadParameters = null;
 
+// Metadata file loading management
+var imageMetadataList = new Array();
+var currentImageMetadataItem = 0;
+
 // Master list of images
 var totalNumImages = 0;
 var imageList = new Array();
@@ -39,7 +43,12 @@ function initializePage()
 {
     loadParameters = getParams();
     
-    loadImages();
+    var isLocal = 0;
+    var idx = document.URL.indexOf('file:');
+    if ( idx != -1 )
+        isLocal = 1;
+        
+    loadImages(isLocal);
 }
 
 function getParams()
@@ -253,26 +262,52 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
     }
 }
 
-function loadImages()
+function loadImages(isLocal)
 {
     $.getJSON("images.json",
-        function(json) {
+        function(json)
+        {
             $.each(json.items,
                 function(i,item)
                 {
-                    filePath = item.filename;
-                    if ( 1 == item.bucket )
-                        filePath = "images/" + item.filename;
-                    else if ( 2 == item.bucket )
-                        filePath = "images_2/" + item.filename;
-                    
+                    if ( isLocal && item.type == "local" )
+                        imageMetadataList[i] = item.metadataPath;
+                    else if ( !isLocal && ( item.type != "local" ) || ( item.type == null ) )
+                        imageMetadataList[i] = item.metadataPath;
+                }
+            );
+       
+            currentImageMetadataItem = 0;
+            loadImageMetadata( 0 );
+        }
+     );
+}
+
+function loadImageMetadata(metadataItem)
+{
+    var metadataFilePath = imageMetadataList[metadataItem];
+    $.getJSON(metadataFilePath + "/metadata.json",
+        function(json)
+        {
+            $.each(json.items,
+                function(i,item)
+                {
                     var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
-                    var ir = new imageRecord( filePath, md );
+                    var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
                     imageList[totalNumImages++] = ir;
                 }
-                );
-       
-            buildMenu();
+            );
+                
+            currentImageMetadataItem++;
+            if ( currentImageMetadataItem < imageMetadataList.length )
+            {
+                loadImageMetadata(currentImageMetadataItem);
+            }
+            else
+            {
+                buildMenu();
+                return;
+            }
         }
      );
 }
