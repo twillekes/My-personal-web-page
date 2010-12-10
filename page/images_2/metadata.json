@@ -42,7 +42,7 @@
         { "filename" : "MinnewankaMorningNo1.jpg", "title" : "Minnewanka Morning #1", "subject" : "Water" },
         { "filename" : "SibbaldLakeNo2.jpg", "title" : "Sibbald Lake #2", "subject" : "Water" },
         { "filename" : "PondDotCalm.jpg", "title" : "Pond dot Calm", "subject" : "Water" },
-        { "filename" : "TheCast.jpg", "title" : "TheCast", "subject" : "Water", "isFavorite" : 1 },
+        { "filename" : "TheCast.jpg", "title" : "The Cast", "subject" : "Water", "isFavorite" : 1 },
         { "filename" : "FirstSnow.jpg", "title" : "First Snow", "subject" : "Water" },
         { "filename" : "LakeMinnewankaBoathouse.jpg", "title" : "Lake Minnewanka Boathouse", "subject" : "Water" },
         { "filename" : "KananaskisLakes.jpg", "title" : "Kananaskis Lakes", "subject" : "Water" },
