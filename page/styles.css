@@ -27,7 +27,7 @@ div
 #welcometextdiv
     {
     width: 66%;
-    height: 100%;
+    height: auto; /* Was 100% */
     display: block;
     top: 1%;
     right: 0;
