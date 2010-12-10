@@ -53,7 +53,7 @@
         { "filename" : "VermillionDawn.jpg", "title" : "Vermillion Dawn", "subject" : "Water" },
         { "filename" : "SpillwayLakeDaisies.jpg", "title" : "Spillway Lake Daisies", "subject" : "Water" },
         { "filename" : "BeaverLodge.jpg", "title" : "Beaver Lodge", "subject" : "Water" },
-        { "filename" : "SmokeOnTheWater.jpg", "title" : "Smoke on the Water (Fire in the Sky)", "subject" : "Water" },
+        { "filename" : "SmokeOnTheWater.jpg", "title" : "Smoke on the Water (Fire in the Sky)", "subject" : "Water", "isFavorite" : 1 },
         { "filename" : "WedgePond.jpg", "title" : "Wedge Pond", "subject" : "Water" },
         { "filename" : "SilvertonFalls.jpg", "title" : "Silverton Falls", "subject" : "Water" },
         { "filename" : "MoraineCascade.jpg", "title" : "Moraine Cascade", "subject" : "Water" },

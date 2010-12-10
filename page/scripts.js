@@ -93,7 +93,6 @@ function buildMenu()
         
         theElement.appendChild(adiv);
     }
-
     if ( loadParameters != null )
     {
         for ( index in loadParameters )
@@ -114,8 +113,10 @@ function toSingleImageView(filePath)
     var imageTitle = null;
     for ( index in imageList )
     {
-        if ( imageList[index].filePath == filePath )
+        var idx = imageList[index].filePath.indexOf(filePath);
+        if ( idx != -1 )
         {
+            filePath = imageList[index].filePath;
             imageTitle = imageList[index].metadata.title;
             break;
         }
