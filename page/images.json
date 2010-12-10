@@ -1,7 +1,7 @@
 {
     "items":
     [
-        { "type" : "local", "metadataPath" : "images" },
-        { "type" : "local", "metadataPath" : "images_2" }
+        { "type" : "local", "metadataPath" : "images_2" },
+        { "type" : "local", "metadataPath" : "images" }
     ]
 }
