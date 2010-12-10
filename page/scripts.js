@@ -170,12 +170,7 @@ function toWelcomeView()
                 </div>\n\
                 <!--iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\" allowTransparency=\"true\"></iframe-->\n\
                 <div style=\"text-align: center\" id=\"welcometextdiv\">\n\
-                    <h1>Welcome</h1>\n\
-                    <p>Welcome to my web page. I use it to display pictures that I have taken of the countryside around Calgary, Alberta, Canada.</p>\n\
-                    <p>Navigate pages through the links at the left.</p>\n\
-                    <p>More images of mine can be seen on <a href=\"http://flickr.com/photos/photonwrangler\" target=\"_top\">Flickr</a>.</p>\n\
-                    <p>Please note: I am an amateur photographer and therefore not available for hire. My photographs are not available for sale or license and cannot be used for any commercial purpose whatsoever.</p>\n\
-                    <h2>Contact Information</h2>\n\
+                     <p>More images: <a href=\"http://flickr.com/photos/photonwrangler\" target=\"_top\">Flickr</a>.</p>\n\
                     <p>Email: PhotonWrangler (at) shaw.ca</p>\n\
                 </div>\n\
             </div>";
