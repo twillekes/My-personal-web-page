@@ -1,3 +1,6 @@
+a {
+  outline: none;
+}
 body
     {
     margin: 0; /* margin and padding only necessary to cater for Mac IE5 */
