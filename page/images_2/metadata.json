@@ -1,27 +1,6 @@
 {
     "items":
     [
-        { "filename" : "BrightFuture.jpg", "title" : "Bright Future", "subject" : "New" },
-        { "filename" : "TheHills.jpg", "title" : "The Hills", "subject" : "New" },
-        { "filename" : "RollOn.jpg", "title" : "Roll On", "subject" : "New" },
-        { "filename" : "TransientResponse.jpg", "title" : "Transient Response", "subject" : "New" },
-        { "filename" : "Apex.jpg", "title" : "Apex", "subject" : "New" },
-        { "filename" : "StarPower.jpg", "title" : "Star Power", "subject" : "New" },
-        { "filename" : "TudorMorningMist.jpg", "title" : "Tudor Morning Mist", "subject" : "New" },
-        { "filename" : "RoadToRosebud.jpg", "title" : "Road to Rosebud", "subject" : "New" },
-        { "filename" : "OutWithTheOld.jpg", "title" : "Out, With the Old", "subject" : "New" },
-        { "filename" : "SeasonsEnd.jpg", "title" : "Season's End", "subject" : "New" },
-        { "filename" : "AFenceApart.jpg", "title" : "A Fence Apart", "subject" : "New" },
-        { "filename" : "TheRest.jpg", "title" : "The Rest", "subject" : "New" },
-        { "filename" : "FrostyFoggyField.jpg", "title" : "Frosty Foggy Field", "subject" : "New" },
-        { "filename" : "TheEdge.jpg", "title" : "The Edge", "subject" : "New" },
-        { "filename" : "StrawMan.jpg", "title" : "Straw, Man", "subject" : "New" },
-        { "filename" : "MissedASpot.jpg", "title" : "Missed a Spot", "subject" : "New" },
-        { "filename" : "LateHarvest.jpg", "title" : "Late Harvest", "subject" : "New" },
-        { "filename" : "Stubble.jpg", "title" : "Stubble", "subject" : "New" },
-        { "filename" : "Rows.jpg", "title" : "Rows (by any other name)", "subject" : "New" },
-        { "filename" : "KrisCross.jpg", "title" : "Kris Cross", "subject" : "New" },
-
         { "filename" : "MooseMeadowsMorning.jpg", "title" : "Moose Meadows Morning", "subject" : "Mountains" },
         { "filename" : "CastleMountainNo2.jpg", "title" : "Castle Mountain #2", "subject" : "Mountains" },
         { "filename" : "MountKiddNo2.jpg", "title" : "Mount Kidd #2", "subject" : "Mountains" },
