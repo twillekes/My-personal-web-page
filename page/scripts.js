@@ -86,10 +86,11 @@ function buildMenu()
         if ( categoryList[index].numImages == 1 )
             extra = "image";
             
-        adiv.innerHTML = "<input type=\"button\" value=\"" + categoryList[index].categoryValue + "\" onClick=\"switchTo('" +
-                         categoryList[index].categoryValue + "');\" class=\"menuButton\" onMouseOver=\"showText(escape('" +
+        adiv.innerHTML = "<a href=\"javascript:switchTo('" + categoryList[index].categoryValue +
+                         "');\" id=\"menuButton\" onMouseOver=\"showText(escape('" +
                          categoryList[index].numImages + " " + extra +
-                         "'),'buttonDescription');\" onMouseOut=\"hideText('buttonDescription')\" />";
+                         "'),'buttonDescription');\" onMouseOut=\"hideText('buttonDescription')\">" +
+                         categoryList[index].categoryValue + "</a>";
         
         theElement.appendChild(adiv);
     }

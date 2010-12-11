@@ -62,14 +62,28 @@
       
     <body style="height: 100%;" onLoad="initializePage()">
     
+<!--div id="coolmenu">
+<a href="http://www.javascriptkit.com" onMouseover="showtext('JavaScript tutorials and scripts!')" onMouseout="hidetext()">JavaScript Kit</a>
+<a href="http://www.javascriptkit.com/cutpastejava.shtml" onMouseover="showtext('300+ free JavaScripts')" onMouseout="hidetext()">Free JavaScripts</a>
+<a href="http://www.javascriptkit.com/jsref/" onMouseover="showtext('Comprehensive JavaScript Reference')" onMouseout="hidetext()">JavaScript Reference</a>
+<a href="http://www.codingforums.com" onMouseover="showtext('Web coding and development forums!')" onMouseout="hidetext()">Coding Forums</a>
+<a href="http://www.dynamicdrive.com" onMouseover="showtext('Award winning DHTML and JavaScripts')" onMouseout="hidetext()">Dynamic Drive</a>
+<div id="tabledescription"></div>
+</div>
+
+<p style="font: normal 11px Arial">This free script provided by<br />
+<a href="http://www.javascriptkit.com">JavaScript Kit</a></p-->
+
         <!--
          Menu bar is always visible in the same place
           -->
         <div id="menubar">            
             <div style="text-align: center;">
-                <input type="button" value="Home" onclick="toWelcomeView()" class="menuButton"
+                <a href="javascript:toWelcomeView()" id="menuButton" onMouseOver="showText(escape('Go to front page'),'buttonDescription')"
+                       onMouseOut="hideText('buttonDescription')"  style="font-size: larger; margin-bottom: 40px;">Home</a>
+                <!--input type="button" value="Home" onclick="toWelcomeView()" class="menuButton"
                        onMouseOver="showText(escape('Go to front page'),'buttonDescription')"
-                       onMouseOut="hideText('buttonDescription')"  style="font-size: larger; margin-bottom: 40px;"/>
+                       onMouseOut="hideText('buttonDescription')"  style="font-size: larger; margin-bottom: 40px;"/-->
                 <div id = "menuitems">
                 </div>
                 <div id="buttonDescription"></div>
