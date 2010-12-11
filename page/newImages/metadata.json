@@ -1,4 +1,5 @@
 {
+    "_comment" : "Use subject=Discarded to hide an image, except for access with the showImage action",
     "items":
     [
         { "filename" : "BrightFuture.jpg", "title" : "Bright Future", "subject" : "New" },

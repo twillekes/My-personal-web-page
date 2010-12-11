@@ -368,6 +368,9 @@ function findCategories()
     for ( index in imageList )
     {
         var categoryValue = imageList[index].metadata.getCategoryValue();
+        if ( "Discarded" == categoryValue ) // Allows an image to be present but not displayed
+            continue;
+            
         var found = 0;
         var foundIndex;
         for ( catIndex in categoryList )
