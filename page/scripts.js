@@ -94,6 +94,7 @@ function buildMenu()
         
         theElement.appendChild(adiv);
     }
+
     if ( loadParameters != null )
     {
         for ( index in loadParameters )
@@ -105,7 +106,7 @@ function buildMenu()
             }
         }
     }
-
+    
     toWelcomeView();
 }
 
@@ -129,7 +130,14 @@ function toSingleImageView(filePath)
         imageTitle = imageList[0].metadata.title;
     }
     
-    theHTML = getCopyrightAndImageDisplayHTML();
+    var theHTML =
+     "      <div id=\"singleImage\">\n\
+                <div class=\"centeredImage\">\n\
+                    <div id=\"imagetitlediv\"></div>\n\
+                    <div id=\"imagedisplaydiv\"></div>\n\
+                    <h3 style=\"text-align: center;;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                </div>\n\
+            </div>\n";  
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
@@ -167,7 +175,7 @@ function toWelcomeView()
             </div>\n\
             <div id=\"welcome\">\n\
                 <div class=\"centeredImage\">\n\
-                     <br/>\n\
+                     <!--br/-->\n\
                     <div id=\"welcomeimagedisplaydiv\"></div>\n\
                 </div>\n\
                 <!--iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\" allowTransparency=\"true\"></iframe-->\n\
@@ -183,7 +191,7 @@ function toWelcomeView()
     showRandomWelcomeImage();
 }
 
-function getCopyrightAndImageDisplayHTML()
+function getImageDisplayHTML()
 {
     var theImageDisplayArea =
      "      <div id=\"imagedisplayarea\">\n\
@@ -212,7 +220,7 @@ function toImageView(categoryValue)
             </div>\n\
             <div id=\"thumbnailDescription\"></div>\n";
             
-    theHTML = theCategoryNameArea + theThumbBar + getCopyrightAndImageDisplayHTML();
+    theHTML = theCategoryNameArea + theThumbBar + getImageDisplayHTML();
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
