@@ -87,7 +87,7 @@ function buildMenu()
             extra = "image";
             
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + categoryList[index].categoryValue +
-                         "');\" id=\"menuButton\" onMouseOver=\"showText(escape('" +
+                         "');\" onMouseOver=\"showText(escape('" +
                          categoryList[index].numImages + " " + extra +
                          "'),'buttonDescription');\" onMouseOut=\"hideText('buttonDescription')\">" +
                          categoryList[index].categoryValue + "</a>";
