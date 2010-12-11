@@ -2,6 +2,8 @@
     "items":
     [
         { "type" : "local", "metadataPath" : "images_2" },
-        { "type" : "local", "metadataPath" : "images" }
+        { "type" : "local", "metadataPath" : "images" },
+        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/tjwillekes/images_2" },
+        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/tomjwillekes/images" }
     ]
 }
