@@ -159,7 +159,9 @@ function toSingleImageView(filePath)
         return;
         
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
+    setOpacity( theElement, 0 );
     theElement.innerHTML = theHTML;
+    fadeIn( "imagedisplaydiv", 0 );
 }
 
 function switchTo( categoryValue )
