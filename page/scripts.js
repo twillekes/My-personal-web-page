@@ -203,14 +203,16 @@ function getImageDisplayHTML()
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <div id=\"prevnextbuttondiv\">\n\
-                        <table style=\"margin-left: auto; margin-right: auto;\">\n\
-                            <tr>\n\
-                                <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
-                                <td><div id=\"nextbuttondiv\">Next</div></td>\n\
-                            </tr>\n\
-                        </table>\n\
-                    </div>\n\
+                    <!--[if gt IE 6]>\n\
+                        <div id=\"prevnextbuttondiv\">\n\
+                            <table style=\"margin-left: auto; margin-right: auto;\">\n\
+                                <tr>\n\
+                                    <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
+                                    <td><div id=\"nextbuttondiv\">Next</div></td>\n\
+                                </tr>\n\
+                            </table>\n\
+                        </div>\n\
+                    <![endif]-->\n\
                     <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n";  

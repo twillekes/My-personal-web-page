@@ -83,23 +83,23 @@ div
     }
 #menubar a
     {
+    background-color: #E6E6E6; /* was below */
+    border: 1px solid black; /* was below */
+    margin-bottom: 5px; /* was below */
     font: bold 13px Verdana;
     padding: 2px;
     padding-left: 4px;
     display: block;
-    width: 100%;
+    width: 66%; /* was 100% */
     color: black;
     text-decoration: none;
     border-bottom: 1px solid black;
     }
 html>body #menubar a
 {
-    background-color: #E6E6E6;
-    border: 1px solid black;
-    width: 66%;
+    width: 100%; /* was 66% */
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 5px;
     -moz-box-shadow: 8px 8px 6px #808080;
     -webkit-box-shadow: 8px 8px 6px #808080;
     box-shadow: 8px 8px 6px #808080;
@@ -117,23 +117,23 @@ html>body #menubar a
 }
 #prevnextbuttondiv div
     {
+    background-color: #E6E6E6; /* was below */
+    border: 1px solid black; /* was below */
+    margin-left: auto; /* was below */
+    margin-right: auto; /* was below */
     font: bold 13px Verdana;
     padding: 2px;
     padding-left: 4px;
     display: block;
     height: 100%;
-    width: 100%;
+    width: 50%; /* was 100% */
     color: black;
     text-decoration: none;
     border-bottom: 1px solid black;
     }
 html>body #prevnextbuttondiv div
 {
-    background-color: #E6E6E6;
-    border: 1px solid black;
-    width: 50%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%; /* Was 50% */
     margin-bottom: 5px;
     -moz-box-shadow: 8px 8px 6px #808080;
     -webkit-box-shadow: 8px 8px 6px #808080;
