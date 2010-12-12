@@ -204,12 +204,6 @@ function getImageDisplayHTML()
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                     <div id=\"prevnextbuttondiv\">\n\
-                        <table style=\"margin-left: auto; margin-right: auto;\">\n\
-                            <tr>\n\
-                                <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
-                                <td><div id=\"nextbuttondiv\">Next</div></td>\n\
-                            </tr>\n\
-                        </table>\n\
                     </div>\n\
                     <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
@@ -472,13 +466,28 @@ function showImage( filePath, imageTitle )
 
 function addPrevNextButtons()
 {
-    if ( isIEVersion6() )
+    if ( isIEVersion6() == 1 )
     {
-        var wholeElement = getElementById("prevnextbuttondiv");
-        wholeElement.innerHTML = "";
+        //var wholeElement = getElementById("prevbuttondiv");
+        //(wholeElement.parentNode).removeChild(wholeElement);
+        //wholeElement.innerHTML = "";
         return;
     }
-    
+
+    var theElement = document.getElementById("prevnextbuttondiv");
+    if ( null == theElement )
+    {
+        return;
+    }
+        
+    theElement.innerHTML =
+                       "<table style=\"margin-left: auto; margin-right: auto;\">\n\
+                            <tr>\n\
+                                <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
+                                <td><div id=\"nextbuttondiv\">Next</div></td>\n\
+                            </tr>\n\
+                        </table>\n";
+
     var prevIndex = -1;
     var nextIndex = -1;
     for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
@@ -499,7 +508,7 @@ function addPrevNextButtons()
         }
     }
     
-    var theElement = document.getElementById("prevbuttondiv");
+    theElement = document.getElementById("prevbuttondiv");
     if ( null == theElement )
         return;
 
@@ -660,7 +669,6 @@ function getInternetExplorerVersion()
 
 function isIEVersion6()
 {
-    var msg = "You're not using Internet Explorer.";
     var ver = getInternetExplorerVersion();
     if ( ver == -1 )
         return 0;
