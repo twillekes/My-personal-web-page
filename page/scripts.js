@@ -469,30 +469,39 @@ function showImage( filePath, imageTitle )
         }
     }
     
-    if ( prevIndex != -1 )
+    theElement = document.getElementById("prevbuttondiv");
+    if ( null == theElement )
+        return;
+
+    if ( prevIndex == -1 )
+    {
+        theElement.innerHTML = "";
+    }
+    else
     {
         var prevFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].filePath;
         var prevImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].metadata.title;
         
         theHTML = "<a href=\"javascript:showImage('" + prevFilePath + "','" + escape(prevImageTitle) + "');\">Previous</a>";
         
-        theElement = document.getElementById("prevbuttondiv");
-        if ( null == theElement )
-            return;
-    
         theElement.innerHTML = theHTML;
     }
-    if ( nextIndex != -1 )
+    
+    theElement = document.getElementById("nextbuttondiv");
+    if ( null == theElement )
+        return;
+
+    if ( nextIndex == -1 )
+    {
+        theElement.innerHTML = "";
+    }
+    else
     {
         var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].filePath;
         var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].metadata.title;
         
         theHTML = "<a href=\"javascript:showImage('" + nextFilePath + "','" + escape(nextImageTitle) + "');\">Next</a>";
         
-        theElement = document.getElementById("nextbuttondiv");
-        if ( null == theElement )
-            return;
-    
         theElement.innerHTML = theHTML;
     }
 }
@@ -514,11 +523,11 @@ function showRandomImage( categoryValue )
     var numImages = 0;
     if ( categoryValue == "New" )
     {
-        numImages = categoryList[0].imageIndexes.length;
+        numImages = categoryList["New"].imageIndexes.length;
     }
     else if ( categoryValue == "Favorites" )
     {
-        numImages = categoryList[1].imageIndexes.length;
+        numImages = categoryList["Favorites"].imageIndexes.length;
     }
     else
     {
@@ -543,7 +552,7 @@ function showRandomImage( categoryValue )
         {
             if ( foundIndex == index )
             {
-                showImage( imageList[imageIndex].filePath, imageList[imageIndex].metadata.title );
+                showImage( imageList[imageIndex].filePath, escape(imageList[imageIndex].metadata.title) );
                 break;
             }
             else
