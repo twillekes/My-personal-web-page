@@ -199,7 +199,6 @@ function getImageDisplayHTML()
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                     <div id=\"prevnextbuttondiv\">\n\
                         <table style=\"margin-left: auto; margin-right: auto;\">\n\
                             <tr>\n\
@@ -208,6 +207,7 @@ function getImageDisplayHTML()
                             </tr>\n\
                         </table>\n\
                     </div>\n\
+                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n";  
             
