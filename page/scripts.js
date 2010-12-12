@@ -11,6 +11,7 @@ var imageList = new Array();
 
 // Category management
 var currentCategorization = "subject";
+var currentCategoryValue; // E.g. "New" or "Houses" or ...
 var categoryList = new Array();
 var currentlySelectedImage = null;
 
@@ -78,19 +79,19 @@ function buildMenu()
     
     for ( index in categoryList )
     {
-        if ( categoryList[index].numImages == 0 )
+        if ( categoryList[index].imageIndexes.length == 0 )
             continue;
             
         var adiv = document.createElement('div');
         var extra = "images";
-        if ( categoryList[index].numImages == 1 )
+        if ( categoryList[index].imageIndexes.length == 1 )
             extra = "image";
             
-        adiv.innerHTML = "<a href=\"javascript:switchTo('" + categoryList[index].categoryValue +
+        adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
                          "');\" onMouseOver=\"showText(escape('" +
-                         categoryList[index].numImages + " " + extra +
+                         categoryList[index].imageIndexes.length + " " + extra +
                          "'),'buttonDescription');\" onMouseOut=\"hideText('buttonDescription')\">" +
-                         categoryList[index].categoryValue + "</a>";
+                         index + "</a>";
         
         theElement.appendChild(adiv);
     }
@@ -198,7 +199,15 @@ function getImageDisplayHTML()
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <h3 style=\"text-align: center;;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                    <div id=\"prevnextbuttondiv\">\n\
+                        <table style=\"margin-left: auto; margin-right: auto;\">\n\
+                            <tr>\n\
+                                <td><div id=\"prevbuttondiv\"></div></td>\n\
+                                <td><div id=\"nextbuttondiv\"></div></td>\n\
+                            </tr>\n\
+                        </table>\n\
+                    </div>\n\
                 </div>\n\
             </div>\n";  
             
@@ -229,6 +238,8 @@ function toImageView(categoryValue)
     if ( null == theElement )
         return;
         
+    currentCategoryValue = categoryValue;
+        
     for ( index in imageList )
     {
         if (   !(
@@ -256,14 +267,14 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
         return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
                               filePath + "','" + escape(imageTitle) +
                               "')\" style=\"border: 4px solid #606060\" onMouseOver=\"showText('" + escape(imageTitle) +
-                              "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
+                              "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>\n";
     }
     else
     {
         return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
                               filePath + "','" + escape(imageTitle) +
                                "')\" onMouseOver=\"showText('" + escape(imageTitle) +
-                               "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>";
+                               "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>\n";
     }
 }
 
@@ -332,10 +343,9 @@ function imageRecord( filePath, metadata )
     this.metadata = metadata;
 }
 
-function categoryRecord( categoryValue, numImages )
+function categoryRecord()
 {
-    this.categoryValue = categoryValue;
-    this.numImages = numImages;
+    this.imageIndexes = new Array();
 }
 
 function currentlySelectedImageRecord( filePath, title )
@@ -360,10 +370,10 @@ function findCategories()
 {
     categoryList.length = 0;
     
-    var catRecord = new categoryRecord( "New", 0 );
-    categoryList[0] = catRecord;
-    catRecord = new categoryRecord( "Favorites", 0 );
-    categoryList[1] = catRecord;
+    var catRecord = new categoryRecord();
+    categoryList["New"] = catRecord;
+    catRecord = new categoryRecord();
+    categoryList["Favorites"] = catRecord;
     
     for ( index in imageList )
     {
@@ -375,7 +385,7 @@ function findCategories()
         var foundIndex;
         for ( catIndex in categoryList )
         {
-            if ( categoryList[catIndex].categoryValue == categoryValue )
+            if ( catIndex == categoryValue )
             {
                 found = 1;
                 foundIndex = catIndex;
@@ -385,23 +395,21 @@ function findCategories()
         
         if ( !found )
         {
-            catRecord = new categoryRecord( categoryValue, 1 );
-            categoryList.push(catRecord);
+            catRecord = new categoryRecord();
+            catRecord.imageIndexes.push(index);
+            categoryList[categoryValue] = catRecord;
         }
         else
         {
-            categoryList[foundIndex].numImages++;
+            categoryList[foundIndex].imageIndexes.push(index);
         }
         
         if ( imageList[index].metadata.isNew )
-        {
-            categoryList[0].numImages++;
-        }
+            categoryList["New"].imageIndexes.push(index);
         
         if ( imageList[index].metadata.isFavorite )
-        {
-            categoryList[1].numImages++;
-        }
+            categoryList["Favorites"].imageIndexes.push(index);
+
     }
 }
 
@@ -436,11 +444,57 @@ function showImage( filePath, imageTitle )
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
     theElement.innerHTML = theHTML;
     
- 
     theElement = document.getElementById(filePath);
     theElement.innerHTML = getThumbnailHtml(filePath,unescape(imageTitle),1);
     
     currentlySelectedImage = new currentlySelectedImageRecord( filePath, unescape(imageTitle) );
+    
+    var prevIndex = -1;
+    var nextIndex = -1;
+    for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
+    {
+        if ( imageList[categoryList[currentCategoryValue].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
+        {
+            if ( catIndex > 0 )
+            {
+                prevIndex = catIndex - 1;
+            }
+            
+            if ( catIndex < (categoryList[currentCategoryValue].imageIndexes.length-1) )
+            {
+                nextIndex = catIndex; // If I add 1 here, nextIndex becomes a string type. WTF?
+                nextIndex++;
+            }
+            break;
+        }
+    }
+    
+    if ( prevIndex != -1 )
+    {
+        var prevFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].filePath;
+        var prevImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].metadata.title;
+        
+        theHTML = "<a href=\"javascript:showImage('" + prevFilePath + "','" + escape(prevImageTitle) + "');\">Previous</a>";
+        
+        theElement = document.getElementById("prevbuttondiv");
+        if ( null == theElement )
+            return;
+    
+        theElement.innerHTML = theHTML;
+    }
+    if ( nextIndex != -1 )
+    {
+        var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].filePath;
+        var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].metadata.title;
+        
+        theHTML = "<a href=\"javascript:showImage('" + nextFilePath + "','" + escape(nextImageTitle) + "');\">Next</a>";
+        
+        theElement = document.getElementById("nextbuttondiv");
+        if ( null == theElement )
+            return;
+    
+        theElement.innerHTML = theHTML;
+    }
 }
 
 function showRandomWelcomeImage()
@@ -460,19 +514,19 @@ function showRandomImage( categoryValue )
     var numImages = 0;
     if ( categoryValue == "New" )
     {
-        numImages = categoryList[0].numImages;
+        numImages = categoryList[0].imageIndexes.length;
     }
     else if ( categoryValue == "Favorites" )
     {
-        numImages = categoryList[1].numImages;
+        numImages = categoryList[1].imageIndexes.length;
     }
     else
     {
         for ( catRecordIndex in categoryList )
         {
-            if ( categoryValue == categoryList[catRecordIndex].categoryValue )
+            if ( categoryValue == catRecordIndex )
             {
-                numImages = categoryList[catRecordIndex].numImages;
+                numImages = categoryList[catRecordIndex].imageIndexes.length;
             }
         }
     }

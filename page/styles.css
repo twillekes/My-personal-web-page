@@ -110,6 +110,46 @@ html>body #menubar a
     color: white;
 }
 
+#prevnextbuttondiv
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+#prevnextbuttondiv a
+    {
+    font: bold 13px Verdana;
+    padding: 2px;
+    padding-left: 4px;
+    display: block;
+    width: 100%;
+    color: black;
+    text-decoration: none;
+    border-bottom: 1px solid black;
+    }
+html>body #prevnextbuttondiv a
+{
+    background-color: #E6E6E6;
+    border: 1px solid black;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+    -moz-box-shadow: 8px 8px 6px #808080;
+    -webkit-box-shadow: 8px 8px 6px #808080;
+    box-shadow: 8px 8px 6px #808080;
+}
+#prevnextbuttondiv a:hover
+{
+    background-color: gray;
+    color: white;
+}
+#prevnextbuttondiv  table,td
+{
+    margin-top: 1em;
+    width: 50%;
+}
+
+
 #buttonDescription
 {
     width: 100%;
