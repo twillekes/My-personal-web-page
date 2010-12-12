@@ -202,8 +202,8 @@ function getImageDisplayHTML()
                     <div id=\"prevnextbuttondiv\">\n\
                         <table style=\"margin-left: auto; margin-right: auto;\">\n\
                             <tr>\n\
-                                <td><div id=\"prevbuttondiv\"></div></td>\n\
-                                <td><div id=\"nextbuttondiv\"></div></td>\n\
+                                <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
+                                <td><div id=\"nextbuttondiv\">Next</div></td>\n\
                             </tr>\n\
                         </table>\n\
                     </div>\n\
@@ -473,18 +473,19 @@ function showImage( filePath, imageTitle )
     if ( null == theElement )
         return;
 
+    // For some reason, using an HTML anchor tag results in the showImage call failing when the title has an apostrophe. WTF?
+    
     if ( prevIndex == -1 )
     {
-        theElement.innerHTML = "";
+        theElement.removeAttribute( "onClick" );
+        theElement.setAttribute("style", "cursor: auto; background-color: #E6E6E6; color: gray;" );
     }
     else
     {
         var prevFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].filePath;
         var prevImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].metadata.title;
-        
-        theHTML = "<a href=\"javascript:showImage('" + prevFilePath + "','" + escape(prevImageTitle) + "');\">Previous</a>";
-        
-        theElement.innerHTML = theHTML;
+        theElement.setAttribute( "onClick", "javascript:showImage('" + prevFilePath + "','" + escape(prevImageTitle) + "');" );
+        theElement.removeAttribute( "style" );
     }
     
     theElement = document.getElementById("nextbuttondiv");
@@ -493,16 +494,15 @@ function showImage( filePath, imageTitle )
 
     if ( nextIndex == -1 )
     {
-        theElement.innerHTML = "";
+        theElement.removeAttribute( "onClick" );
+        theElement.setAttribute("style", "cursor: auto; background-color: #E6E6E6; color: gray;" );
     }
     else
     {
         var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].filePath;
         var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].metadata.title;
-        
-        theHTML = "<a href=\"javascript:showImage('" + nextFilePath + "','" + escape(nextImageTitle) + "');\">Next</a>";
-        
-        theElement.innerHTML = theHTML;
+        theElement.setAttribute( "onClick", "javascript:showImage('" + nextFilePath + "','" + escape(nextImageTitle) + "');" );
+        theElement.removeAttribute( "style" );
     }
 }
 
