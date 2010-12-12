@@ -458,13 +458,20 @@ function showImage( filePath, imageTitle )
         return;
         
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
+    setOpacity( theElement, 0 );
     theElement.innerHTML = theHTML;
+    fadeIn( "imagedisplaydiv", 10 );
     
     theElement = document.getElementById(filePath);
     theElement.innerHTML = getThumbnailHtml(filePath,unescape(imageTitle),1);
     
     currentlySelectedImage = new currentlySelectedImageRecord( filePath, unescape(imageTitle) );
     
+    addPrevNextButtons();
+}
+
+function addPrevNextButtons()
+{
     var prevIndex = -1;
     var nextIndex = -1;
     for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
@@ -485,7 +492,7 @@ function showImage( filePath, imageTitle )
         }
     }
     
-    theElement = document.getElementById("prevbuttondiv");
+    var theElement = document.getElementById("prevbuttondiv");
     if ( null == theElement )
         return;
 
@@ -531,7 +538,9 @@ function showRandomWelcomeImage()
     if ( null == theElement )
         return;
         
+    setOpacity( theElement, 0 );
     theElement.innerHTML = theHTML;
+    fadeIn( "welcomeimagedisplaydiv", 0 );
             
     timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
 }
@@ -594,4 +603,35 @@ function showText( theText, theElementId )
 function hideText( theElementId )
 {
     showText(escape(""), theElementId);
+}
+
+function setOpacity( obj, opacity )
+{
+  opacity = (opacity == 100)?99.999:opacity;
+  
+  // IE/Win
+  obj.style.filter = "alpha(opacity:"+opacity+")";
+  
+  // Safari<1.2, Konqueror
+  obj.style.KHTMLOpacity = opacity/100;
+  
+  // Older Mozilla and Firefox
+  obj.style.MozOpacity = opacity/100;
+  
+  // Safari 1.2, newer Firefox and Mozilla, CSS3
+  obj.style.opacity = opacity/100;
+}
+
+function fadeIn( elementId, opacity )
+{
+    if (document.getElementById)
+    {
+        var theElement = document.getElementById(elementId);
+        if (opacity < 100)
+        {
+            setOpacity(theElement, opacity);
+            opacity += 5;
+            window.setTimeout("fadeIn('"+elementId+"',"+opacity+")", 50);
+        }
+    }
 }
