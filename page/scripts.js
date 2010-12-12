@@ -15,6 +15,10 @@ var currentCategoryValue; // E.g. "New" or "Houses" or ...
 var categoryList = new Array();
 var currentlySelectedImage = null;
 
+// Welcome page image timer
+var timerId = null;
+var welcomeImageChangeTimeout = 15000; // In milliseconds
+
 /*
 
 Image categories:
@@ -216,6 +220,12 @@ function getImageDisplayHTML()
 
 function toImageView(categoryValue)
 {
+    if ( timerId != null )
+    {
+        clearTimeout( timerId );
+        timerId = null;
+    }
+        
     var theCategoryNameArea =
     "       <div id=\"categorynamearea\">\n\
                 <h3  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h3>\n\
@@ -428,6 +438,12 @@ function hideImage()
 
 function showImage( filePath, imageTitle )
 {
+    if ( timerId != null )
+    {
+        clearTimeout( timerId );
+        timerId = null;
+    }
+
     hideImage();
     
     var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageTitle) + "</h3>";
@@ -516,6 +532,8 @@ function showRandomWelcomeImage()
         return;
         
     theElement.innerHTML = theHTML;
+            
+    timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
 }
 
 function showRandomImage( categoryValue )
@@ -561,7 +579,9 @@ function showRandomImage( categoryValue )
             }
         }
     }
-
+   
+    // This would probably be disconcerting to users 
+//    timerId = setTimeout( function () { showRandomImage( categoryValue ) }, welcomeImageChangeTimeout );
 }
 
 
