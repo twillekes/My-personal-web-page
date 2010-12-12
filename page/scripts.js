@@ -203,16 +203,14 @@ function getImageDisplayHTML()
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <!--[if gt IE 6]>\n\
-                        <div id=\"prevnextbuttondiv\">\n\
-                            <table style=\"margin-left: auto; margin-right: auto;\">\n\
-                                <tr>\n\
-                                    <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
-                                    <td><div id=\"nextbuttondiv\">Next</div></td>\n\
-                                </tr>\n\
-                            </table>\n\
-                        </div>\n\
-                    <![endif]-->\n\
+                    <div id=\"prevnextbuttondiv\">\n\
+                        <table style=\"margin-left: auto; margin-right: auto;\">\n\
+                            <tr>\n\
+                                <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
+                                <td><div id=\"nextbuttondiv\">Next</div></td>\n\
+                            </tr>\n\
+                        </table>\n\
+                    </div>\n\
                     <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n";  
@@ -474,6 +472,13 @@ function showImage( filePath, imageTitle )
 
 function addPrevNextButtons()
 {
+    if ( isIEVersion6() )
+    {
+        var wholeElement = getElementById("prevnextbuttondiv");
+        wholeElement.innerHTML = "";
+        return;
+    }
+    
     var prevIndex = -1;
     var nextIndex = -1;
     for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
@@ -636,4 +641,30 @@ function fadeIn( elementId, opacity )
             window.setTimeout("fadeIn('"+elementId+"',"+opacity+")", 50);
         }
     }
+}
+
+function getInternetExplorerVersion()
+// Returns the version of Internet Explorer or a -1
+// (indicating the use of another browser).
+{
+    var rv = -1; // Return value assumes failure.
+    if (navigator.appName == 'Microsoft Internet Explorer')
+    {
+        var ua = navigator.userAgent;
+        var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+            rv = parseFloat( RegExp.$1 );
+    }
+    return rv;
+}
+
+function isIEVersion6()
+{
+    var msg = "You're not using Internet Explorer.";
+    var ver = getInternetExplorerVersion();
+    if ( ver == -1 )
+        return 0;
+
+    if ( ver < 7.0 ) 
+        return 1;
 }
