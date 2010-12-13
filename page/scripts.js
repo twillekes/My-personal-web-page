@@ -19,6 +19,9 @@ var currentlySelectedImage = null;
 var timerId = null;
 var welcomeImageChangeTimeout = 15000; // In milliseconds
 
+// For image fade management
+var fadeTimerId = null;
+
 /*
 
 Image categories:
@@ -561,6 +564,11 @@ function showRandomWelcomeImage()
     theElement.innerHTML = theHTML;
     fadeIn( "welcomeimagedisplaydiv", 0 );
             
+    if ( timerId != null )
+    {
+        clearTimeout( timerId );
+        timerId = null;
+    }
     timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
 }
 
@@ -643,6 +651,12 @@ function setOpacity( obj, opacity )
 
 function fadeIn( elementId, opacity )
 {
+    if ( fadeTimerId != null )
+    {
+        clearTimeout( fadeTimerId );
+        fadeTimerId = null;
+    }
+    
     if (document.getElementById)
     {
         var theElement = document.getElementById(elementId);
@@ -650,7 +664,7 @@ function fadeIn( elementId, opacity )
         {
             setOpacity(theElement, opacity);
             opacity += 5;
-            window.setTimeout("fadeIn('"+elementId+"',"+opacity+")", 50);
+            fadeTimerId = window.setTimeout("fadeIn('"+elementId+"',"+opacity+")", 50);
         }
     }
 }
