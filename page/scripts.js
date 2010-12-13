@@ -584,7 +584,18 @@ function showRandomWelcomeImage()
         clearTimeout( timerId );
         timerId = null;
     }
-    timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
+    //timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
+    timerId = setTimeout(
+                function ()
+                {
+                    var theElement = document.getElementById("welcomeimagedisplaydiv");
+                    if ( null == theElement )
+                        return;
+                        
+                    setOpacity( theElement, 100 );
+                    theElement.innerHTML = theHTML;
+                    fadeOut( "welcomeimagedisplaydiv", 100 );
+                }, welcomeImageChangeTimeout );
 }
 
 function showRandomImage( categoryValue )
@@ -664,14 +675,18 @@ function setOpacity( obj, opacity )
   obj.style.opacity = opacity/100;
 }
 
-function fadeIn( elementId, opacity )
+function stopFade()
 {
     if ( fadeTimerId != null )
     {
         clearTimeout( fadeTimerId );
         fadeTimerId = null;
-    }
-    
+    }    
+}
+
+function fadeIn( elementId, opacity )
+{
+    stopFade();
     if (document.getElementById)
     {
         var theElement = document.getElementById(elementId);
@@ -680,6 +695,25 @@ function fadeIn( elementId, opacity )
             setOpacity(theElement, opacity);
             opacity += 5;
             fadeTimerId = window.setTimeout("fadeIn('"+elementId+"',"+opacity+")", 50);
+        }
+    }
+}
+
+function fadeOut( elementId, opacity )
+{
+    stopFade();
+    if (document.getElementById)
+    {
+        var theElement = document.getElementById(elementId);
+        if (opacity > 0)
+        {
+            setOpacity(theElement, opacity);
+            opacity -= 5;
+            fadeTimerId = window.setTimeout("fadeOut('"+elementId+"',"+opacity+")", 50);
+        }
+        else
+        {
+            showRandomWelcomeImage();
         }
     }
 }
