@@ -289,13 +289,14 @@ function loadImages(isLocal)
     $.getJSON("images.json",
         function(json)
         {
+            var theIndex = 0;
             $.each(json.items,
                 function(i,item)
                 {
                     if ( isLocal && item.type == "local" )
-                        imageMetadataList[i] = item.metadataPath;
+                        imageMetadataList[theIndex++] = item.metadataPath;
                     else if ( !isLocal && ( item.type != "local" ) || ( item.type == null ) )
-                        imageMetadataList[i] = item.metadataPath;
+                        imageMetadataList[theIndex++] = item.metadataPath;
                 }
             );
        

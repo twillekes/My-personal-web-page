@@ -133,7 +133,7 @@ html>body #menubar a
     }
 html>body #prevnextbuttondiv div
 {
-    width: 50%;
+    width: 50%;	
     margin-bottom: 5px;
     -moz-box-shadow: 8px 8px 6px #808080;
     -webkit-box-shadow: 8px 8px 6px #808080;

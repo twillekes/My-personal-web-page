@@ -1,11 +1,10 @@
 {
     "items":
     [
+        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/photonwrangler/drop/images_2" },
+        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/photonwrangler/drop/newImages" },
         { "type" : "local", "metadataPath" : "images_2" },
         { "type" : "local", "metadataPath" : "images" },
-        { "type" : "local", "metadataPath" : "newImages" },
-        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/tjwillekes/images_2" },
-        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/tomjwillekes/images" },
-        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/twillekes/newImages" }
+        { "type" : "local", "metadataPath" : "newImages" }
     ]
 }
