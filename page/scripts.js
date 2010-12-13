@@ -17,7 +17,7 @@ var currentlySelectedImage = null;
 
 // Welcome page image timer
 var timerId = null;
-var welcomeImageChangeTimeout = 15000; // In milliseconds
+var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // For image fade management
 var fadeTimerId = null;
@@ -44,6 +44,19 @@ Image information:
 - Date captured
 
 */
+
+function lostFocus()
+{
+    if ( timerId != null )
+    {
+        clearTimeout( timerId );
+        timerId = null;
+    }
+}
+
+function gainedFocus()
+{
+}
 
 //window.onload = initializePage(); Doesn't work in Firefox
 
@@ -474,9 +487,7 @@ function addPrevNextButtons()
 {
     if ( isIEVersion6() == 1 )
     {
-        //var wholeElement = getElementById("prevbuttondiv");
-        //(wholeElement.parentNode).removeChild(wholeElement);
-        //wholeElement.innerHTML = "";
+        // in IE6, I could not figure out how to make a div support onClick()
         return;
     }
 
