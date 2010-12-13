@@ -48,7 +48,6 @@
         { "filename" : "TheGlory.jpg", "title" : "The Glory", "subject" : "Prairie", "isFavorite" : 1 },
         { "filename" : "PathToEnlightenment.jpg", "title" : "Path to Enlightenment", "subject" : "Prairie" },
         { "filename" : "ACountryMile.jpg", "title" : "A Country Mile", "subject" : "Prairie" },
-        { "filename" : "DoTell.jpg", "title" : "Do Tell", "subject" : "Prairie" },
         { "filename" : "ABoundlessMoment.jpg", "title" : "A Boundless Moment", "subject" : "Prairie" },
         { "filename" : "WellBeTogetherAgain.jpg", "title" : "(We'll Be) Together Again", "subject" : "Prairie" },
         { "filename" : "Extraction.jpg", "title" : "Extraction", "subject" : "Prairie" },
