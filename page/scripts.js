@@ -30,7 +30,7 @@ Image categories:
 - Camera
 - Lens
 - Film
-- Monochrome
+- Monochrome versus polychrome
 - Format (35mm, 6x4.5, 6x6, 6x7, 6x9, 6x12, 4x5)
 - Year captured (2003 through 2010)
 
@@ -56,6 +56,10 @@ function lostFocus()
 
 function gainedFocus()
 {
+    if ( getElementById( "welcome" ) )
+    {
+        timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
+    }
 }
 
 //window.onload = initializePage(); Doesn't work in Firefox
