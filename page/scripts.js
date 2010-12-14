@@ -112,9 +112,9 @@ function buildMenu()
             extra = "image";
             
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
-                         "');\" onMouseOver=\"showText(escape('" +
+                         "');\" onmouseover=\"showText(escape('" +
                          categoryList[index].imageIndexes.length + " " + extra +
-                         "'),'buttonDescription');\" onMouseOut=\"hideText('buttonDescription')\">" +
+                         "'),'buttonDescription');\" onmouseout=\"hideText('buttonDescription')\">" +
                          index + "</a>";
         
         theElement.appendChild(adiv);
@@ -292,15 +292,15 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
     {
         return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
                               filePath + "','" + escape(imageTitle) +
-                              "')\" style=\"border: 4px solid #606060\" onMouseOver=\"showText('" + escape(imageTitle) +
-                              "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>\n";
+                              "')\" style=\"border: 4px solid #606060\" onoouseover=\"showText('" + escape(imageTitle) +
+                              "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
     }
     else
     {
-        return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
+        return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onclick=\"showImage('" +
                               filePath + "','" + escape(imageTitle) +
-                               "')\" onMouseOver=\"showText('" + escape(imageTitle) +
-                               "','thumbnailDescription');\" onMouseOut=\"hideText('thumbnailDescription');\"/>\n";
+                               "')\" onmouseover=\"showText('" + escape(imageTitle) +
+                               "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
     }
 }
 
