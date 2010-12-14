@@ -687,14 +687,18 @@ function stopFade()
 function fadeIn( elementId, opacity )
 {
     stopFade();
-    if (document.getElementById)
-    {
+    if (document.getElementById) {
         var theElement = document.getElementById(elementId);
-        if (opacity < 100)
+        if (isIEVersion6())
         {
+            setOpacity(theElement, 100);
+            return;
+        }
+
+        if (opacity < 100) {
             setOpacity(theElement, opacity);
             opacity += 5;
-            fadeTimerId = window.setTimeout("fadeIn('"+elementId+"',"+opacity+")", 50);
+            fadeTimerId = window.setTimeout("fadeIn('" + elementId + "'," + opacity + ")", 50);
         }
     }
 }
@@ -705,6 +709,12 @@ function fadeOut( elementId, opacity )
     if (document.getElementById)
     {
         var theElement = document.getElementById(elementId);
+        if (isIEVersion6()) {
+            setOpacity(theElement, 0);
+            showRandomWelcomeImage();
+            return;
+        }
+        
         if (opacity > 0)
         {
             setOpacity(theElement, opacity);
