@@ -19,9 +19,6 @@ var currentlySelectedImage = null;
 var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
-// For image fade management
-var fadeTimerId = null;
-
 /*
 
 Image categories:
@@ -97,10 +94,6 @@ function buildMenu()
 {
     findCategories();
     
-    var theElement = document.getElementById("menuitems");
-    if ( null == theElement )
-        return;
-    
     for ( index in categoryList )
     {
         if ( categoryList[index].imageIndexes.length == 0 )
@@ -117,7 +110,7 @@ function buildMenu()
                          "'),'buttonDescription');\" onmouseout=\"hideText('buttonDescription')\">" +
                          index + "</a>";
         
-        theElement.appendChild(adiv);
+        $("#menuitems").append(adiv);
     }
 
     if ( loadParameters != null )
@@ -179,9 +172,7 @@ function toSingleImageView(filePath)
         return;
         
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
-    setOpacity( theElement, 0 );
-    theElement.innerHTML = theHTML;
-    fadeIn( "imagedisplaydiv", 0 );
+    $("#imagedisplaydiv").hide().html(theHTML).slideDown( 1000 );
 }
 
 function switchTo( categoryValue )
@@ -329,9 +320,11 @@ function loadImages(isLocal)
 function loadImageMetadata(metadataItem)
 {
     var metadataFilePath = imageMetadataList[metadataItem];
-    $.getJSON(metadataFilePath + "/metadata.json",
-        function(json)
-        {
+
+    $.ajax({
+        url: metadataFilePath + "/metadata.json",
+        dataType: "json",
+        success: function(json) {
             $.each(json.items,
                 function(i,item)
                 {
@@ -351,8 +344,11 @@ function loadImageMetadata(metadataItem)
                 buildMenu();
                 return;
             }
+        },
+        error: function(request, status, error) {
+            //alert("failed with: "+status+" and "+error);
         }
-     );
+    });
 }
 
 function metadata( title, subject, isNew, isFavorite )
@@ -475,9 +471,7 @@ function showImage( filePath, imageTitle )
         return;
         
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
-    setOpacity( theElement, 0 );
-    theElement.innerHTML = theHTML;
-    fadeIn( "imagedisplaydiv", 10 );
+    $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
     
     theElement = document.getElementById(filePath);
     theElement.innerHTML = getThumbnailHtml(filePath,unescape(imageTitle),1);
@@ -571,30 +565,21 @@ function showRandomWelcomeImage()
     var index = Math.floor( Math.random() * totalNumImages );
     
     var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\"/>";
-    var theElement = document.getElementById("welcomeimagedisplaydiv");
-    if ( null == theElement )
-        return;
-        
-    setOpacity( theElement, 0 );
-    theElement.innerHTML = theHTML;
-    fadeIn( "welcomeimagedisplaydiv", 0 );
+    $("#welcomeimagedisplaydiv").hide().html(theHTML).fadeIn(1000);
             
     if ( timerId != null )
     {
         clearTimeout( timerId );
         timerId = null;
     }
-    //timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
+
     timerId = setTimeout(
                 function ()
                 {
-                    var theElement = document.getElementById("welcomeimagedisplaydiv");
-                    if ( null == theElement )
-                        return;
-                        
-                    setOpacity( theElement, 100 );
-                    theElement.innerHTML = theHTML;
-                    fadeOut( "welcomeimagedisplaydiv", 100 );
+                    $("#welcomeimagedisplaydiv").fadeOut( 1000, function () 
+                        {
+                            showRandomWelcomeImage();
+                        } );
                 }, welcomeImageChangeTimeout );
 }
 
@@ -646,7 +631,6 @@ function showRandomImage( categoryValue )
 //    timerId = setTimeout( function () { showRandomImage( categoryValue ) }, welcomeImageChangeTimeout );
 }
 
-
 function showText( theText, theElementId )
 {
     var theTextArea = document.getElementById(theElementId);
@@ -656,66 +640,6 @@ function showText( theText, theElementId )
 function hideText( theElementId )
 {
     showText(escape(""), theElementId);
-}
-
-function setOpacity( obj, opacity )
-{
-  opacity = (opacity == 100)?99.999:opacity;
-  
-  // IE/Win
-  obj.style.filter = "alpha(opacity:"+opacity+")";
-  
-  // Safari<1.2, Konqueror
-  obj.style.KHTMLOpacity = opacity/100;
-  
-  // Older Mozilla and Firefox
-  obj.style.MozOpacity = opacity/100;
-  
-  // Safari 1.2, newer Firefox and Mozilla, CSS3
-  obj.style.opacity = opacity/100;
-}
-
-function stopFade()
-{
-    if ( fadeTimerId != null )
-    {
-        clearTimeout( fadeTimerId );
-        fadeTimerId = null;
-    }    
-}
-
-function fadeIn( elementId, opacity )
-{
-    stopFade();
-    if (document.getElementById)
-    {
-        var theElement = document.getElementById(elementId);
-        if (opacity < 100)
-        {
-            setOpacity(theElement, opacity);
-            opacity += 5;
-            fadeTimerId = window.setTimeout("fadeIn('"+elementId+"',"+opacity+")", 50);
-        }
-    }
-}
-
-function fadeOut( elementId, opacity )
-{
-    stopFade();
-    if (document.getElementById)
-    {
-        var theElement = document.getElementById(elementId);
-        if (opacity > 0)
-        {
-            setOpacity(theElement, opacity);
-            opacity -= 5;
-            fadeTimerId = window.setTimeout("fadeOut('"+elementId+"',"+opacity+")", 50);
-        }
-        else
-        {
-            showRandomWelcomeImage();
-        }
-    }
 }
 
 function getInternetExplorerVersion()
