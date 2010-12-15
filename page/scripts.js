@@ -471,7 +471,7 @@ function showImage( filePath, imageTitle )
         return;
         
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
-    $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
+    $("#imagedisplaydiv").hide().html(theHTML).slideDown(1000);
     
     theElement = document.getElementById(filePath);
     theElement.innerHTML = getThumbnailHtml(filePath,unescape(imageTitle),1);
@@ -562,21 +562,21 @@ function addPrevNextButtons()
 
 function showRandomWelcomeImage()
 {
+    //if ( timerId != null )
+    //{
+    //    clearTimeout( timerId );
+    //    timerId = null;
+    //}
+
     var index = Math.floor( Math.random() * totalNumImages );
     
     var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\"/>";
-    $("#welcomeimagedisplaydiv").hide().html(theHTML).fadeIn(1000);
+    $("#welcomeimagedisplaydiv").hide().html(theHTML).slideDown(2000);
             
-    if ( timerId != null )
-    {
-        clearTimeout( timerId );
-        timerId = null;
-    }
-
     timerId = setTimeout(
                 function ()
                 {
-                    $("#welcomeimagedisplaydiv").fadeOut( 1000, function () 
+                    $("#welcomeimagedisplaydiv").slideUp( 2000, function () 
                         {
                             showRandomWelcomeImage();
                         } );
