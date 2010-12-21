@@ -28,6 +28,19 @@ div
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
+#article
+    {
+    /*\*/
+    position: absolute;
+    top: 7%; /* Was 11 */
+    right: 0%;
+    bottom: 5%;
+    left: 16%;
+    /* Exclude all previous props for Mac IE5 */
+    margin: 7% 0% 5% 16%; /* Cater for Mac IE5 */
+    /*\*/ margin: 0; /* Put back for all the rest */
+    /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
+    }
 #singleImage
     {
     /*\*/

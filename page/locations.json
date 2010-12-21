@@ -5,6 +5,7 @@
         { "type" : "remote", "metadataPath" : "http://members.shaw.ca/photonwrangler/drop/newImages" },
         { "type" : "local", "metadataPath" : "images_2" },
         { "type" : "local", "metadataPath" : "images" },
-        { "type" : "local", "metadataPath" : "newImages" }
+        { "type" : "local", "metadataPath" : "newImages" },
+        { "type" : "local", "metadataPath" : "words" }
     ]
 }

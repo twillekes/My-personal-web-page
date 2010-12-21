@@ -1,0 +1,9 @@
+{
+    "_comment" : "TBD",
+    "items":
+    [
+        { "heading" : "Title for this section" },
+        { "paragraph" : "<p>paragraph text here</p><p>New paragraph here</p>" },
+        { "image" : "BrightFuture.jpg" }
+    ]
+}

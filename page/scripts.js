@@ -1,13 +1,17 @@
 // Page load actions
 var loadParameters = null;
+var locationsFileName = "locations.json";
 
 // Metadata file loading management
-var imageMetadataList = new Array();
-var currentImageMetadataItem = 0;
+var metadataList = new Array();
+var currentMetadataItem = 0;
 
 // Master list of images
 var totalNumImages = 0;
 var imageList = new Array();
+
+// Master list of articles
+var articleList = new Array();
 
 // Category management
 var currentCategorization = "subject";
@@ -112,6 +116,15 @@ function buildMenu()
         
         $("#menuitems").append(adiv);
     }
+    
+    for ( index in articleList )
+    {
+        adiv.innerHTML = "<a href=\"javascript:toWordView('" + index +
+                         "');\" onmouseover=\"showText(escape('Article'),'buttonDescription');\" onmouseout=\"hideText('buttonDescription')\">" +
+                         articleList[index].title + "</a>";
+        
+        $("#menuitems").append(adiv);
+    }
 
     if ( loadParameters != null )
     {
@@ -122,21 +135,27 @@ function buildMenu()
                 toSingleImageView(loadParameters[index]);
                 return;
             }
+            else if ( index == "showArticle" )
+            {
+                if ( showArticle(loadParameters[index]) )
+                    return;
+            }
         }
     }
     
     toWelcomeView();
 }
 
-function toSingleImageView(filePath)
+function findImage(filePath, imageTitle)
 {
     var imageTitle = null;
+    var newFilePath = filePath;
     for ( index in imageList )
     {
         var idx = imageList[index].filePath.indexOf(filePath);
         if ( idx != -1 )
         {
-            filePath = imageList[index].filePath;
+            newFilePath = imageList[index].filePath;
             imageTitle = imageList[index].metadata.title;
             break;
         }
@@ -144,9 +163,18 @@ function toSingleImageView(filePath)
     
     if ( imageTitle == null )
     {
-        filePath = imageList[0].filePath;
+        newFilePath = imageList[0].filePath;
         imageTitle = imageList[0].metadata.title;
     }
+
+    return { imageTitle : imageTitle, filePath : newFilePath };
+}
+
+function toSingleImageView(filePath)
+{
+    var imageData = findImage( filePath );
+    var imageTitle = imageData.imageTitle;
+    filePath = imageData.filePath;
     
     var theHTML =
      "      <div id=\"singleImage\">\n\
@@ -277,6 +305,62 @@ function toImageView(categoryValue)
     showRandomImage(categoryValue);
 }
 
+function showArticle( articleTitle )
+{
+    for ( index in articleList )
+    {
+        var idx = articleList[index].title.indexOf(articleTitle);
+        if ( idx != -1 )
+        {
+            toWordView(index);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+function toWordView( articleMetadataFilePath )
+{
+    var theHTML =
+     "\
+            <div id=\"titlearea\">\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + articleList[articleMetadataFilePath].title + "</h1>\n\
+            </div>\n\
+            <div id=\"article\" style=\"text-align: center\">\n\
+            </div>";
+     
+    var theElement = document.getElementById("contentplaceholder");
+    theElement.innerHTML = theHTML;
+
+    $.getJSON(articleMetadataFilePath,
+        function(json)
+        {
+            $.each(json.items,
+                function(i,item)
+                {
+                    if ( item.heading )
+                    {
+                        $("#article").append($("<h2>"+item.heading+"</h2>"));
+                    }
+                    else if ( item.paragraph )
+                    {
+                        $("#article").append($("<p>"+item.paragraph+"</p>"));
+                    }
+                    else if ( item.image )
+                    {
+                        $("#article").append($("<div class=\"centeredImage\"><img src=\"" + findImage(item.image).filePath + "\" /></div>"));
+                    }
+                    else
+                    {
+                        alert("An error has occurred within function 'toWordView', please email the page owner");
+                    }
+                }
+            );
+         }
+     );
+}
+
 function getThumbnailHtml( filePath, imageTitle, asSelected )
 {
     if ( asSelected )
@@ -297,29 +381,29 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
 
 function loadImages(isLocal)
 {
-    $.getJSON("images.json",
+    $.getJSON(locationsFileName,
         function(json)
         {
             var theIndex = 0;
             $.each(json.items,
                 function(i,item)
                 {
-                    if ( isLocal && item.type == "local" )
-                        imageMetadataList[theIndex++] = item.metadataPath;
-                    else if ( !isLocal && ( item.type != "local" ) || ( item.type == null ) )
-                        imageMetadataList[theIndex++] = item.metadataPath;
+                    if ( (isLocal && item.type == "local") || 
+                         (!isLocal && item.type != "local") ||
+                         (item.type == null) )
+                        metadataList[theIndex++] = item.metadataPath;
                 }
             );
        
-            currentImageMetadataItem = 0;
-            loadImageMetadata( 0 );
+            currentMetadataItem = 0;
+            loadMetadata( 0 );
         }
      );
 }
 
-function loadImageMetadata(metadataItem)
+function loadMetadata(metadataItem)
 {
-    var metadataFilePath = imageMetadataList[metadataItem];
+    var metadataFilePath = metadataList[metadataItem];
 
     $.ajax({
         url: metadataFilePath + "/metadata.json",
@@ -328,16 +412,24 @@ function loadImageMetadata(metadataItem)
             $.each(json.items,
                 function(i,item)
                 {
-                    var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
-                    var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
-                    imageList[totalNumImages++] = ir;
+                    if ( json.type != "words" )
+                    {
+                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
+                        var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
+                        imageList[totalNumImages++] = ir;
+                    }
+                    else
+                    {
+                        var art = new article( item.title );
+                        articleList[metadataFilePath+"/"+item.filename] = art;
+                    }
                 }
             );
                 
-            currentImageMetadataItem++;
-            if ( currentImageMetadataItem < imageMetadataList.length )
+            currentMetadataItem++;
+            if ( currentMetadataItem < metadataList.length )
             {
-                loadImageMetadata(currentImageMetadataItem);
+                loadMetadata(currentMetadataItem);
             }
             else
             {
@@ -369,6 +461,11 @@ function imageRecord( filePath, metadata )
 function categoryRecord()
 {
     this.imageIndexes = new Array();
+}
+
+function article( title )
+{
+    this.title = title;
 }
 
 function currentlySelectedImageRecord( filePath, title )
