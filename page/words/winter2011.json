@@ -4,6 +4,8 @@
     [
         { "heading" : "Title for this section" },
         { "paragraph" : "<p>paragraph text here</p><p>New paragraph here</p>" },
-        { "image" : "BrightFuture.jpg" }
+        { "image" : "BrightFuture.jpg" },
+        { "heading" : "Another section" },
+        { "image" : "TransientResponse" }
     ]
 }

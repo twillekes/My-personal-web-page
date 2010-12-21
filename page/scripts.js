@@ -120,7 +120,7 @@ function buildMenu()
     for ( index in articleList )
     {
         adiv.innerHTML = "<a href=\"javascript:toWordView('" + index +
-                         "');\" onmouseover=\"showText(escape('Article'),'buttonDescription');\" onmouseout=\"hideText('buttonDescription')\">" +
+                         "');\" onmouseover=\"showSubmenu('words');\" onmouseout=\"hideText('buttonDescription')\">" +
                          articleList[index].title + "</a>";
         
         $("#menuitems").append(adiv);
@@ -144,6 +144,10 @@ function buildMenu()
     }
     
     toWelcomeView();
+}
+
+function showSubMenu(parentName)
+{
 }
 
 function findImage(filePath, imageTitle)
