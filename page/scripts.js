@@ -12,6 +12,7 @@ var imageList = new Array();
 
 // Master list of articles
 var articleList = new Array();
+var totalNumArticles = 0;
 
 // Category management
 var currentCategorization = "subject";
@@ -117,15 +118,21 @@ function buildMenu()
         $("#menuitems").append(adiv);
     }
     
-    for ( index in articleList )
+    if ( totalNumArticles > 0 )
     {
-        adiv.innerHTML = "<a href=\"javascript:toWordView('" + index +
-                         "');\" onmouseover=\"showSubmenu('words');\" onmouseout=\"hideText('buttonDescription')\">" +
-                         articleList[index].title + "</a>";
+        var textToShow = totalNumArticles;
+        if ( totalNumArticles == 1 )
+            textToShow += " article";
+        else
+            textToShow += " articles";
+            
+        adiv = document.createElement('div');
+        adiv.innerHTML = "<a href=\"javascript:toWordView();\" onmouseover=\"showText('" + textToShow +
+                         "','buttonDescription');\" onmouseout=\"hideText('buttonDescription')\">Words</a>";
         
         $("#menuitems").append(adiv);
     }
-
+    
     if ( loadParameters != null )
     {
         for ( index in loadParameters )
@@ -144,10 +151,6 @@ function buildMenu()
     }
     
     toWelcomeView();
-}
-
-function showSubMenu(parentName)
-{
 }
 
 function findImage(filePath, imageTitle)
@@ -324,7 +327,31 @@ function showArticle( articleTitle )
     return 0;
 }
 
-function toWordView( articleMetadataFilePath )
+function toWordView()
+{
+    var theHTML =
+     "\
+            <div id=\"titlearea\">\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Articles</h1>\n\
+            </div>\n\
+            <div id=\"articleListItems\" style=\"text-align: center\">\n\
+            </div>";
+     
+    var theElement = document.getElementById("contentplaceholder");
+    theElement.innerHTML = theHTML;
+
+    for ( index in articleList )
+    {
+        var adiv = document.createElement('div');
+        adiv.innerHTML = "<a href=\"javascript:showArticleAt('" + index +
+                         "');\" id=\"articleListItem\">" + articleList[index].title + "</a>";
+        
+        $("#articleListItems").append(adiv);
+    }
+
+}
+
+function showArticleAt( articleMetadataFilePath )
 {
     var theHTML =
      "\
@@ -357,7 +384,7 @@ function toWordView( articleMetadataFilePath )
                     }
                     else
                     {
-                        alert("An error has occurred within function 'toWordView', please email the page owner");
+                        //alert("An error has occurred within function 'toWordView'");
                     }
                 }
             );
@@ -426,6 +453,8 @@ function loadMetadata(metadataItem)
                     {
                         var art = new article( item.title );
                         articleList[metadataFilePath+"/"+item.filename] = art;
+                        totalNumArticles++; // ".length" doesn't work for associative arrays
+
                     }
                 }
             );

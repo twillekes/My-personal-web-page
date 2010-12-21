@@ -28,6 +28,47 @@ div
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
+#articleListItems a
+    {
+    background-color: #E6E6E6; /* was below */
+    border: 1px solid black; /* was below */
+    margin-bottom: 5px; /* was below */
+    font: bold 13px Verdana;
+    padding: 2px;
+    padding-left: 4px;
+    display: block;
+    width: 66%; /* was 100% */
+    color: black;
+    text-decoration: none;
+    border-bottom: 1px solid black;
+    }
+html>body #articleListItems a
+{
+    width: 33%;
+    margin-left: auto;
+    margin-right: auto;
+    -moz-box-shadow: 8px 8px 6px #808080;
+    -webkit-box-shadow: 8px 8px 6px #808080;
+    box-shadow: 8px 8px 6px #808080;
+}
+#articleListItems a:hover
+{
+    background-color: gray;
+    color: white;
+}
+#articleListItems
+    {
+    /*\*/
+    position: absolute;
+    top: 7%; /* Was 11 */
+    right: 0%;
+    bottom: 5%;
+    left: 16%;
+    /* Exclude all previous props for Mac IE5 */
+    margin: 7% 0% 5% 16%; /* Cater for Mac IE5 */
+    /*\*/ margin: 0; /* Put back for all the rest */
+    /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
+    }
 #article
     {
     /*\*/
