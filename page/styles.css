@@ -157,8 +157,8 @@ html>body #prevnextbuttondiv div
     width: 100%;
     height: 2em;
     padding: 2px;
-    filter:alpha(opacity=0);
-    -moz-opacity:0;
+    /*filter:alpha(opacity=0);
+    -moz-opacity:0;*/
     margin-top: 10px;
 }
 
@@ -198,8 +198,8 @@ html>body #prevnextbuttondiv div
     bottom: 0%;
     overflow: auto;
     width: 20%;
-    filter:alpha(opacity=0);
-    -moz-opacity:0;
+    /*filter:alpha(opacity=0);
+    -moz-opacity:0;*/
     margin-top: 10px;
 }
 #imagetitlearea

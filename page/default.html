@@ -25,7 +25,11 @@
 	}
 #thumbbar
 	{
-	height: expression(document.body.clientHeight + "px");
+	height: expression(document.body.clientHeight - ( (document.body.clientHeight * 8 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");
+	}
+#thumbnailDescription
+	{
+	height: expression(document.body.clientHeight - (document.body.clientHeight * 90 / 100) + "px");
 	}
 #welcome
 	{
