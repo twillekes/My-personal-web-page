@@ -86,7 +86,11 @@ function getParams()
 {
     var idx = document.URL.indexOf('?');
     if ( idx == -1 )
-        return null;
+    {
+        idx = document.URL.indexOf('#');
+        if ( idx == -1 )
+            return null;
+    }
     
     var tempParams = new Object();
     var pairs = document.URL.substring(idx+1,document.URL.length).split('&');
@@ -137,21 +141,42 @@ function buildMenu()
         $("#menuitems").append(adiv);
     }
     
+    var imageToShow = null;
+    var catValToShow = null;
+    
     if ( loadParameters != null )
     {
         for ( index in loadParameters )
         {
             if ( index == "showImage" )
             {
-                toSingleImageView(loadParameters[index]);
-                return;
+                imageToShow = loadParameters[index];
             }
+            else if ( index == "showCatVal" )
+            {
+                catValToShow = loadParameters[index];
+            } // TODO: Add support for showCat
             else if ( index == "showArticle" )
             {
-                if ( showArticle(loadParameters[index]) )
+                if ( showArticle(unescape(loadParameters[index])) )
                     return;
             }
         }
+    }
+    
+    if ( imageToShow != null )
+    {
+        if ( catValToShow == null )
+            toSingleImageView(imageToShow);
+        else
+            toImageView(catValToShow, imageToShow);
+            
+        return;
+    }
+    else if ( catValToShow != null )
+    {
+        toImageView(catValToShow);
+        return;
     }
     
     toWelcomeView();
@@ -221,6 +246,8 @@ function switchTo( categoryValue )
 
 function toWelcomeView()
 {
+    parent.location.hash = "";
+
     var theHTML =
      "\
             <!--\n\
@@ -264,7 +291,7 @@ function getImageDisplayHTML()
     return theImageDisplayArea;
 }
 
-function toImageView(categoryValue)
+function toImageView(categoryValue, imageToShow)
 {
     if ( timerId != null )
     {
@@ -295,6 +322,8 @@ function toImageView(categoryValue)
         return;
         
     currentCategoryValue = categoryValue;
+    var foundImagePath = null;
+    var foundImageTitle = null;
         
     for ( index in imageList )
     {
@@ -311,9 +340,18 @@ function toImageView(categoryValue)
         thediv.innerHTML = getThumbnailHtml(imageList[index].filePath,imageList[index].metadata.title,0);
         
         theElement.appendChild(thediv);
+        
+        if ( imageToShow != null && imageList[index].filePath.indexOf( imageToShow ) != -1 )
+        {
+            foundImagePath = imageList[index].filePath;
+            foundImageTitle = imageList[index].metadata.title;
+        }
     }
     
-    showRandomImage(categoryValue);
+    if ( foundImagePath == null || foundImageTitle == null )
+        showRandomImage(categoryValue);
+    else
+        showImage(foundImagePath,foundImageTitle);
 }
 
 function showArticle( articleTitle )
@@ -323,7 +361,7 @@ function showArticle( articleTitle )
         var idx = articleList[index].title.indexOf(articleTitle);
         if ( idx != -1 )
         {
-            toWordView(index);
+            showArticleAt(index);
             return 1;
         }
     }
@@ -352,7 +390,6 @@ function toWordView()
         
         $("#articleListItems").append(adiv);
     }
-
 }
 
 function showArticleAt( articleMetadataFilePath )
@@ -392,6 +429,9 @@ function showArticleAt( articleMetadataFilePath )
                     }
                 }
             );
+            
+            parent.location.hash = "showArticle=" + escape(articleList[articleMetadataFilePath].title);
+
          }
      );
 }
@@ -613,6 +653,8 @@ function showImage( filePath, imageTitle )
     currentlySelectedImage = new currentlySelectedImageRecord( filePath, unescape(imageTitle) );
     
     addPrevNextButtons();
+    
+    parent.location.hash = "showCat=" + currentCategorization + "&showCatVal=" + currentCategoryValue + "&showImage=" + filePath;
 }
 
 function addPrevNextButtons()
