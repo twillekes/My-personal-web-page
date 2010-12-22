@@ -654,7 +654,8 @@ function showImage( filePath, imageTitle )
     
     addPrevNextButtons();
     
-    parent.location.hash = "showCat=" + currentCategorization + "&showCatVal=" + currentCategoryValue + "&showImage=" + filePath;
+    //parent.location.hash = "showCat=" + currentCategorization + "&showCatVal=" + currentCategoryValue + "&showImage=" + filePath;
+    parent.location.hash = "showImage=" + filePath;
 }
 
 function addPrevNextButtons()
@@ -694,7 +695,7 @@ function addPrevNextButtons()
     }
     
     // For some reason, using an HTML anchor tag for the prev/next buttons results in the
-    // showImage call failing when the title has an apostrophe. WTF?
+    // showImage call failing when the title has an apostrophe (even though it's escaped). WTF?
     
     setupButton(prevIndex, "prevbuttondiv");
     setupButton(nextIndex, "nextbuttondiv");
@@ -707,12 +708,15 @@ function setupButton(imageIndex, theDivName)
 
     if (imageIndex == -1) {
         var cssSettings = {
+            'background-color': '#E6E6E6',
             'color': 'gray',
             'cursor': 'not-allowed'
         };
         $div.css(cssSettings);
+        $div.unbind('mouseover').unbind('mouseout').unbind('click');
     }
-    else {
+    else
+    {
         var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].filePath;
         var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].metadata.title;
         $div.click(function() { showImage(nextFilePath, nextImageTitle); });
@@ -723,8 +727,8 @@ function setupButton(imageIndex, theDivName)
                 'cursor': 'pointer'
             };
             $(divName).css(cssSettings);
-        });
-        $div.mouseleave(function() {
+        },
+        function() {
             var cssSettings = {
                 'background-color': '#E6E6E6',
                 'color': 'black',
