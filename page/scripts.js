@@ -1,3 +1,6 @@
+// Author: Tom Willekes
+// Use is permitted as long as you give me credit, man.
+
 // Page load actions
 var loadParameters = null;
 var locationsFileName = "locations.json";
@@ -35,6 +38,7 @@ Image categories:
 - Monochrome versus polychrome
 - Format (35mm, 6x4.5, 6x6, 6x7, 6x9, 6x12, 4x5)
 - Year captured (2003 through 2010)
+- Direction from Calgary (N, S, E, W, NW, SE, SW, NE)
 
 Image information:
 - File name
@@ -60,7 +64,7 @@ function gainedFocus()
 {
     if ( getElementById( "welcome" ) )
     {
-        timerId = setTimeout( "showRandomWelcomeImage()", welcomeImageChangeTimeout );
+        timerId = setTimeout( "showRandomWelcomeImage(true)", welcomeImageChangeTimeout );
     }
 }
 
@@ -207,7 +211,7 @@ function toSingleImageView(filePath)
         return;
         
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
-    $("#imagedisplaydiv").hide().html(theHTML).slideDown( 1000 );
+    $("#imagedisplaydiv").hide().html(theHTML).fadeIn( 1000 );
 }
 
 function switchTo( categoryValue )
@@ -223,7 +227,7 @@ function toWelcomeView()
              Front page mode\n\
               -->\n\
             <div id=\"titlearea\">\n\
-                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Photonwrangler</h1>\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Tom Willekes</h1>\n\
                 <h2 style=\"text-align: center; margin: 0; padding: 0;\">Landscape and Nature Photography</h2>\n\
             </div>\n\
             <div id=\"welcome\">\n\
@@ -241,7 +245,7 @@ function toWelcomeView()
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
     
-    showRandomWelcomeImage();
+    showRandomWelcomeImage(true);
 }
 
 function getImageDisplayHTML()
@@ -601,7 +605,7 @@ function showImage( filePath, imageTitle )
         return;
         
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
-    $("#imagedisplaydiv").hide().html(theHTML).slideDown(1000);
+    $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
     
     theElement = document.getElementById(filePath);
     theElement.innerHTML = getThumbnailHtml(filePath,unescape(imageTitle),1);
@@ -690,27 +694,37 @@ function addPrevNextButtons()
     }
 }
 
-function showRandomWelcomeImage()
+function showRandomWelcomeImage( shouldStopFirst )
 {
-    //if ( timerId != null )
-    //{
-    //    clearTimeout( timerId );
-    //    timerId = null;
-    //}
-
+    if ( shouldStopFirst && timerId != null )
+    {
+        clearTimeout( timerId );
+        timerId = null;
+    }
+    
+    if ( shouldStopFirst )
+        $("#displayedimage").stop(true,false); // Stop any outstanding animations
+    
     var index = Math.floor( Math.random() * totalNumImages );
     
-    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\"/>";
-    $("#welcomeimagedisplaydiv").hide().html(theHTML).slideDown(2000);
-            
-    timerId = setTimeout(
-                function ()
-                {
-                    $("#welcomeimagedisplaydiv").slideUp( 2000, function () 
-                        {
-                            showRandomWelcomeImage();
-                        } );
-                }, welcomeImageChangeTimeout );
+    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\" style=\"display: none;\"/>";
+    $("#welcomeimagedisplaydiv").html(theHTML);
+    
+   
+    $("#displayedimage").fadeIn( 2000, function ()
+    {
+        timerId = setTimeout(
+                    function ()
+                    {
+                        $("#displayedimage").animate( { height : 0 }, { duration: 2000, complete: function ()
+                            {
+                                $("#displayedimage").hide();
+                                timerId = null;
+                                showRandomWelcomeImage(false);
+                            } } );
+                        
+                    }, welcomeImageChangeTimeout );
+    } );
 }
 
 function showRandomImage( categoryValue )
