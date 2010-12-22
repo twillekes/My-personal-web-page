@@ -659,12 +659,6 @@ function showImage( filePath, imageTitle )
 
 function addPrevNextButtons()
 {
-    if ( isIEVersion6() == 1 )
-    {
-        // in IE6, I could not figure out how to make a div support onClick()
-        return;
-    }
-
     var theElement = document.getElementById("prevnextbuttondiv");
     if ( null == theElement )
     {
@@ -703,36 +697,70 @@ function addPrevNextButtons()
     if ( null == theElement )
         return;
 
+    var $div = $("#prevbuttondiv");
+
     // For some reason, using an HTML anchor tag results in the showImage call failing when the title has an apostrophe. WTF?
     
     if ( prevIndex == -1 )
     {
-        theElement.removeAttribute( "onClick" );
-        theElement.setAttribute("style", "cursor: auto; background-color: #E6E6E6; color: gray;" );
+        $div.css('cursor', 'not-allowed');
+        $div.css('color', 'gray');
     }
     else
     {
         var prevFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].filePath;
         var prevImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].metadata.title;
-        theElement.setAttribute( "onClick", "javascript:showImage('" + prevFilePath + "','" + escape(prevImageTitle) + "');" );
-        theElement.removeAttribute( "style" );
+        $div.click(function() { showImage(prevFilePath, prevImageTitle); });
+        $div.hover(function() {
+            var cssSettings = {
+                'background-color': 'gray',
+                'color': 'white',
+                'cursor': 'pointer'
+            };
+            $("#prevbuttondiv").css(cssSettings);
+        });
+        $div.mouseleave(function() {
+            var cssSettings = {
+                'background-color': '#E6E6E6',
+                'color': 'black',
+                'cursor': 'auto'
+            };
+            $("#prevbuttondiv").css(cssSettings);
+        });
     }
     
     theElement = document.getElementById("nextbuttondiv");
     if ( null == theElement )
         return;
 
+    $div = $("#nextbuttondiv");
+
     if ( nextIndex == -1 )
     {
-        theElement.removeAttribute( "onClick" );
-        theElement.setAttribute("style", "cursor: auto; background-color: #E6E6E6; color: gray;" );
+        $div.css('cursor', 'not-allowed');
+        $div.css('color', 'gray');
     }
     else
     {
         var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].filePath;
         var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].metadata.title;
-        theElement.setAttribute( "onClick", "javascript:showImage('" + nextFilePath + "','" + escape(nextImageTitle) + "');" );
-        theElement.removeAttribute( "style" );
+        $div.click(function() { showImage(nextFilePath, nextImageTitle); });
+        $div.hover(function() {
+            var cssSettings = {
+                'background-color' : 'gray',
+                'color': 'white',
+                'cursor' : 'pointer'
+            };
+            $("#nextbuttondiv").css(cssSettings);
+        });
+        $div.mouseleave(function() {
+            var cssSettings = {
+                'background-color': '#E6E6E6',
+                'color': 'black',
+                'cursor': 'auto'
+            };
+            $("#nextbuttondiv").css(cssSettings);
+        });
     }
 }
 
@@ -828,27 +856,3 @@ function hideText( theElementId )
     showText(escape(""), theElementId);
 }
 
-function getInternetExplorerVersion()
-// Returns the version of Internet Explorer or a -1
-// (indicating the use of another browser).
-{
-    var rv = -1; // Return value assumes failure.
-    if (navigator.appName == 'Microsoft Internet Explorer')
-    {
-        var ua = navigator.userAgent;
-        var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-        if (re.exec(ua) != null)
-            rv = parseFloat( RegExp.$1 );
-    }
-    return rv;
-}
-
-function isIEVersion6()
-{
-    var ver = getInternetExplorerVersion();
-    if ( ver == -1 )
-        return 0;
-
-    if ( ver < 7.0 ) 
-        return 1;
-}

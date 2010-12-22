@@ -193,16 +193,18 @@ html>body #prevnextbuttondiv div
     -webkit-box-shadow: 8px 8px 6px #808080;
     box-shadow: 8px 8px 6px #808080;
 }
-#prevnextbuttondiv div:hover
+/* Does not work for IE6 */
+/*#prevnextbuttondiv div:hover
 {
     cursor:pointer;
     background-color: gray;
     color: white;
-}
+}*/
 #prevnextbuttondiv  table,td
 {
     margin-top: 1em;
     width: 50%;
+    text-align: center;
 }
 
 
