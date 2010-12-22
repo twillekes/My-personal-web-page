@@ -686,38 +686,43 @@ function addPrevNextButtons()
             
             if ( catIndex < (categoryList[currentCategoryValue].imageIndexes.length-1) )
             {
-                nextIndex = catIndex; // If I add 1 here, nextIndex becomes a string type. WTF?
+                nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
                 nextIndex++;
             }
             break;
         }
     }
     
-    theElement = document.getElementById("prevbuttondiv");
-    if ( null == theElement )
-        return;
-
-    var $div = $("#prevbuttondiv");
-
-    // For some reason, using an HTML anchor tag results in the showImage call failing when the title has an apostrophe. WTF?
+    // For some reason, using an HTML anchor tag for the prev/next buttons results in the
+    // showImage call failing when the title has an apostrophe. WTF?
     
-    if ( prevIndex == -1 )
-    {
-        $div.css('cursor', 'not-allowed');
-        $div.css('color', 'gray');
+    setupButton(prevIndex, "prevbuttondiv");
+    setupButton(nextIndex, "nextbuttondiv");
+}
+
+function setupButton(imageIndex, theDivName)
+{
+    var divName = "#" + theDivName;
+    $div = $(divName);
+
+    if (imageIndex == -1) {
+        var cssSettings = {
+            'color': 'gray',
+            'cursor': 'not-allowed'
+        };
+        $div.css(cssSettings);
     }
-    else
-    {
-        var prevFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].filePath;
-        var prevImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[prevIndex]].metadata.title;
-        $div.click(function() { showImage(prevFilePath, prevImageTitle); });
+    else {
+        var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].filePath;
+        var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].metadata.title;
+        $div.click(function() { showImage(nextFilePath, nextImageTitle); });
         $div.hover(function() {
             var cssSettings = {
                 'background-color': 'gray',
                 'color': 'white',
                 'cursor': 'pointer'
             };
-            $("#prevbuttondiv").css(cssSettings);
+            $(divName).css(cssSettings);
         });
         $div.mouseleave(function() {
             var cssSettings = {
@@ -725,41 +730,7 @@ function addPrevNextButtons()
                 'color': 'black',
                 'cursor': 'auto'
             };
-            $("#prevbuttondiv").css(cssSettings);
-        });
-    }
-    
-    theElement = document.getElementById("nextbuttondiv");
-    if ( null == theElement )
-        return;
-
-    $div = $("#nextbuttondiv");
-
-    if ( nextIndex == -1 )
-    {
-        $div.css('cursor', 'not-allowed');
-        $div.css('color', 'gray');
-    }
-    else
-    {
-        var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].filePath;
-        var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[nextIndex]].metadata.title;
-        $div.click(function() { showImage(nextFilePath, nextImageTitle); });
-        $div.hover(function() {
-            var cssSettings = {
-                'background-color' : 'gray',
-                'color': 'white',
-                'cursor' : 'pointer'
-            };
-            $("#nextbuttondiv").css(cssSettings);
-        });
-        $div.mouseleave(function() {
-            var cssSettings = {
-                'background-color': '#E6E6E6',
-                'color': 'black',
-                'cursor': 'auto'
-            };
-            $("#nextbuttondiv").css(cssSettings);
+            $(divName).css(cssSettings);
         });
     }
 }
