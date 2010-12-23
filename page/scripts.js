@@ -654,8 +654,8 @@ function showImage( filePath, imageTitle )
     
     addPrevNextButtons();
     
-    //parent.location.hash = "showCat=" + currentCategorization + "&showCatVal=" + currentCategoryValue + "&showImage=" + filePath;
-    parent.location.hash = "showImage=" + filePath;
+    //parent.location.hash = "showCat=" + currentCategorization + "&showCatVal=" + currentCategoryValue + "&showImage=" + filePath.substring(filePath.lastIndexOf('/')+1);
+    parent.location.hash = "showImage=" + filePath.substring(filePath.lastIndexOf('/')+1);
 }
 
 function addPrevNextButtons()
