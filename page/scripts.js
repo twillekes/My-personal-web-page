@@ -150,11 +150,11 @@ function buildMenu()
         {
             if ( index == "showImage" )
             {
-                imageToShow = loadParameters[index];
+                imageToShow = unescape(loadParameters[index]);
             }
             else if ( index == "showCatVal" )
             {
-                catValToShow = loadParameters[index];
+                catValToShow = unescape(loadParameters[index]);
             } // TODO: Add support for showCat
             else if ( index == "showArticle" )
             {
@@ -654,8 +654,9 @@ function showImage( filePath, imageTitle )
     
     addPrevNextButtons();
     
-    //parent.location.hash = "showCat=" + currentCategorization + "&showCatVal=" + currentCategoryValue + "&showImage=" + filePath.substring(filePath.lastIndexOf('/')+1);
-    parent.location.hash = "showImage=" + filePath.substring(filePath.lastIndexOf('/')+1);
+    parent.location.hash = "showCat=" + escape(currentCategorization) +
+                           "&showCatVal=" + escape(currentCategoryValue) +
+                           "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
 }
 
 function addPrevNextButtons()
