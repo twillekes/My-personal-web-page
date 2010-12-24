@@ -423,6 +423,10 @@ function showArticleAt( articleMetadataFilePath )
                     {
                         $("#article").append($("<div class=\"centeredImage\"><img src=\"" + findImage(item.image).filePath + "\" /></div>"));
                     }
+                    else if ( item.filePath )
+                    {
+                        $("#article").load( item.filePath );
+                    }
                     else
                     {
                         //alert("An error has occurred within function 'toWordView'");
