@@ -72,6 +72,8 @@ function gainedFocus()
 
 function initializePage()
 {
+    var isMobile = isMobilePlatform();
+        
     loadParameters = getParams();
     
     var isLocal = 0;
@@ -838,5 +840,14 @@ function showText( theText, theElementId )
 function hideText( theElementId )
 {
     showText(escape(""), theElementId);
+}
+
+function isMobilePlatform()
+{
+    var uagent = navigator.userAgent.toLowerCase();
+    if ( uagent.search("iphone") > -1 || uagent.search("ipod") > -1 )
+        return 1;
+
+    return 0;
 }
 
