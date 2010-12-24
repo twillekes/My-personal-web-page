@@ -394,56 +394,34 @@ function toWordView()
     }
 }
 
-function showArticleAt( articleMetadataFilePath )
+function showArticleAt( articleFilePath )
 {
     var theHTML =
      "\
             <div id=\"titlearea\">\n\
-                <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + articleList[articleMetadataFilePath].title + "</h1>\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + articleList[articleFilePath].title + "</h1>\n\
             </div>\n\
             <div id=\"article\" style=\"text-align: center\">\n\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
-
-    $.getJSON(articleMetadataFilePath,
-        function(json)
-        {
-            $.each(json.items,
-                function(i,item)
-                {
-                    if ( item.heading )
-                    {
-                        $("#article").append($("<h2>"+item.heading+"</h2>"));
-                    }
-                    else if ( item.paragraph )
-                    {
-                        $("#article").append($("<p>"+item.paragraph+"</p>"));
-                    }
-                    else if ( item.image )
-                    {
-                        $("#article").append($("<div class=\"centeredImage\"><img src=\"" + findImage(item.image).filePath + "\" /></div>"));
-                    }
-                    else if ( item.filePath )
-                    {
-                        $("#article").load( item.filePath, function () {
-                            $("img.resolveme").each( function (index) {
-                                $(this).attr('src', findImage( $(this).attr('src') ).filePath );
-                            } ); // Add the fully resolved path for images
-                        } );
-                    }
-                    else
-                    {
-                        //alert("An error has occurred within function 'toWordView'");
-                    }
-                }
-            );
-            
-            parent.location.hash = "showArticle=" + escape(articleList[articleMetadataFilePath].title);
-
-         }
-     );
+    
+    $.ajax({
+        url: articleFilePath,
+        dataType: "text",
+        success: function(data) {
+            $("#article").html(data);
+            $("img.resolveme").each( function (index) {
+                $(this).attr('src', findImage( $(this).attr('src') ).filePath );
+            } ); // Add the fully resolved path for images
+        },
+        error: function(request, status, error) {
+            //alert("failed with: "+status+" and "+error);
+        }
+        });
+    
+    parent.location.hash = "showArticle=" + escape(articleList[articleFilePath].title);
 }
 
 function getThumbnailHtml( filePath, imageTitle, asSelected )

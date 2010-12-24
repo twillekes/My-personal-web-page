@@ -1,8 +1,9 @@
 {
-    "_comment" : "TBD",
+    "_comment" : "This is how articles in a folder are declared",
     "type" : "words",
     "items":
     [
-        { "filename" : "winter2011.json", "title" : "Winter 2011" }
+        { "filename" : "winter.htm", "title" : "Winter" },
+        { "filename" : "Dec23_2010.htm", "title" : "December 23, 2010" }
     ]
 }
