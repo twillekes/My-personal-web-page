@@ -417,7 +417,7 @@ function showArticleAt( articleFilePath )
             <div id=\"titlearea\">\n\
                 <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + articleList[articleFilePath].title + "</h1>\n\
             </div>\n\
-            <div id=\"article\" style=\"text-align: left\">\n\
+            <div id=\"article\" style=\"text-align: center;\">\n\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");

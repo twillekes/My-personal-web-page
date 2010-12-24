@@ -4,7 +4,6 @@
     "items":
     [
         { "filename" : "aboot.htm", "title" : "Aboot" },
-        { "filename" : "winter.htm", "title" : "Winter" },
-        { "filename" : "Dec23_2010.htm", "title" : "December 23, 2010" }
+        { "filename" : "seasons.htm", "title" : "Seasons" }
     ]
 }
