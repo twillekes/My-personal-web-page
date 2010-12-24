@@ -373,8 +373,18 @@ function toWordView()
             <div id=\"titlearea\">\n\
                 <h1 style=\"text-align: center; margin: 0; padding: 0;\">Articles</h1>\n\
             </div>\n\
-            <div id=\"articleListItems\" style=\"text-align: center\">\n\
-            </div>";
+            <div id=\"articleList\">\n\
+                <div id=\"articleHeader\">\n\
+                </div>\n\
+                <div id=\"articleListItems\">\n\
+                </div>\n\
+                <h3>Contact</h3>\n\
+                <p>Email: PhotonWrangler (at) shaw.ca</p>\n\
+                <p>\n\
+                <a href=\"http://members.shaw.ca/twillekes\">Home</a>\n\
+                </p>\n\
+            </div>\n\
+    ";
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
@@ -387,6 +397,17 @@ function toWordView()
         
         $("#articleListItems").append(adiv);
     }
+    
+    $.ajax({
+        url: "words/articleHeader.htm",
+        dataType: "text",
+        success: function(data) {
+            $("#articleHeader").html(data);
+        },
+        error: function(request, status, error) {
+            //alert("failed with: "+status+" and "+error);
+        }
+        });
 }
 
 function showArticleAt( articleFilePath )
