@@ -182,7 +182,7 @@ function buildMenu()
     toWelcomeView();
 }
 
-function findImage(filePath, imageTitle)
+function findImage(filePath)
 {
     var imageTitle = null;
     var newFilePath = filePath;
@@ -425,7 +425,11 @@ function showArticleAt( articleMetadataFilePath )
                     }
                     else if ( item.filePath )
                     {
-                        $("#article").load( item.filePath );
+                        $("#article").load( item.filePath, function () {
+                            $("img.resolveme").each( function (index) {
+                                $(this).attr('src', findImage( $(this).attr('src') ).filePath );
+                            } ); // Add the fully resolved path for images
+                        } );
                     }
                     else
                     {
