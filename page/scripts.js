@@ -264,11 +264,6 @@ function toWelcomeView()
                      <!--br/-->\n\
                     <div id=\"welcomeimagedisplaydiv\"></div>\n\
                 </div>\n\
-                <!--iframe src=\"welcomeText.html\" frameborder=\"0\" id=\"welcometextdiv\" allowTransparency=\"true\"></iframe-->\n\
-                <div style=\"text-align: center\" id=\"welcometextdiv\">\n\
-                     <p>More images: <a href=\"http://flickr.com/photos/photonwrangler\" target=\"_top\">Flickr</a>.</p>\n\
-                    <p>Email: PhotonWrangler (at) shaw.ca</p>\n\
-                </div>\n\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
@@ -401,7 +396,7 @@ function showArticleAt( articleFilePath )
             <div id=\"titlearea\">\n\
                 <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + articleList[articleFilePath].title + "</h1>\n\
             </div>\n\
-            <div id=\"article\" style=\"text-align: center\">\n\
+            <div id=\"article\" style=\"text-align: left\">\n\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");

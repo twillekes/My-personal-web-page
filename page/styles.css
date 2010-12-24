@@ -82,6 +82,18 @@ html>body #articleListItems a
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
+#article p
+{
+    width: 66%;
+    margin-left: auto;
+    margin-right: auto;
+}
+#article h3
+{
+    width: 66%;
+    margin-left: auto;
+    margin-right: auto;
+}
 #singleImage
     {
     /*\*/
