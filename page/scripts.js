@@ -158,6 +158,11 @@ function buildMenu()
             {
                 catValToShow = unescape(loadParameters[index]);
             } // TODO: Add support for showCat
+            else if ( index == "showArticles" )
+            {
+                toWordView();
+                return;
+            }
             else if ( index == "showArticle" )
             {
                 if ( showArticle(unescape(loadParameters[index])) )
@@ -371,7 +376,7 @@ function toWordView()
     var theHTML =
      "\
             <div id=\"titlearea\">\n\
-                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Articles</h1>\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Words</h1>\n\
             </div>\n\
             <div id=\"articleList\">\n\
                 <div id=\"articleHeader\">\n\
@@ -408,6 +413,8 @@ function toWordView()
             //alert("failed with: "+status+" and "+error);
         }
         });
+        
+    parent.location.hash = "showArticles";
 }
 
 function showArticleAt( articleFilePath )
