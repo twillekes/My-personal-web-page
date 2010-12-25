@@ -3,8 +3,8 @@
     [
         { "type" : "remote", "metadataPath" : "http://members.shaw.ca/tjwillekes/images" },
         { "type" : "remote", "metadataPath" : "http://members.shaw.ca/tomjwillekes/images_2" },
-        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/twillekes/newImages" },
-        { "type" : "remote", "metadataPath" : "http://members.shaw.ca/twillekes/newImages" },
+        { "type" : "remote", "metadataPath" : "newImages" },
+        { "type" : "remote", "metadataPath" : "words" },
         { "type" : "local", "metadataPath" : "images_2" },
         { "type" : "local", "metadataPath" : "images" },
         { "type" : "local", "metadataPath" : "newImages" },
