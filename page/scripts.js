@@ -28,7 +28,7 @@ var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // Appearance mode
-var usingLightbox = true;
+var usingLightbox = false;
 
 /*
 
@@ -56,11 +56,7 @@ Image information:
 
 function lostFocus()
 {
-    if ( timerId != null )
-    {
-        clearTimeout( timerId );
-        timerId = null;
-    }
+    stopTimerEvents();
 }
 
 function gainedFocus()
@@ -218,6 +214,8 @@ function findImage(filePath)
 
 function toSingleImageView(filePath)
 {
+    stopTimerEvents();
+    
     var imageData = findImage( filePath );
     var imageTitle = imageData.imageTitle;
     filePath = imageData.filePath;
@@ -256,6 +254,8 @@ function switchTo( categoryValue )
 
 function toWelcomeView()
 {
+    stopTimerEvents();
+    
     parent.location.hash = "";
 
     var theHTML =
@@ -298,11 +298,7 @@ function getImageDisplayHTML()
 
 function toImageView(categoryValue, imageToShow)
 {
-    if ( timerId != null )
-    {
-        clearTimeout( timerId );
-        timerId = null;
-    }
+    stopTimerEvents();
         
     if ( usingLightbox )
         toImageView_lightbox(categoryValue, imageToShow);
@@ -349,6 +345,9 @@ function toImageView_lightbox(categoryValue, imageToShow)
     $('a.lightbox').lightBox({
         overlayOpacity: 0.6
     });
+
+    parent.location.hash = "showCat=" + escape(currentCategorization) +
+                           "&showCatVal=" + escape(currentCategoryValue);
 }
 
 function getThumbnailHtml_lightbox( filePath, imageTitle, asSelected )
@@ -448,6 +447,8 @@ function showArticle( articleTitle )
 
 function toWordView()
 {
+    stopTimerEvents();
+
     var theHTML =
      "\
             <div id=\"titlearea\">\n\
@@ -693,11 +694,7 @@ function hideImage()
 
 function showImage( filePath, imageTitle )
 {
-    if ( timerId != null )
-    {
-        clearTimeout( timerId );
-        timerId = null;
-    }
+    stopTimerEvents();
 
     hideImage();
     
@@ -810,14 +807,8 @@ function setupButton(imageIndex, theDivName)
 
 function showRandomWelcomeImage( shouldStopFirst )
 {
-    if ( shouldStopFirst && timerId != null )
-    {
-        clearTimeout( timerId );
-        timerId = null;
-    }
-    
     if ( shouldStopFirst )
-        $("#displayedimage").stop(true,false); // Stop any outstanding animations
+        stopTimerEvents();
     
     var index = Math.floor( Math.random() * totalNumImages );
     
@@ -909,3 +900,13 @@ function isMobilePlatform()
     return 0;
 }
 
+function stopTimerEvents()
+{
+    if ( timerId != null ) // Stop welcome image change timer
+    {
+        clearTimeout( timerId );
+        timerId = null;
+    }
+    
+    $("#displayedimage").stop(true,false); // Stop any outstanding animations
+}

@@ -267,10 +267,10 @@ html>body #prevnextbuttondiv div
 #thumbpage
     {
     position: absolute;
-    top:  1%;
+    top:  0%;
     right: 0;
     left: 16%;
-    bottom: 5%;
+    bottom: 0%;
     overflow: auto;
     }
 #thumbpage ul li
