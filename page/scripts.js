@@ -28,7 +28,7 @@ var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // Appearance mode
-var usingLightbox = false;
+var usingLightbox = true;
 
 /*
 
@@ -113,16 +113,14 @@ function buildMenu()
         if ( categoryList[index].imageIndexes.length == 0 )
             continue;
             
-        var adiv = document.createElement('div');
         var extra = "images";
         if ( categoryList[index].imageIndexes.length == 1 )
             extra = "image";
             
+        var adiv = document.createElement('div');
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
-                         "');\" onmouseover=\"showText(escape('" +
-                         categoryList[index].imageIndexes.length + " " + extra +
-                         "'),'buttonDescription');\" onmouseout=\"hideText('buttonDescription')\">" +
-                         index + "</a>";
+                         "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
+                         index + "</a>\n";
         
         $("#menuitems").append(adiv);
     }
@@ -136,11 +134,12 @@ function buildMenu()
             textToShow += " articles";
             
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a href=\"javascript:toWordView();\" onmouseover=\"showText('" + textToShow +
-                         "','buttonDescription');\" onmouseout=\"hideText('buttonDescription')\">Words</a>";
+        adiv.innerHTML = "<a href=\"javascript:toWordView();\" class=\"tooltip\" title=\"" + textToShow + "\">Words</a>\n";
         
         $("#menuitems").append(adiv);
     }
+    
+    initializeTooltips();
     
     var imageToShow = null;
     var catValToShow = null;
@@ -311,8 +310,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
     var theThumbBar =
      "      <div id=\"thumbpage\">\n\
                 <ul style=\"list-style: none;\" id=\"thumbdisplaydiv\"></ul>\n\
-            </div>\n\
-            <div id=\"thumbnailDescription\"></div>\n";
+            </div>\n";
             
     theHTML = theThumbBar;
      
@@ -367,8 +365,7 @@ function toImageView_original(categoryValue, imageToShow)
                 <div class=\"centeredImage\">\n\
                     <div id=\"thumbdisplaydiv\"></div>\n\
                 </div>\n\
-            </div>\n\
-            <div id=\"thumbnailDescription\"></div>\n";
+            </div>\n";
             
     theHTML = theCategoryNameArea + theThumbBar + getImageDisplayHTML();
      
@@ -395,7 +392,11 @@ function toImageView_original(categoryValue, imageToShow)
             
         var thediv = document.createElement('div');
         thediv.setAttribute('id',imageList[index].filePath);
-        thediv.innerHTML = getThumbnailHtml(imageList[index].filePath,imageList[index].metadata.title,0);
+        thediv.setAttribute('class','tooltip');
+        thediv.setAttribute('title',imageList[index].metadata.title);
+        thediv.innerHTML = "<img src=\"" + imageList[index].filePath +
+                           "\" onclick=\"showImage('"  + imageList[index].filePath + "','" + escape(imageList[index].metadata.title) +
+                           "');\" class=\"thumbnailImage\" />\n"
         
         theElement.appendChild(thediv);
         
@@ -405,6 +406,8 @@ function toImageView_original(categoryValue, imageToShow)
             foundImageTitle = imageList[index].metadata.title;
         }
     }
+    
+    initializeTooltips("div");
     
     if ( foundImagePath == null || foundImageTitle == null )
         showRandomImage(categoryValue);
@@ -416,17 +419,15 @@ function getThumbnailHtml( filePath, imageTitle, asSelected )
 {
     if ( asSelected )
     {
-        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                              filePath + "','" + escape(imageTitle) +
-                              "')\" style=\"border: 4px solid #606060\" onoouseover=\"showText('" + escape(imageTitle) +
-                              "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
+        return "<img src=\"" + filePath +
+                              "\" onclick=\"showImage('"  + filePath + "','" + escape(imageTitle) +
+                              "');\" class=\"thumbnailImage\" style=\"border: 4px solid #606060\"/>\n";
     }
     else
     {
-        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onclick=\"showImage('" +
-                              filePath + "','" + escape(imageTitle) +
-                               "')\" onmouseover=\"showText('" + escape(imageTitle) +
-                               "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
+        return "<img src=\"" + filePath +
+                              "\" onclick=\"showImage('"  + filePath + "','" + escape(imageTitle) +
+                              "');\" class=\"thumbnailImage\" />\n";
     }
 }
 
@@ -684,10 +685,10 @@ function hideImage()
     if ( currentlySelectedImage )
     {
         var theElement = document.getElementById(currentlySelectedImage.filePath);
-        if ( !theElement )
+        if ( theElement == null )
             return;
             
-        theElement.innerHTML = getThumbnailHtml(currentlySelectedImage.filePath, currentlySelectedImage.title,0);
+        theElement.childNodes[0].style.border = '0';
         currentlySelectedImage = null;
     }
 }
@@ -713,8 +714,11 @@ function showImage( filePath, imageTitle )
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
     
     theElement = document.getElementById(filePath);
-    theElement.innerHTML = getThumbnailHtml(filePath,unescape(imageTitle),1);
-    
+    if ( theElement == null )
+        return;
+        
+    theElement.childNodes[0].style.border = '4px solid #606060';
+        
     currentlySelectedImage = new currentlySelectedImageRecord( filePath, unescape(imageTitle) );
     
     addPrevNextButtons();
@@ -880,17 +884,6 @@ function showRandomImage( categoryValue )
 //    timerId = setTimeout( function () { showRandomImage( categoryValue ) }, welcomeImageChangeTimeout );
 }
 
-function showText( theText, theElementId )
-{
-    var theTextArea = document.getElementById(theElementId);
-    theTextArea.innerHTML = unescape(theText);
-}
-
-function hideText( theElementId )
-{
-    showText(escape(""), theElementId);
-}
-
 function isMobilePlatform()
 {
     var uagent = navigator.userAgent.toLowerCase();
@@ -910,3 +903,38 @@ function stopTimerEvents()
     
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
 }
+
+// This function
+// From http://cssglobe.com/post/1695/easiest-tooltip-and-image-preview-using-jquery
+// Originally written by Alen Grakalic (http://cssglobe.com)
+this.initializeTooltips = function(tagName)
+{	
+    if ( tagName == null )
+        tagName = "a";
+        
+	/* CONFIG */		
+		xOffset = 10;
+		yOffset = 20;		
+		// these 2 variable determine popup's distance from the cursor
+		// you might want to adjust to get the right result		
+	/* END CONFIG */		
+	$(tagName+".tooltip").hover(function(e){											  
+		this.t = this.title;
+		this.title = "";	
+		$("body").append("<p id='tooltip'>"+ unescape(this.t) +"</p>");
+		$("#tooltip")
+			.css("top",(e.pageY - xOffset) + "px")
+			.css("left",(e.pageX + yOffset) + "px")
+			.fadeIn("fast");		
+    },
+	function(){
+		this.title = this.t;		
+        this.t = "";
+		$("#tooltip").remove();
+    });	
+	$(tagName+".tooltip").mousemove(function(e){
+		$("#tooltip")
+			.css("top",(e.pageY - xOffset) + "px")
+			.css("left",(e.pageX + yOffset) + "px");
+	});			
+};
