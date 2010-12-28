@@ -27,6 +27,9 @@ var currentlySelectedImage = null;
 var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
+// Appearance mode
+var usingLightbox = true;
+
 /*
 
 Image categories:
@@ -62,7 +65,7 @@ function lostFocus()
 
 function gainedFocus()
 {
-    if ( getElementById( "welcome" ) )
+    if ( document.getElementById( "welcome" ) )
     {
         timerId = setTimeout( "showRandomWelcomeImage(true)", welcomeImageChangeTimeout );
     }
@@ -224,7 +227,7 @@ function toSingleImageView(filePath)
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <h3 style=\"text-align: center;;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n";  
      
@@ -242,7 +245,7 @@ function toSingleImageView(filePath)
     if ( null == theElement )
         return;
         
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"shadowKnows\"/>";
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn( 1000 );
 }
 
@@ -301,6 +304,60 @@ function toImageView(categoryValue, imageToShow)
         timerId = null;
     }
         
+    if ( usingLightbox )
+        toImageView_lightbox(categoryValue, imageToShow);
+    else
+        toImageView_original(categoryValue, imageToShow);
+}
+
+function toImageView_lightbox(categoryValue, imageToShow)
+{
+    var theThumbBar =
+     "      <div id=\"thumbpage\">\n\
+                <ul style=\"list-style: none;\" id=\"thumbdisplaydiv\"></ul>\n\
+            </div>\n\
+            <div id=\"thumbnailDescription\"></div>\n";
+            
+    theHTML = theThumbBar;
+     
+    var theElement = document.getElementById("contentplaceholder");
+    theElement.innerHTML = theHTML;
+    var theElement = document.getElementById("thumbdisplaydiv");
+    if ( null == theElement )
+        return;
+        
+    currentCategoryValue = categoryValue;
+        
+    for ( index in imageList )
+    {
+        if (   !(
+                ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
+                ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
+                ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
+                )
+            )
+            continue;
+            
+        var thediv = document.createElement('li');
+        thediv.setAttribute('id',imageList[index].filePath);
+        thediv.innerHTML = getThumbnailHtml_lightbox(imageList[index].filePath,imageList[index].metadata.title,0);
+        
+        theElement.appendChild(thediv);
+    }
+    
+    // Box em
+    $('a.lightbox').lightBox({
+        overlayOpacity: 0.6
+    });
+}
+
+function getThumbnailHtml_lightbox( filePath, imageTitle, asSelected )
+{
+    return "<a href=\"" + filePath + "\" title=\"" + imageTitle + "\" class=\"lightbox\"><img src=\"" + filePath + "\" width=\"150\" class=\"shadowKnows\"/></a>";
+}
+
+function toImageView_original(categoryValue, imageToShow)
+{
     var theCategoryNameArea =
     "       <div id=\"categorynamearea\">\n\
                 <h3  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h3>\n\
@@ -354,6 +411,24 @@ function toImageView(categoryValue, imageToShow)
         showRandomImage(categoryValue);
     else
         showImage(foundImagePath,foundImageTitle);
+}
+
+function getThumbnailHtml( filePath, imageTitle, asSelected )
+{
+    if ( asSelected )
+    {
+        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onClick=\"showImage('" +
+                              filePath + "','" + escape(imageTitle) +
+                              "')\" style=\"border: 4px solid #606060\" onoouseover=\"showText('" + escape(imageTitle) +
+                              "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
+    }
+    else
+    {
+        return "<img src=\"" + filePath + "\" class=\"thumbnailImage\" onclick=\"showImage('" +
+                              filePath + "','" + escape(imageTitle) +
+                               "')\" onmouseover=\"showText('" + escape(imageTitle) +
+                               "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
+    }
 }
 
 function showArticle( articleTitle )
@@ -445,24 +520,6 @@ function showArticleAt( articleFilePath )
         });
     
     parent.location.hash = "showArticle=" + escape(articleList[articleFilePath].title);
-}
-
-function getThumbnailHtml( filePath, imageTitle, asSelected )
-{
-    if ( asSelected )
-    {
-        return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onClick=\"showImage('" +
-                              filePath + "','" + escape(imageTitle) +
-                              "')\" style=\"border: 4px solid #606060\" onoouseover=\"showText('" + escape(imageTitle) +
-                              "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
-    }
-    else
-    {
-        return "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"thumbnailImage\" onclick=\"showImage('" +
-                              filePath + "','" + escape(imageTitle) +
-                               "')\" onmouseover=\"showText('" + escape(imageTitle) +
-                               "','thumbnailDescription');\" onmouseout=\"hideText('thumbnailDescription');\"/>\n";
-    }
 }
 
 function loadImages(isLocal)
@@ -764,7 +821,7 @@ function showRandomWelcomeImage( shouldStopFirst )
     
     var index = Math.floor( Math.random() * totalNumImages );
     
-    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\" style=\"display: none;\"/>";
+    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"display: none;\"/>";
     $("#welcomeimagedisplaydiv").html(theHTML);
     
    

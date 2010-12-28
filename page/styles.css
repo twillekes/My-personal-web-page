@@ -139,7 +139,7 @@ html>body #articleList a
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
-#displayedimage
+.shadowKnows
     {
     -moz-box-shadow: 8px 8px 6px #808080;
     -webkit-box-shadow: 8px 8px 6px #808080;
@@ -264,6 +264,30 @@ html>body #prevnextbuttondiv div
     overflow: auto;
     width: 20%;
     }
+#thumbpage
+    {
+    position: absolute;
+    top:  1%;
+    right: 0;
+    left: 16%;
+    bottom: 5%;
+    overflow: auto;
+    }
+#thumbpage ul li
+{
+    text-align: center;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 0px;
+    display: inline;
+}
+#thumbpage img
+{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    vertical-align: middle;
+    border: 0;
+}
 #thumbnailDescription
 {
     text-align: center;
@@ -333,8 +357,11 @@ ol
     
 .thumbnailImage
     {
+        -moz-box-shadow: 8px 8px 6px #808080;
+        -webkit-box-shadow: 8px 8px 6px #808080;
+        box-shadow: 8px 8px 6px #808080;
         text-align: center;
-        width: 80%; /*100px;*/
+        width: 80%;
         height: auto;
         margin-bottom: 10px;
     }
