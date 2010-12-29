@@ -600,10 +600,9 @@ function article( title )
     this.title = title;
 }
 
-function currentlySelectedImageRecord( filePath, title )
+function currentlySelectedImageRecord( filePath )
 {
     this.filePath = filePath;
-    this.title = title;
 }
 
 function getCategoryValue()
@@ -696,10 +695,15 @@ function showImage( filePath, imageTitle )
         return;
 
     var theImage = new Image();
+    theImage.onload = function() { imageLoaded(theImage,filePath); }
     theImage.src = filePath;
-        
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
+}
+
+function imageLoaded( theImage, filePath )
+{
+    var theHTML = "<img src=\"" + theImage.src + "\" id=\"displayedimage\" origHeight=\"" +
                   theImage.height + "\" origWidth=\"" + theImage.width + "\"/>";
+                  
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
     adjustCurrentImageSize();
     
@@ -709,7 +713,7 @@ function showImage( filePath, imageTitle )
         
     theElement.childNodes[0].style.border = '4px solid #606060';
         
-    currentlySelectedImage = new currentlySelectedImageRecord( filePath, unescape(imageTitle) );
+    currentlySelectedImage = new currentlySelectedImageRecord( filePath );
     
     addPrevNextButtons();
     
