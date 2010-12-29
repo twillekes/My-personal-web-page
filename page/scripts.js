@@ -274,7 +274,7 @@ function toWelcomeView()
                 <h2 style=\"text-align: center; margin: 0; padding: 0;\">Landscape and Nature Photography</h2>\n\
             </div>\n\
             <div id=\"welcome\">\n\
-                <div class=\"centeredImage\">\n\
+                <div class=\"centeredImage\" >\n\
                     <div id=\"welcomeimagedisplaydiv\" style=\"position:relative;\"></div>\n\
                 </div>\n\
             </div>";
@@ -730,7 +730,8 @@ function adjustCurrentImageSize()
     var imgWidth = $div.attr("origWidth");
     var widthDiff = imgWidth/winWidth;
     
-    $div.removeAttr("style");
+    $div.height("");
+    $div.width("");
     
     if ( heightDiff <= 1.0 && widthDiff <= 1.0 )
         return;
@@ -831,42 +832,54 @@ function showRandomWelcomeImage( shouldStopFirst )
     
     var theImage = new Image();
     theImage.onload = function () {
-        setupOriginalImageSizes(this.src);
-        adjustCurrentImageSize();
+        var theHTML = "<img src=\"" + this.src +
+            "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"height: 0; position: relative;\" origWidth=\""
+            + this.width + "\" origHeight=\"" + this.height + "\"/>";
+            
+        $("#welcomeimagedisplaydiv").html(theHTML);
+        
+        var winHeight = $(window).height() * 0.75;
+        var imgHeight = this.height;
+        var heightDiff = imgHeight/winHeight;
+        
+        var winWidth = $(window).width() * 0.58;
+        var imgWidth = this.width;
+        var widthDiff = imgWidth/winWidth;
+        
+        var theHeight = this.height;
+        if ( heightDiff > 1.0 || widthDiff > 1.0 )
+        {        
+            if ( heightDiff > widthDiff )
+            {
+                theHeight = winHeight;
+            }
+            else
+            {
+                theHeight = ( winWidth / imgWidth ) * imgHeight;
+            }
+        }
+        
+        var $imageDiv = $("#displayedimage");
+        $imageDiv.offset( { top: theHeight/2+$("#welcome").offset().top+25 } ); // ... fudge
+        $imageDiv.animate( { height: theHeight, top: "-="+(theHeight/2) }, { duration: 2000 , complete: function ()
+        {
+            timerId = setTimeout(
+                        function ()
+                        {
+                            var $div = $("#displayedimage");
+                            var theHeight = $div.height();
+                            $div.animate( { height : 0, width: 0, top : "+=" + (theHeight/2) }, { duration: 2000, complete: function ()
+                                {
+                                    $("#displayedimage").hide();
+                                    timerId = null;
+                                    showRandomWelcomeImage(false);
+                                } } );
+                            
+                        }, welcomeImageChangeTimeout );
+        } } );
     }
     theImage.src = imageList[index].filePath;
 
-    var theHTML = "<img src=\"" + imageList[index].filePath +
-        "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"opacity: 0.0; position: relative;\"/>";
-        
-    $("#welcomeimagedisplaydiv").html(theHTML);
-    
-    var $imageDiv = $("#displayedimage");
-    $imageDiv.animate( { opacity: 1.0 }, { duration: 2000 , complete: function ()
-    {
-        timerId = setTimeout(
-                    function ()
-                    {
-                        var $div = $("#displayedimage");
-                        var theHeight = $div.height();
-                        $div.animate( { height : 0, width: 0, top : "+=" + (theHeight/2) }, { duration: 2000, complete: function ()
-                            {
-                                $("#displayedimage").hide();
-                                timerId = null;
-                                showRandomWelcomeImage(false);
-                            } } );
-                        
-                    }, welcomeImageChangeTimeout );
-    } } );
-}
-
-function setupOriginalImageSizes(theSrc)
-{
-    var $div = $("#displayedimage");
-    var theImage = new Image();
-    theImage.src = theSrc;
-    $div.attr('origWidth',theImage.width);
-    $div.attr('origHeight',theImage.height);
 }
 
 function showRandomImage( categoryValue )
