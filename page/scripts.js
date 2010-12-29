@@ -120,8 +120,9 @@ function buildMenu()
         var extra = "images";
         if ( categoryList[index].imageIndexes.length == 1 )
             extra = "image";
-            
+
         var adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
                          "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
                          index + "</a>\n";
@@ -492,6 +493,7 @@ function showArticleAt( articleFilePath )
                 <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + articleList[articleFilePath].title + "</h1>\n\
             </div>\n\
             <div id=\"article\" style=\"text-align: center;\">\n\
+                <div id=\"articleWrapper\"></div>\n\
             </div>";
      
     var theElement = document.getElementById("contentplaceholder");
@@ -501,7 +503,7 @@ function showArticleAt( articleFilePath )
         url: articleFilePath,
         dataType: "text",
         success: function(data) {
-            $("#article").html(data);
+            $("#articleWrapper").html(data);
             $("img.resolveme").each( function (index) {
                 $(this).attr('src', findImage( $(this).attr('src') ).filePath );
             } ); // Add the fully resolved path for images
@@ -963,55 +965,69 @@ function stopTimerEvents()
 // From http://cssglobe.com/post/1695/easiest-tooltip-and-image-preview-using-jquery
 // Originally written by Alen Grakalic (http://cssglobe.com)
 this.initializeTooltips = function(tagName)
-{	
-    if ( tagName == null )
+{
+    if (isIE6()) // Lots of weirdness with this function in IE6
+        return;
+        
+    if (tagName == null)
         tagName = "a";
-        
-    yOffset = 0;		
+
+    yOffset = 0;
     xOffset = 10;
-    
-	$(tagName+".tooltip").hover(function(e){											  
-		this.t = this.title;
-		this.title = "";	
-		$("body").append("<p id='tooltip'>"+ unescape(this.t) +"</p>");
-        
+
+    $(tagName + ".tooltip").hover(function(e) {
+        this.t = this.title;
+        this.title = "";
+        $("body").append("<p id='tooltip'>" + unescape(this.t) + "</p>");
+
         var leftValue = e.pageX + xOffset;
         var tipWidth = $("#tooltip").width();
         var rightExtent = leftValue + tipWidth + 15;
-        if ( rightExtent > $(window).width() )
+        if (rightExtent > $(window).width())
             leftValue -= (rightExtent - $(window).width());
 
         var topValue = e.pageY - yOffset;
         var tipHeight = $("#tooltip").height();
         var topExtent = topValue + tipHeight + 15;
-        if ( topExtent > $(window).height() )
+        if (topExtent > $(window).height())
             topValue -= (topExtent - $(window).height());
-        
+
         $("#tooltip")
-            .css("top",topValue + "px")
-            .css("left",leftValue + "px")
+            .css("top", topValue + "px")
+            .css("left", leftValue + "px")
             .fadeIn("fast");
     },
-	function(){
-		this.title = this.t;		
-        this.t = "";
-		$("#tooltip").remove();
-    });	
-	$(tagName+".tooltip").mousemove(function(e){
+	function() {
+	    this.title = this.t;
+	    this.t = "";
+	    $("#tooltip").remove();
+	});
+    $(tagName + ".tooltip").mousemove(function(e) {
         var leftValue = e.pageX + xOffset;
         var tipWidth = $("#tooltip").width();
         var rightExtent = leftValue + tipWidth + 15;
-        if ( rightExtent > $(window).width() )
+        if (rightExtent > $(window).width())
             leftValue -= (rightExtent - $(window).width());
 
         var topValue = e.pageY - yOffset;
         var tipHeight = $("#tooltip").height();
         var topExtent = topValue + tipHeight + 15;
-        if ( topExtent > $(window).height() )
+        if (topExtent > $(window).height())
             topValue -= (topExtent - $(window).height());
-        
+
         $("#tooltip")
-            .css("top",topValue + "px")
-            .css("left",leftValue + "px");
-	});			
+            .css("top", topValue + "px")
+            .css("left", leftValue + "px");
+    });
 };
+
+function isIE6() {
+    var browserName=navigator.appName; 
+    if (browserName=="Microsoft Internet Explorer") {
+        var browserVer = parseInt(navigator.appVersion);
+        if (browserVer <= 6)
+            return true;
+    }
+    
+    return false;
+}
