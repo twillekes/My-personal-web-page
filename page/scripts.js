@@ -189,6 +189,13 @@ function buildMenu()
                 if ( showArticle(unescape(loadParameters[index])) )
                     return;
             }
+            else if ( index == "showMode" )
+            {
+                if ( loadParameters[index] == "Lightbox" )
+                    usingLightbox = true;
+                else
+                    usingLightbox = false;
+            }
         }
     }
     
@@ -383,7 +390,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
         var thediv = document.createElement('li');
         thediv.innerHTML = 
             "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.title +
-            "\" class=\"lightbox tooltip\"><img src=\"" + imageList[index].filePath + "\" height=\"100\" class=\"shadowKnows\"/></a>\n"
+            "\" class=\"lightbox tooltip\"><img src=\"" + imageList[index].filePath + "\" height=\"100px\" class=\"shadowKnows\"/></a>\n"
         
         theElement.appendChild(thediv);
     }
@@ -396,7 +403,8 @@ function toImageView_lightbox(categoryValue, imageToShow)
     });
 
     parent.location.hash = "showCat=" + escape(currentCategorization) +
-                           "&showCatVal=" + escape(currentCategoryValue);
+                           "&showCatVal=" + escape(currentCategoryValue) +
+                           "&showMode=Lightbox";
 }
 
 function toImageView_original(categoryValue, imageToShow)
@@ -759,7 +767,7 @@ function imageLoaded( theImage, filePath )
     if ( theElement == null )
         return;
         
-    theElement.childNodes[0].style.border = '4px solid #606060';
+    theElement.childNodes[0].style.border = '7px solid #606060';
         
     currentlySelectedImage = new currentlySelectedImageRecord( filePath );
     
