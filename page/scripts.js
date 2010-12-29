@@ -28,7 +28,7 @@ var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // Appearance mode
-var usingLightbox = true;
+var usingLightbox = false;
 
 /*
 
@@ -81,6 +81,10 @@ function initializePage()
         isLocal = 1;
         
     loadImages(isLocal);
+    
+    $(window).resize( function() {
+        adjustCurrentImageSize();
+    } );
 }
 
 function getParams()
@@ -119,7 +123,7 @@ function buildMenu()
             
         var adiv = document.createElement('div');
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
-                         "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
+                         "');\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
                          index + "</a>\n";
         
         $("#menuitems").append(adiv);
@@ -134,13 +138,11 @@ function buildMenu()
             textToShow += " articles";
             
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a href=\"javascript:toWordView();\" class=\"tooltip\" title=\"" + textToShow + "\">Words</a>\n";
+        adiv.innerHTML = "<a href=\"javascript:toWordView();\" title=\"" + textToShow + "\">Words</a>\n";
         
-        $("#menuitems").append(adiv);
+        $("#otheritems").append(adiv);
     }
-    
-    initializeTooltips();
-    
+        
     var imageToShow = null;
     var catValToShow = null;
     
@@ -242,8 +244,13 @@ function toSingleImageView(filePath)
     if ( null == theElement )
         return;
         
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"shadowKnows\"/>";
+    var theImage = new Image();
+    theImage.src = filePath;
+
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"shadowKnows\" origWidth=\""
+        + theImage.width + "\" origHeight=\"" + theImage.height + "\"/>";
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn( 1000 );
+    adjustCurrentImageSize();
 }
 
 function switchTo( categoryValue )
@@ -333,6 +340,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
             
         var thediv = document.createElement('li');
         thediv.setAttribute('id',imageList[index].filePath);
+        thediv.setAttribute('title',imageList[index].metadata.title);        
         thediv.innerHTML = 
             "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.imageTitle +
             "\" class=\"lightbox\"><img src=\"" + imageList[index].filePath + "\" width=\"150\" class=\"shadowKnows\"/></a>"
@@ -388,7 +396,6 @@ function toImageView_original(categoryValue, imageToShow)
             
         var thediv = document.createElement('div');
         thediv.setAttribute('id',imageList[index].filePath);
-        thediv.setAttribute('class','tooltip');
         thediv.setAttribute('title',imageList[index].metadata.title);
         thediv.innerHTML = "<img src=\"" + imageList[index].filePath +
                            "\" onclick=\"showImage('"  + imageList[index].filePath + "','" + escape(imageList[index].metadata.title) +
@@ -402,8 +409,6 @@ function toImageView_original(categoryValue, imageToShow)
             foundImageTitle = imageList[index].metadata.title;
         }
     }
-    
-    initializeTooltips("div");
     
     if ( foundImagePath == null || foundImageTitle == null )
         showRandomImage(categoryValue);
@@ -689,9 +694,14 @@ function showImage( filePath, imageTitle )
     theElement = document.getElementById("imagedisplaydiv");
     if ( null == theElement )
         return;
+
+    var theImage = new Image();
+    theImage.src = filePath;
         
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\"/>";
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
+                  theImage.height + "\" origWidth=\"" + theImage.width + "\"/>";
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
+    adjustCurrentImageSize();
     
     theElement = document.getElementById(filePath);
     if ( theElement == null )
@@ -706,6 +716,29 @@ function showImage( filePath, imageTitle )
     parent.location.hash = "showCat=" + escape(currentCategorization) +
                            "&showCatVal=" + escape(currentCategoryValue) +
                            "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+}
+
+function adjustCurrentImageSize()
+{
+    var $div = $("#displayedimage");
+    
+    var winHeight = $(window).height() * 0.75;
+    var imgHeight = $div.attr("origHeight");
+    var heightDiff = imgHeight/winHeight;
+    
+    var winWidth = $(window).width() * 0.58;
+    var imgWidth = $div.attr("origWidth");
+    var widthDiff = imgWidth/winWidth;
+    
+    $div.removeAttr("style");
+    
+    if ( heightDiff <= 1.0 && widthDiff <= 1.0 )
+        return;
+    
+    if ( heightDiff > widthDiff )
+        $div.height(winHeight+'px');
+    else
+        $div.width(winWidth+'px');
 }
 
 function addPrevNextButtons()
@@ -796,7 +829,16 @@ function showRandomWelcomeImage( shouldStopFirst )
     
     var index = Math.floor( Math.random() * totalNumImages );
     
-    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"opacity: 0.0; position: relative;\"/>";
+    var theImage = new Image();
+    theImage.onload = function () {
+        setupOriginalImageSizes(this.src);
+        adjustCurrentImageSize();
+    }
+    theImage.src = imageList[index].filePath;
+
+    var theHTML = "<img src=\"" + imageList[index].filePath +
+        "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"opacity: 0.0; position: relative;\"/>";
+        
     $("#welcomeimagedisplaydiv").html(theHTML);
     
     var $imageDiv = $("#displayedimage");
@@ -816,6 +858,15 @@ function showRandomWelcomeImage( shouldStopFirst )
                         
                     }, welcomeImageChangeTimeout );
     } } );
+}
+
+function setupOriginalImageSizes(theSrc)
+{
+    var $div = $("#displayedimage");
+    var theImage = new Image();
+    theImage.src = theSrc;
+    $div.attr('origWidth',theImage.width);
+    $div.attr('origHeight',theImage.height);
 }
 
 function showRandomImage( categoryValue )
@@ -885,38 +936,3 @@ function stopTimerEvents()
     
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
 }
-
-// This function
-// From http://cssglobe.com/post/1695/easiest-tooltip-and-image-preview-using-jquery
-// Originally written by Alen Grakalic (http://cssglobe.com)
-this.initializeTooltips = function(tagName)
-{	
-    if ( tagName == null )
-        tagName = "a";
-        
-	/* CONFIG */		
-		xOffset = 10;
-		yOffset = 20;		
-		// these 2 variable determine popup's distance from the cursor
-		// you might want to adjust to get the right result		
-	/* END CONFIG */		
-	$(tagName+".tooltip").hover(function(e){											  
-		this.t = this.title;
-		this.title = "";	
-		$("body").append("<p id='tooltip'>"+ unescape(this.t) +"</p>");
-		$("#tooltip")
-			.css("top",(e.pageY - yOffset) + "px")
-			.css("left",(e.pageX + xOffset) + "px")
-			.fadeIn("fast");		
-    },
-	function(){
-		this.title = this.t;		
-        this.t = "";
-		$("#tooltip").remove();
-    });	
-	$(tagName+".tooltip").mousemove(function(e){
-		$("#tooltip")
-			.css("top",(e.pageY - xOffset) + "px")
-			.css("left",(e.pageX + yOffset) + "px");
-	});			
-};
