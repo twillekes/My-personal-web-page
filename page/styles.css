@@ -261,7 +261,7 @@ html>body #prevnextbuttondiv div
 #thumbpage
     {
     position: absolute;
-    top:  0%;
+    top:  8%;
     right: 0;
     left: 16%;
     bottom: 0%;
@@ -270,15 +270,15 @@ html>body #prevnextbuttondiv div
 #thumbpage ul li
 {
     text-align: center;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
     padding: 0px;
     display: inline;
 }
 #thumbpage img
 {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     vertical-align: middle;
     border: 0;
 }

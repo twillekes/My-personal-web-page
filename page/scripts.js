@@ -19,7 +19,7 @@ var totalNumArticles = 0;
 
 // Category management
 var currentCategorization = "subject";
-var currentCategoryValue; // E.g. "New" or "Houses" or ...
+var currentCategoryValue = null; // E.g. "New" or "Houses" or ...
 var categoryList = new Array();
 var currentlySelectedImage = null;
 
@@ -28,6 +28,7 @@ var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // Appearance mode
+var supportLightbox = true;
 var usingLightbox = false;
 
 /*
@@ -139,7 +140,24 @@ function buildMenu()
             textToShow += " articles";
             
         adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
         adiv.innerHTML = "<a href=\"javascript:toWordView();\" class=\"tooltip\" title=\"" + textToShow + "\">Words</a>\n";
+        
+        $("#otheritems").append(adiv);
+    }
+    
+    if ( supportLightbox )
+    {
+        var lightboxHelpText = "Change the way image categories are viewed";
+        
+        var modeText = "View: Lightbox";
+        if ( usingLightbox )
+            modeText = "View: Original";
+            
+        adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
+        adiv.innerHTML = "<a href=\"javascript:toggleThumbView();\" class=\"tooltip\" id=\"toggleThumbView\" title=\""
+                         + lightboxHelpText + "\">" + modeText + "</a>\n";
         
         $("#otheritems").append(adiv);
     }
@@ -216,6 +234,23 @@ function findImage(filePath)
     return { imageTitle : imageTitle, filePath : newFilePath };
 }
 
+function toggleThumbView()
+{        
+    if ( usingLightbox )
+    {
+        $("#toggleThumbView").html("View: Lightbox");
+        usingLightbox = false;
+    }
+    else
+    {
+        $("#toggleThumbView").html("View: Original");
+        usingLightbox = true;
+    }
+    
+    if ( currentCategoryValue != null )
+        toImageView(currentCategoryValue);
+}
+
 function toSingleImageView(filePath)
 {
     stopTimerEvents();
@@ -264,6 +299,7 @@ function switchTo( categoryValue )
 function toWelcomeView()
 {
     stopTimerEvents();
+    currentCategoryValue = null;
     
     parent.location.hash = "";
 
@@ -317,7 +353,10 @@ function toImageView(categoryValue, imageToShow)
 function toImageView_lightbox(categoryValue, imageToShow)
 {
     var theThumbBar =
-     "      <div id=\"thumbpage\">\n\
+     "      <div id=\"titlearea\">\n\
+                <h1  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h1>\n\
+            </div>\n\
+            <div id=\"thumbpage\">\n\
                 <ul style=\"list-style: none;\" id=\"thumbdisplaydiv\"></ul>\n\
             </div>\n";
             
@@ -342,15 +381,15 @@ function toImageView_lightbox(categoryValue, imageToShow)
             continue;
             
         var thediv = document.createElement('li');
-        thediv.setAttribute('id',imageList[index].filePath);
-        thediv.setAttribute('title',imageList[index].metadata.title);        
         thediv.innerHTML = 
-            "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.imageTitle +
-            "\" class=\"lightbox\"><img src=\"" + imageList[index].filePath + "\" height=\"100\" class=\"shadowKnows\"/></a>"
+            "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.title +
+            "\" class=\"lightbox tooltip\"><img src=\"" + imageList[index].filePath + "\" height=\"100\" class=\"shadowKnows\"/></a>\n"
         
         theElement.appendChild(thediv);
     }
     
+    initializeTooltips();
+        
     // Box em
     $('a.lightbox').lightBox({
         overlayOpacity: 0.6
@@ -439,6 +478,8 @@ function showArticle( articleTitle )
 
 function toWordView()
 {
+    currentCategoryValue = null;
+    
     stopTimerEvents();
 
     var theHTML =
@@ -961,9 +1002,6 @@ function stopTimerEvents()
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
 }
 
-// This function
-// From http://cssglobe.com/post/1695/easiest-tooltip-and-image-preview-using-jquery
-// Originally written by Alen Grakalic (http://cssglobe.com)
 this.initializeTooltips = function(tagName)
 {
     if (isIE6()) // Lots of weirdness with this function in IE6
@@ -976,6 +1014,9 @@ this.initializeTooltips = function(tagName)
     xOffset = 10;
 
     $(tagName + ".tooltip").hover(function(e) {
+        if ( this.title == "" )
+            return;
+            
         this.t = this.title;
         this.title = "";
         $("body").append("<p id='tooltip'>" + unescape(this.t) + "</p>");
@@ -998,7 +1039,9 @@ this.initializeTooltips = function(tagName)
             .fadeIn("fast");
     },
 	function() {
-	    this.title = this.t;
+        if ( this.t != "" )
+            this.title = this.t;            
+        
 	    this.t = "";
 	    $("#tooltip").remove();
 	});
