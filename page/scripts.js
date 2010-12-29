@@ -123,7 +123,7 @@ function buildMenu()
             
         var adiv = document.createElement('div');
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
-                         "');\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
+                         "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
                          index + "</a>\n";
         
         $("#menuitems").append(adiv);
@@ -138,11 +138,13 @@ function buildMenu()
             textToShow += " articles";
             
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a href=\"javascript:toWordView();\" title=\"" + textToShow + "\">Words</a>\n";
+        adiv.innerHTML = "<a href=\"javascript:toWordView();\" class=\"tooltip\" title=\"" + textToShow + "\">Words</a>\n";
         
         $("#otheritems").append(adiv);
     }
         
+    initializeTooltips();
+    
     var imageToShow = null;
     var catValToShow = null;
     
@@ -343,7 +345,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
         thediv.setAttribute('title',imageList[index].metadata.title);        
         thediv.innerHTML = 
             "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.imageTitle +
-            "\" class=\"lightbox\"><img src=\"" + imageList[index].filePath + "\" width=\"150\" class=\"shadowKnows\"/></a>"
+            "\" class=\"lightbox\"><img src=\"" + imageList[index].filePath + "\" height=\"100\" class=\"shadowKnows\"/></a>"
         
         theElement.appendChild(thediv);
     }
@@ -397,6 +399,7 @@ function toImageView_original(categoryValue, imageToShow)
         var thediv = document.createElement('div');
         thediv.setAttribute('id',imageList[index].filePath);
         thediv.setAttribute('title',imageList[index].metadata.title);
+        thediv.setAttribute('class','tooltip');
         thediv.innerHTML = "<img src=\"" + imageList[index].filePath +
                            "\" onclick=\"showImage('"  + imageList[index].filePath + "','" + escape(imageList[index].metadata.title) +
                            "');\" class=\"thumbnailImage\" />\n"
@@ -409,6 +412,8 @@ function toImageView_original(categoryValue, imageToShow)
             foundImageTitle = imageList[index].metadata.title;
         }
     }
+    
+    initializeTooltips("div");
     
     if ( foundImagePath == null || foundImageTitle == null )
         showRandomImage(categoryValue);
@@ -953,3 +958,60 @@ function stopTimerEvents()
     
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
 }
+
+// This function
+// From http://cssglobe.com/post/1695/easiest-tooltip-and-image-preview-using-jquery
+// Originally written by Alen Grakalic (http://cssglobe.com)
+this.initializeTooltips = function(tagName)
+{	
+    if ( tagName == null )
+        tagName = "a";
+        
+    yOffset = 0;		
+    xOffset = 10;
+    
+	$(tagName+".tooltip").hover(function(e){											  
+		this.t = this.title;
+		this.title = "";	
+		$("body").append("<p id='tooltip'>"+ unescape(this.t) +"</p>");
+        
+        var leftValue = e.pageX + xOffset;
+        var tipWidth = $("#tooltip").width();
+        var rightExtent = leftValue + tipWidth + 15;
+        if ( rightExtent > $(window).width() )
+            leftValue -= (rightExtent - $(window).width());
+
+        var topValue = e.pageY - yOffset;
+        var tipHeight = $("#tooltip").height();
+        var topExtent = topValue + tipHeight + 15;
+        if ( topExtent > $(window).height() )
+            topValue -= (topExtent - $(window).height());
+        
+        $("#tooltip")
+            .css("top",topValue + "px")
+            .css("left",leftValue + "px")
+            .fadeIn("fast");
+    },
+	function(){
+		this.title = this.t;		
+        this.t = "";
+		$("#tooltip").remove();
+    });	
+	$(tagName+".tooltip").mousemove(function(e){
+        var leftValue = e.pageX + xOffset;
+        var tipWidth = $("#tooltip").width();
+        var rightExtent = leftValue + tipWidth + 15;
+        if ( rightExtent > $(window).width() )
+            leftValue -= (rightExtent - $(window).width());
+
+        var topValue = e.pageY - yOffset;
+        var tipHeight = $("#tooltip").height();
+        var topExtent = topValue + tipHeight + 15;
+        if ( topExtent > $(window).height() )
+            topValue -= (topExtent - $(window).height());
+        
+        $("#tooltip")
+            .css("top",topValue + "px")
+            .css("left",leftValue + "px");
+	});			
+};
