@@ -268,8 +268,7 @@ function toWelcomeView()
             </div>\n\
             <div id=\"welcome\">\n\
                 <div class=\"centeredImage\">\n\
-                     <!--br/-->\n\
-                    <div id=\"welcomeimagedisplaydiv\"></div>\n\
+                    <div id=\"welcomeimagedisplaydiv\" style=\"position:relative;\"></div>\n\
                 </div>\n\
             </div>";
      
@@ -334,7 +333,9 @@ function toImageView_lightbox(categoryValue, imageToShow)
             
         var thediv = document.createElement('li');
         thediv.setAttribute('id',imageList[index].filePath);
-        thediv.innerHTML = getThumbnailHtml_lightbox(imageList[index].filePath,imageList[index].metadata.title,0);
+        thediv.innerHTML = 
+            "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.imageTitle +
+            "\" class=\"lightbox\"><img src=\"" + imageList[index].filePath + "\" width=\"150\" class=\"shadowKnows\"/></a>"
         
         theElement.appendChild(thediv);
     }
@@ -346,11 +347,6 @@ function toImageView_lightbox(categoryValue, imageToShow)
 
     parent.location.hash = "showCat=" + escape(currentCategorization) +
                            "&showCatVal=" + escape(currentCategoryValue);
-}
-
-function getThumbnailHtml_lightbox( filePath, imageTitle, asSelected )
-{
-    return "<a href=\"" + filePath + "\" title=\"" + imageTitle + "\" class=\"lightbox\"><img src=\"" + filePath + "\" width=\"150\" class=\"shadowKnows\"/></a>";
 }
 
 function toImageView_original(categoryValue, imageToShow)
@@ -413,22 +409,6 @@ function toImageView_original(categoryValue, imageToShow)
         showRandomImage(categoryValue);
     else
         showImage(foundImagePath,foundImageTitle);
-}
-
-function getThumbnailHtml( filePath, imageTitle, asSelected )
-{
-    if ( asSelected )
-    {
-        return "<img src=\"" + filePath +
-                              "\" onclick=\"showImage('"  + filePath + "','" + escape(imageTitle) +
-                              "');\" class=\"thumbnailImage\" style=\"border: 4px solid #606060\"/>\n";
-    }
-    else
-    {
-        return "<img src=\"" + filePath +
-                              "\" onclick=\"showImage('"  + filePath + "','" + escape(imageTitle) +
-                              "');\" class=\"thumbnailImage\" />\n";
-    }
 }
 
 function showArticle( articleTitle )
@@ -816,16 +796,18 @@ function showRandomWelcomeImage( shouldStopFirst )
     
     var index = Math.floor( Math.random() * totalNumImages );
     
-    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"display: none;\"/>";
+    var theHTML = "<img src=\"" + imageList[index].filePath + "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"opacity: 0.0; position: relative;\"/>";
     $("#welcomeimagedisplaydiv").html(theHTML);
     
-   
-    $("#displayedimage").fadeIn( 2000, function ()
+    var $imageDiv = $("#displayedimage");
+    $imageDiv.animate( { opacity: 1.0 }, { duration: 2000 , complete: function ()
     {
         timerId = setTimeout(
                     function ()
                     {
-                        $("#displayedimage").animate( { height : 0 }, { duration: 2000, complete: function ()
+                        var $div = $("#displayedimage");
+                        var theHeight = $div.height();
+                        $div.animate( { height : 0, width: 0, top : "+=" + (theHeight/2) }, { duration: 2000, complete: function ()
                             {
                                 $("#displayedimage").hide();
                                 timerId = null;
@@ -833,7 +815,7 @@ function showRandomWelcomeImage( shouldStopFirst )
                             } } );
                         
                     }, welcomeImageChangeTimeout );
-    } );
+    } } );
 }
 
 function showRandomImage( categoryValue )
@@ -923,8 +905,8 @@ this.initializeTooltips = function(tagName)
 		this.title = "";	
 		$("body").append("<p id='tooltip'>"+ unescape(this.t) +"</p>");
 		$("#tooltip")
-			.css("top",(e.pageY - xOffset) + "px")
-			.css("left",(e.pageX + yOffset) + "px")
+			.css("top",(e.pageY - yOffset) + "px")
+			.css("left",(e.pageX + xOffset) + "px")
 			.fadeIn("fast");		
     },
 	function(){
