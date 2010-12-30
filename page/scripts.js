@@ -450,7 +450,7 @@ function toImageView_original(categoryValue, imageToShow)
         thediv.setAttribute('class','tooltip');
         thediv.innerHTML = "<img src=\"" + imageList[index].filePath +
                            "\" onclick=\"showImage('"  + imageList[index].filePath + "','" + escape(imageList[index].metadata.title) +
-                           "');\" class=\"thumbnailImage\" />\n"
+                           "');\" class=\"thumbnailImage\" style=\"outline: 0; -moz-box-shadow: 8px 8px 6px #808080; -webkit-box-shadow: 8px 8px 6px #808080; box-shadow: 8px 8px 6px #808080;\"/>\n"
         
         theElement.appendChild(thediv);
         
@@ -727,11 +727,9 @@ function hideImage()
         var theElement = document.getElementById(currentlySelectedImage.filePath);
         if ( theElement == null )
             return;
-            
-        theElement.childNodes[0].style.outline = '0';
-        theElement.childNodes[0].style.mozBoxShadow = '8px 8px 6px #808080';
-        theElement.childNodes[0].style.webkitBoxShadow = '8px 8px 6px #808080';
-        theElement.childNodes[0].style.boxShadow = '8px 8px 6px #808080';
+        
+        theElement.childNodes[0].setAttribute('style',
+            'outline: 0; -moz-box-shadow: 8px 8px 6px #808080; -webkit-box-shadow: 8px 8px 6px #808080; box-shadow: 8px 8px 6px #808080;');
         currentlySelectedImage = null;
     }
 }
@@ -770,10 +768,8 @@ function imageLoaded( theImage, filePath )
     if ( theElement == null )
         return;
         
-    theElement.childNodes[0].style.outline = '7px solid #606060';
-    theElement.childNodes[0].style.mozBoxShadow = '0px 0px 0px #808080';
-    theElement.childNodes[0].style.webkitBoxShadow = '0px 0px 0px #808080';
-    theElement.childNodes[0].style.boxShadow = '0px 0px 0px #808080';
+    theElement.childNodes[0].setAttribute('style',
+            'outline: 7px solid #606060; -moz-box-shadow: 0px 0px 0px #808080; -webkit-box-shadow: 0px 0px 0px #808080; box-shadow: 0px 0px 0px #808080;');
         
     currentlySelectedImage = new currentlySelectedImageRecord( filePath );
     

@@ -344,13 +344,11 @@ ol
     
 .thumbnailImage
     {
-        -moz-box-shadow: 8px 8px 6px #808080;
-        -webkit-box-shadow: 8px 8px 6px #808080;
-        box-shadow: 8px 8px 6px #808080;
         text-align: center;
         width: 80%;
         height: auto;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
+        margin-top: 6px;
         border: 0;
     }
 
