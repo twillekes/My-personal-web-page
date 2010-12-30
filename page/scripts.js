@@ -18,7 +18,7 @@ var articleList = new Array();
 var totalNumArticles = 0;
 
 // Category management
-var currentCategorization = "Subject";
+var currentCategorization = "subject";
 var currentCategoryValue = null; // E.g. "New" or "Houses" or ...
 var categoryList = new Array();
 var currentlySelectedImage = null;
@@ -54,6 +54,7 @@ Image information:
 - Date captured
 
 "Season" : "SEASON", "Camera" : "CAMERA", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None"
+
 
 */
 
@@ -602,7 +603,7 @@ function loadMetadata(metadataItem)
                 {
                     if ( json.type != "words" )
                     {
-                        var md = new metadata( item.title, item.Subject, item.isNew, item.isFavorite );
+                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
                         var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
                         imageList[totalNumImages++] = ir;
                     }
@@ -636,7 +637,7 @@ function loadMetadata(metadataItem)
 function metadata( title, subject, isNew, isFavorite )
 {
     this.title = title;
-    this.Subject = subject;
+    this.subject = subject;
     this.isNew = isNew;
     this.isFavorite = isFavorite;
     this.getCategoryValue = getCategoryValue;
@@ -665,9 +666,9 @@ function currentlySelectedImageRecord( filePath )
 
 function getCategoryValue()
 {
-    if ( "Subject" == currentCategorization )
+    if ( "subject" == currentCategorization )
     {
-        return this.Subject;
+        return this.subject;
     }
     else
     {
