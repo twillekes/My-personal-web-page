@@ -390,7 +390,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
         var thediv = document.createElement('li');
         thediv.innerHTML = 
             "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.title +
-            "\" class=\"lightbox tooltip\"><img src=\"" + imageList[index].filePath + "\" height=\"100px\" class=\"shadowKnows\"/></a>\n"
+            "\" class=\"lightbox tooltip\"><img src=\"" + imageList[index].filePath + "\" /></a>\n"
         
         theElement.appendChild(thediv);
     }
@@ -417,7 +417,7 @@ function toImageView_original(categoryValue, imageToShow)
     var theThumbBar =
      "     <div id=\"thumbbar\">\n\
                 <div class=\"centeredImage\">\n\
-                    <div id=\"thumbdisplaydiv\"></div>\n\
+                    <div id=\"thumbdisplaydiv2\"></div>\n\
                 </div>\n\
             </div>\n";
             
@@ -426,7 +426,7 @@ function toImageView_original(categoryValue, imageToShow)
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
     
-    var theElement = document.getElementById("thumbdisplaydiv");
+    var theElement = document.getElementById("thumbdisplaydiv2");
     if ( null == theElement )
         return;
         
