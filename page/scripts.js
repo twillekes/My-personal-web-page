@@ -52,8 +52,9 @@ Image information:
 - Description/notes
 - Rating (1-10)
 - Date captured
+- Filters
 
-"Season" : "SEASON", "Camera" : "CAMERA", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None"
+"Season" : "SEASON", "Camera" : "CAMERA", "filters" : "FILTERS", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None"
 
 
 */
