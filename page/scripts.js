@@ -390,12 +390,12 @@ function toImageView_lightbox(categoryValue, imageToShow)
         var thediv = document.createElement('li');
         thediv.innerHTML = 
             "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.title +
-            "\" class=\"lightbox tooltip\"><img src=\"" + imageList[index].filePath + "\" /></a>\n"
+            "\" class=\"lightbox\"><img src=\"" + imageList[index].filePath + "\" /></a>\n"
         
         theElement.appendChild(thediv);
     }
     
-    initializeTooltips();
+    //initializeTooltips(); Sometimes lightbox wasn't get the title when class="lightbox tooltip"
         
     // Box em
     $('a.lightbox').lightBox({
