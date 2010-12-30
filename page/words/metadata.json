@@ -4,6 +4,7 @@
     "items":
     [
         { "filename" : "aboot.htm", "title" : "Aboot" },
-        { "filename" : "seasons.htm", "title" : "Seasons" }
+        { "filename" : "seasons.htm", "title" : "Seasons" },
+        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range" }
     ]
 }
