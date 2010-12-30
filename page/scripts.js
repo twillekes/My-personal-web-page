@@ -728,7 +728,10 @@ function hideImage()
         if ( theElement == null )
             return;
             
-        theElement.childNodes[0].style.border = '0';
+        theElement.childNodes[0].style.outline = '0';
+        theElement.childNodes[0].style.mozBoxShadow = '8px 8px 6px #808080';
+        theElement.childNodes[0].style.webkitBoxShadow = '8px 8px 6px #808080';
+        theElement.childNodes[0].style.boxShadow = '8px 8px 6px #808080';
         currentlySelectedImage = null;
     }
 }
@@ -758,7 +761,7 @@ function showImage( filePath, imageTitle )
 function imageLoaded( theImage, filePath )
 {
     var theHTML = "<img src=\"" + theImage.src + "\" id=\"displayedimage\" origHeight=\"" +
-                  theImage.height + "\" origWidth=\"" + theImage.width + "\"/>";
+                  theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"shadowKnows\"/>";
                   
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
     adjustCurrentImageSize();
@@ -767,7 +770,10 @@ function imageLoaded( theImage, filePath )
     if ( theElement == null )
         return;
         
-    theElement.childNodes[0].style.border = '7px solid #606060';
+    theElement.childNodes[0].style.outline = '7px solid #606060';
+    theElement.childNodes[0].style.mozBoxShadow = '0px 0px 0px #808080';
+    theElement.childNodes[0].style.webkitBoxShadow = '0px 0px 0px #808080';
+    theElement.childNodes[0].style.boxShadow = '0px 0px 0px #808080';
         
     currentlySelectedImage = new currentlySelectedImageRecord( filePath );
     
