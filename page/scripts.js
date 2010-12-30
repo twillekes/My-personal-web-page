@@ -53,6 +53,8 @@ Image information:
 - Rating (1-10)
 - Date captured
 
+"Season" : "SEASON", "Camera" : "CAMERA", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None"
+
 */
 
 function lostFocus()
