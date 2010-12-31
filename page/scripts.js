@@ -121,7 +121,7 @@ function buildMenu()
 {
     findCategories();
     
-//    terminateTooltips();
+    terminateTooltips();
     
     $("#menuitems").html("");
     $("#otheritems").html("");
@@ -206,7 +206,13 @@ function buildMenu()
             else if ( index == "showCatVal" )
             {
                 catValToShow = unescape(loadParameters[index]);
-            } // TODO: Add support for showCat
+            }
+            else if ( index == "showCat" )
+            {
+                currentCategorization = unescape(loadParameters[index]);
+                delete loadParameters[index];
+                buildMenu();
+            }
             else if ( index == "showArticles" )
             {
                 toWordView();
@@ -254,6 +260,7 @@ function toNextCategorization()
         nextCategoryIndex = 0;
     
     buildMenu();
+    toWelcomeView();
 }
 
 function findImage(filePath)
@@ -1174,6 +1181,17 @@ this.initializeTooltips = function(tagName)
             .css("left", leftValue + "px");
     });
 };
+
+function terminateTooltips(tagName)
+{
+    if (isIE6()) // Lots of weirdness with this function in IE6
+        return;
+        
+    if (tagName == null)
+        tagName = "a";
+
+    $(tagName+".tooltip").unbind('mouseover').unbind('mouseout');
+}
 
 function isIE6() {
     var browserName=navigator.appName; 
