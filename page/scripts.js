@@ -232,7 +232,11 @@ function buildMenu()
             }
             else if ( index == "showPivot" )
             {
-                supportPivot = loadParameters[index];
+                if ( supportPivot )
+                    supportPivot = false;
+                else
+                    supportPivot = true;
+
                 delete loadParameters[index];
                 buildMenu();
             }
@@ -897,7 +901,7 @@ function imageLoaded( theImage, index )
     $('#metadatadiv').children().remove();
     $('#metadatadiv').hide().append(getMetadataDiv(index));
     if ( showingMetadata )
-        $('#metadatadiv').slideDown(2000);
+        $('#metadatadiv').fadeIn(1000);
     
     parent.location.hash = "showCat=" + escape(currentCategorization) +
                            "&showCatVal=" + escape(currentCategoryValue) +
@@ -961,13 +965,13 @@ function toggleMetadata()
 {
     if ( !showingMetadata )
     {
-        $('#metadatadiv').slideDown(1000);
+        $('#metadatadiv').fadeIn(1000);
         $('#infobuttondiv').html('Hide Info');
         showingMetadata = true;
     }
     else
     {
-        $('#metadatadiv').slideUp(1000);
+        $('#metadatadiv').fadeOut(1000);
         $('#infobuttondiv').html('Show Info');
         showingMetadata = false;
     }
