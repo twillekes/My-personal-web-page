@@ -33,6 +33,7 @@ var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // Appearance mode
+var currentView = null;
 var supportLightbox = true;
 var usingLightbox = false;
 var showingMetadata = false;
@@ -324,6 +325,7 @@ function toSingleImageView(filePath)
     theElement.innerHTML = getImageDisplayHTML();
 
     showImage(findImage(filePath).index);
+    currentView = "single";
     return;
 }
 
@@ -334,6 +336,9 @@ function switchTo( categoryValue )
 
 function toWelcomeView()
 {
+    if ( currentView == "welcome" )
+        return;
+        
     stopTimerEvents();
     currentCategoryValue = null;
     
@@ -358,6 +363,7 @@ function toWelcomeView()
     theElement.innerHTML = theHTML;
     
     showRandomWelcomeImage(true);
+    currentView = "welcome";
 }
 
 function getImageDisplayHTML()
@@ -384,6 +390,8 @@ function toImageView(categoryValue, imageToShow)
         toImageView_lightbox(categoryValue, imageToShow);
     else
         toImageView_original(categoryValue, imageToShow);
+        
+    currentView = "image";
 }
 
 function toImageView_lightbox(categoryValue, imageToShow)
@@ -562,6 +570,7 @@ function toWordView()
         });
         
     parent.location.hash = "showArticles";
+    currentView = "words";
 }
 
 function showArticleAt( articleFilePath )
