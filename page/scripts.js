@@ -277,6 +277,7 @@ function findImage(filePath)
 {
     var imageTitle = null;
     var newFilePath = filePath;
+    var foundIndex = null;
     for ( index in imageList )
     {
         var idx = imageList[index].filePath.indexOf(filePath);
@@ -284,6 +285,7 @@ function findImage(filePath)
         {
             newFilePath = imageList[index].filePath;
             imageTitle = imageList[index].metadata.title;
+            foundIndex = index;
             break;
         }
     }
@@ -294,7 +296,7 @@ function findImage(filePath)
         imageTitle = imageList[0].metadata.title;
     }
 
-    return { imageTitle : imageTitle, filePath : newFilePath };
+    return { imageTitle : imageTitle, filePath : newFilePath, index : foundIndex };
 }
 
 function toggleThumbView()
@@ -318,41 +320,11 @@ function toSingleImageView(filePath)
 {
     stopTimerEvents();
     
-    var imageData = findImage( filePath );
-    var imageTitle = imageData.imageTitle;
-    filePath = imageData.filePath;
-    
-    var theHTML =
-     '      <div id=\"singleImage\">\n\
-                <div class=\"centeredImage\">\n\
-                    <div id=\"imagetitlediv\"></div>\n\
-                    <div id=\"imagedisplaydiv\"></div>\n\
-                    <div id=\"metadatadiv\"></div>\n\
-                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
-                </div>\n\
-            </div>\n';  
-     
     var theElement = document.getElementById("contentplaceholder");
-    theElement.innerHTML = theHTML;
+    theElement.innerHTML = getImageDisplayHTML();
 
-    var titleHTML = "<h3 id=\"imagetitlearea\">" + imageTitle + "</h3>";
-    var theElement = document.getElementById("imagetitlediv");
-    if ( null == theElement )
-        return;
-        
-    theElement.innerHTML = titleHTML;
-    
-    theElement = document.getElementById("imagedisplaydiv");
-    if ( null == theElement )
-        return;
-        
-    var theImage = new Image();
-    theImage.src = filePath;
-
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"shadowKnows\" origWidth=\""
-        + theImage.width + "\" origHeight=\"" + theImage.height + "\"/>";
-    $("#imagedisplaydiv").hide().html(theHTML).fadeIn( 1000 );
-    adjustCurrentImageSize();
+    showImage(findImage(filePath).index);
+    return;
 }
 
 function switchTo( categoryValue )
@@ -864,13 +836,19 @@ function showImage( index )
     var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageList[index].metadata.title) + "</h3>";
     var theElement = document.getElementById("imagetitlediv");
     if ( null == theElement )
+    {
+        console.log("ERROR: No imagetitlediv in showImage");
         return;
+    }
         
     theElement.innerHTML = titleHTML;
     
     theElement = document.getElementById("imagedisplaydiv");
     if ( null == theElement )
+    {
+        console.log("ERROR: No imagedisplaydiv in showImage");
         return;
+    }
 
     var theImage = new Image();
     theImage.onload = function() { imageLoaded(theImage,index); }
@@ -887,25 +865,28 @@ function imageLoaded( theImage, index )
     adjustCurrentImageSize();
     
     theElement = document.getElementById(filePath);
-    if ( theElement == null )
-        return;
-        
-    theElement.childNodes[0].setAttribute('style',
-            'outline: 7px solid #606060; -moz-box-shadow: 0px 0px 0px #808080;\
-            -webkit-box-shadow: 0px 0px 0px #808080; box-shadow: 0px 0px 0px #808080;');
-        
-    currentlySelectedImage = new currentlySelectedImageRecord( filePath );
+    if ( theElement != null )
+    {
+        theElement.childNodes[0].setAttribute('style',
+                'outline: 7px solid #606060; -moz-box-shadow: 0px 0px 0px #808080;\
+                -webkit-box-shadow: 0px 0px 0px #808080; box-shadow: 0px 0px 0px #808080;');
+            
+        currentlySelectedImage = new currentlySelectedImageRecord( filePath );
+    }
     
     addPrevNextButtons();
     
     $('#metadatadiv').children().remove();
     $('#metadatadiv').hide().append(getMetadataDiv(index));
     if ( showingMetadata )
-        $('#metadatadiv').fadeIn(1000);
+        $('#metadatadiv').slideDown(1000);
     
-    parent.location.hash = "showCat=" + escape(currentCategorization) +
-                           "&showCatVal=" + escape(currentCategoryValue) +
-                           "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+    if ( currentCategoryValue != null )
+        parent.location.hash = "showCat=" + escape(currentCategorization) +
+                               "&showCatVal=" + escape(currentCategoryValue) +
+                               "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+    else
+        parent.location.hash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
 }
 
 function getMetadataDiv(index)
@@ -965,13 +946,13 @@ function toggleMetadata()
 {
     if ( !showingMetadata )
     {
-        $('#metadatadiv').fadeIn(1000);
+        $('#metadatadiv').slideDown(1000);
         $('#infobuttondiv').html('Hide Info');
         showingMetadata = true;
     }
     else
     {
-        $('#metadatadiv').fadeOut(1000);
+        $('#metadatadiv').slideUp(1000);
         $('#infobuttondiv').html('Show Info');
         showingMetadata = false;
     }
@@ -1006,6 +987,7 @@ function addPrevNextButtons()
     var theElement = document.getElementById("prevnextbuttondiv");
     if ( null == theElement )
     {
+        console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
         return;
     }
         
@@ -1020,21 +1002,24 @@ function addPrevNextButtons()
 
     var prevIndex = -1;
     var nextIndex = -1;
-    for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
+    if ( currentCategoryValue != null )
     {
-        if ( imageList[categoryList[currentCategoryValue].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
+        for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
         {
-            if ( catIndex > 0 )
+            if ( imageList[categoryList[currentCategoryValue].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
             {
-                prevIndex = catIndex - 1;
+                if ( catIndex > 0 )
+                {
+                    prevIndex = catIndex - 1;
+                }
+                
+                if ( catIndex < (categoryList[currentCategoryValue].imageIndexes.length-1) )
+                {
+                    nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
+                    nextIndex++;
+                }
+                break;
             }
-            
-            if ( catIndex < (categoryList[currentCategoryValue].imageIndexes.length-1) )
-            {
-                nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
-                nextIndex++;
-            }
-            break;
         }
     }
     
@@ -1051,46 +1036,42 @@ function setupButton(theDivName, imageIndex)
     var divName = "#" + theDivName;
     $div = $(divName);
 
-    if (imageIndex == -1) {
-        var cssSettings = {
-            'background-color': '#E6E6E6',
-            'color': 'gray',
-            'cursor': 'not-allowed'
-        };
-        $div.css(cssSettings);
-        $div.unbind('mouseover').unbind('mouseout').unbind('click');
+    if (imageIndex == -1)
+    {
+        $div.remove();
+        return;
+    }
+    
+    if ( imageIndex != null )
+    {
+        $div.click(function() { showImage(categoryList[currentCategoryValue].imageIndexes[imageIndex]); });
     }
     else
     {
-        if ( imageIndex != null )
-            $div.click(function() { showImage(categoryList[currentCategoryValue].imageIndexes[imageIndex]); });
+        if ( !showingMetadata )
+            $div.html("Show Info");
         else
-        {
-            if ( !showingMetadata )
-                $div.html("Show Info");
-            else
-                $div.html("Hide Info");
-                
-            $div.click(function() { toggleMetadata(); });
-        }
+            $div.html("Hide Info");
             
-        $div.hover(function() {
-            var cssSettings = {
-                'background-color': 'gray',
-                'color': 'white',
-                'cursor': 'pointer'
-            };
-            $(divName).css(cssSettings);
-        },
-        function() {
-            var cssSettings = {
-                'background-color': '#E6E6E6',
-                'color': 'black',
-                'cursor': 'auto'
-            };
-            $(divName).css(cssSettings);
-        });
+        $div.click(function() { toggleMetadata(); });
     }
+        
+    $div.hover(function() {
+        var cssSettings = {
+            'background-color': 'gray',
+            'color': 'white',
+            'cursor': 'pointer'
+        };
+        $(divName).css(cssSettings);
+    },
+    function() {
+        var cssSettings = {
+            'background-color': '#E6E6E6',
+            'color': 'black',
+            'cursor': 'auto'
+        };
+        $(divName).css(cssSettings);
+    });
 }
 
 function showRandomWelcomeImage( shouldStopFirst )
