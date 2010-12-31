@@ -1,10 +1,10 @@
 {
-    "_comment" : "This is how articles in a folder are declared",
+    "_comment" : "Use isNotReady=1 to avoid loading articles",
     "type" : "words",
     "items":
     [
         { "filename" : "aboot.htm", "title" : "Aboot" },
         { "filename" : "seasons.htm", "title" : "Seasons" },
-        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range" }
+        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range", "isNotReady" : 1 }
     ]
 }

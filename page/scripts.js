@@ -180,7 +180,7 @@ function buildMenu()
     if ( supportPivot )
     {
         var categorizationHelp = "Change image categorization";
-        var categoryButtonText = "By " + categories[nextCategoryIndex];
+        var categoryButtonText = "Pivot by " + categories[nextCategoryIndex];
         
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
@@ -640,9 +640,12 @@ function loadMetadata(metadataItem)
                     }
                     else
                     {
-                        var art = new article( item.title );
-                        articleList[metadataFilePath+"/"+item.filename] = art;
-                        totalNumArticles++; // ".length" doesn't work for associative arrays
+                        if ( item.isNotReady == null || !item.isNotReady )
+                        {
+                            var art = new article( item.title );
+                            articleList[metadataFilePath+"/"+item.filename] = art;
+                            totalNumArticles++; // ".length" doesn't work for associative arrays
+                        }
 
                     }
                 }
@@ -902,6 +905,10 @@ function getMetadataDiv(index)
     var theNotes = "";
     if ( md.caption != null && md.caption != "None" )
         theNotes = md.caption;
+        
+    var theLens = "";
+    if ( md.lens != null && md.lens != "Unknown" )
+        theLens = md.lens;
     
     // Row 1
     var theRow = $('<tr></tr>');
@@ -918,7 +925,7 @@ function getMetadataDiv(index)
     theRow.append( $('<td style=\"width:33%\"><b><i>Camera:</b></i></td>') );
     theRow.append( $('<td>'+md.camera+'</td>') );
     theRow.append( $('<td style=\"width:33%\"><b><i>Lens:</b></i></td>') );
-    theRow.append( $('<td>'+md.lens+'</td>') );
+    theRow.append( $('<td>'+theLens+'</td>') );
     theRow.append( $('<td style=\"width:33%\"><b><i>Filters:</b></i></td>') );
     theRow.append( $('<td>'+theFilters+'</td>') );
     theTable.append(theRow);
@@ -1084,7 +1091,7 @@ function showRandomWelcomeImage( shouldStopFirst )
     var theImage = new Image();
     theImage.onload = function () {
         var theHTML = "<img src=\"" + this.src +
-            "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"height: 0; position: relative;\" origWidth=\""
+            "\" id=\"displayedwelcomeimage\" class=\"shadowKnows\" style=\"height: 0; position: relative;\" origWidth=\""
             + this.width + "\" origHeight=\"" + this.height + "\"/>";
             
         $("#welcomeimagedisplaydiv").html(theHTML);
@@ -1110,18 +1117,18 @@ function showRandomWelcomeImage( shouldStopFirst )
             }
         }
         
-        var $imageDiv = $("#displayedimage");
+        var $imageDiv = $("#displayedwelcomeimage");
         $imageDiv.offset( { top: theHeight/2+$("#welcome").offset().top+25 } ); // ... fudge
         $imageDiv.animate( { height: theHeight, top: "-="+(theHeight/2) }, { duration: 2000 , complete: function ()
         {
             timerId = setTimeout(
                         function ()
                         {
-                            var $div = $("#displayedimage");
+                            var $div = $("#displayedwelcomeimage");
                             var theHeight = $div.height();
                             $div.animate( { height : 0, width: 0, top : "+=" + (theHeight/2) }, { duration: 2000, complete: function ()
                                 {
-                                    $("#displayedimage").hide();
+                                    $("#displayedwelcomeimage").hide();
                                     timerId = null;
                                     showRandomWelcomeImage(false);
                                 } } );
@@ -1199,6 +1206,7 @@ function stopTimerEvents()
     }
     
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
+    $("#tooltip").remove();
 }
 
 this.initializeTooltips = function(tagName)
