@@ -361,3 +361,22 @@ ol
 	color:#333;
 	display:none;
 	}
+    
+.metadatatable
+{
+    text-align: left;
+    width: 80%;
+    /*border: 1px solid black;*/
+    table-layout: fixed;
+    font-size: 0.80em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+}
+
+.metadatatable td
+{
+    text-align: left;
+    /*border: 1px solid black;*/
+    word-wrap: break-word;
+}

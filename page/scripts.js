@@ -22,6 +22,8 @@ var currentCategorization = "subject";
 var currentCategoryValue = null; // E.g. "New" or "Houses" or ...
 var categoryList; // This is filled with the categoryValues
 var currentlySelectedImage = null;
+
+var supportPivot = false;
 var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
                             "format", "year", "month", "direction", "rating" );
 var nextCategoryIndex = 1;
@@ -33,6 +35,7 @@ var welcomeImageChangeTimeout = 10000; // In milliseconds
 // Appearance mode
 var supportLightbox = true;
 var usingLightbox = false;
+var showMetadata = true;
 
 /*
 
@@ -121,10 +124,8 @@ function buildMenu()
 {
     findCategories();
     
-    terminateTooltips();
-    
-    $("#menuitems").html("");
-    $("#otheritems").html("");
+    $("#menuitems").children().remove();
+    $("#otheritems").children().remove();
     
     for ( index in categoryList )
     {
@@ -175,10 +176,9 @@ function buildMenu()
         $("#otheritems").append(adiv);
     }
     
-    if ( true )
+    $("#catitem").children().remove();
+    if ( supportPivot )
     {
-        $("#catitem").html("");
-        
         var categorizationHelp = "Change image categorization";
         var categoryButtonText = "By " + categories[nextCategoryIndex];
         
@@ -229,6 +229,12 @@ function buildMenu()
                     usingLightbox = true;
                 else
                     usingLightbox = false;
+            }
+            else if ( index == "showPivot" )
+            {
+                supportPivot = loadParameters[index];
+                delete loadParameters[index];
+                buildMenu();
             }
         }
     }
@@ -313,13 +319,14 @@ function toSingleImageView(filePath)
     filePath = imageData.filePath;
     
     var theHTML =
-     "      <div id=\"singleImage\">\n\
+     '      <div id=\"singleImage\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                     <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                    <div id=\"metadatadiv\"></div>\n\
                 </div>\n\
-            </div>\n";  
+            </div>\n';  
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
@@ -357,7 +364,7 @@ function toWelcomeView()
     parent.location.hash = "";
 
     var theHTML =
-     "\
+     '\
             <!--\n\
              Front page mode\n\
               -->\n\
@@ -369,7 +376,7 @@ function toWelcomeView()
                 <div class=\"centeredImage\" >\n\
                     <div id=\"welcomeimagedisplaydiv\" style=\"position:relative;\"></div>\n\
                 </div>\n\
-            </div>";
+            </div>';
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
@@ -380,15 +387,16 @@ function toWelcomeView()
 function getImageDisplayHTML()
 {
     var theImageDisplayArea =
-     "      <div id=\"imagedisplayarea\">\n\
+     '      <div id=\"imagedisplayarea\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                     <div id=\"prevnextbuttondiv\">\n\
                     </div>\n\
                     <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                    <div id=\"metadatadiv\"></div>\n\
                 </div>\n\
-            </div>\n";  
+            </div>\n';  
             
     return theImageDisplayArea;
 }
@@ -406,12 +414,12 @@ function toImageView(categoryValue, imageToShow)
 function toImageView_lightbox(categoryValue, imageToShow)
 {
     var theThumbBar =
-     "      <div id=\"titlearea\">\n\
+     '      <div id=\"titlearea\">\n\
                 <h1  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h1>\n\
             </div>\n\
             <div id=\"thumbpage\">\n\
                 <ul style=\"list-style: none;\" id=\"thumbdisplaydiv\"></ul>\n\
-            </div>\n";
+            </div>\n';
             
     theHTML = theThumbBar;
      
@@ -477,8 +485,7 @@ function toImageView_original(categoryValue, imageToShow)
         return;
         
     currentCategoryValue = categoryValue;
-    var foundImagePath = null;
-    var foundImageTitle = null;
+    var foundIndex = null;
         
     for ( index in imageList )
     {
@@ -494,25 +501,27 @@ function toImageView_original(categoryValue, imageToShow)
         thediv.setAttribute('id',imageList[index].filePath);
         thediv.setAttribute('title',imageList[index].metadata.title);
         thediv.setAttribute('class','tooltip');
-        thediv.innerHTML = "<img src=\"" + imageList[index].filePath +
-                           "\" onclick=\"showImage('"  + imageList[index].filePath + "','" + escape(imageList[index].metadata.title) +
-                           "');\" class=\"thumbnailImage\" style=\"outline: 0; -moz-box-shadow: 8px 8px 6px #808080; -webkit-box-shadow: 8px 8px 6px #808080; box-shadow: 8px 8px 6px #808080;\"/>\n"
+        thediv.innerHTML = '<img src=\"' + imageList[index].filePath +
+                           '\" onclick=\"showImage('  + index + 
+                           ');\" class=\"thumbnailImage\" style=\"outline: 0;\
+                           -moz-box-shadow: 8px 8px 6px #808080;\
+                           -webkit-box-shadow: 8px 8px 6px #808080;\
+                           box-shadow: 8px 8px 6px #808080;\"/>\n';
         
         theElement.appendChild(thediv);
         
         if ( imageToShow != null && imageList[index].filePath.indexOf( imageToShow ) != -1 )
         {
-            foundImagePath = imageList[index].filePath;
-            foundImageTitle = imageList[index].metadata.title;
+            foundIndex = index;
         }
     }
     
     initializeTooltips("div");
     
-    if ( foundImagePath == null || foundImageTitle == null )
+    if ( foundIndex == null )
         showRandomImage(categoryValue);
     else
-        showImage(foundImagePath,foundImageTitle);
+        showImage(foundIndex);
 }
 
 function showArticle( articleTitle )
@@ -537,7 +546,7 @@ function toWordView()
     stopTimerEvents();
 
     var theHTML =
-     "\
+     '\
             <div id=\"titlearea\">\n\
                 <h1 style=\"text-align: center; margin: 0; padding: 0;\">Words</h1>\n\
             </div>\n\
@@ -551,8 +560,7 @@ function toWordView()
                 <p>\n\
                 <a href=\"http://members.shaw.ca/twillekes\">Home</a>\n\
                 </p>\n\
-            </div>\n\
-    ";
+            </div>\n';
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
@@ -574,6 +582,7 @@ function toWordView()
         },
         error: function(request, status, error) {
             //alert("failed with: "+status+" and "+error);
+            console.log("ERROR: Fetch of articleHeader.htm failed with status "+status+" and error "+error);
         }
         });
         
@@ -605,6 +614,7 @@ function showArticleAt( articleFilePath )
         },
         error: function(request, status, error) {
             //alert("failed with: "+status+" and "+error);
+            console.log("ERROR: Fetch of "+articleFilePath+" failed with status "+status+" and error "+error);
         }
         });
     
@@ -649,7 +659,7 @@ function loadMetadata(metadataItem)
                         var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite, item.isDiscarded,
                                                item.season, item.camera, item.lens, item.filters, item.film,
                                                item.chrome, item.format, item.year, item.month, item.date,
-                                               item.direction, item.rating, item.caption )
+                                               item.direction, item.rating, item.caption );
                         var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
                         imageList[totalNumImages++] = ir;
                     }
@@ -676,6 +686,7 @@ function loadMetadata(metadataItem)
         },
         error: function(request, status, error) {
             //alert("failed with: "+status+" and "+error);
+            console.log("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
         }
     });
 }
@@ -824,7 +835,6 @@ function findCategories()
         
         if ( imageList[index].metadata.isFavorite )
             categoryList["Favorites"].imageIndexes.push(index);
-
     }
 }
 
@@ -842,13 +852,13 @@ function hideImage()
     }
 }
 
-function showImage( filePath, imageTitle )
+function showImage( index )
 {
     stopTimerEvents();
 
     hideImage();
     
-    var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageTitle) + "</h3>";
+    var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageList[index].metadata.title) + "</h3>";
     var theElement = document.getElementById("imagetitlediv");
     if ( null == theElement )
         return;
@@ -860,12 +870,13 @@ function showImage( filePath, imageTitle )
         return;
 
     var theImage = new Image();
-    theImage.onload = function() { imageLoaded(theImage,filePath); }
-    theImage.src = filePath;
+    theImage.onload = function() { imageLoaded(theImage,index); }
+    theImage.src = imageList[index].filePath;
 }
 
-function imageLoaded( theImage, filePath )
+function imageLoaded( theImage, index )
 {
+    var filePath = imageList[index].filePath;
     var theHTML = "<img src=\"" + theImage.src + "\" id=\"displayedimage\" origHeight=\"" +
                   theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"shadowKnows\"/>";
                   
@@ -877,15 +888,80 @@ function imageLoaded( theImage, filePath )
         return;
         
     theElement.childNodes[0].setAttribute('style',
-            'outline: 7px solid #606060; -moz-box-shadow: 0px 0px 0px #808080; -webkit-box-shadow: 0px 0px 0px #808080; box-shadow: 0px 0px 0px #808080;');
+            'outline: 7px solid #606060; -moz-box-shadow: 0px 0px 0px #808080;\
+            -webkit-box-shadow: 0px 0px 0px #808080; box-shadow: 0px 0px 0px #808080;');
         
     currentlySelectedImage = new currentlySelectedImageRecord( filePath );
     
     addPrevNextButtons();
+    $('#metadatadiv').children().remove();
+    if ( showMetadata )
+        $('#metadatadiv').append(getMetadata(index));
     
     parent.location.hash = "showCat=" + escape(currentCategorization) +
                            "&showCatVal=" + escape(currentCategoryValue) +
                            "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+}
+
+function getMetadata(index)
+{
+    /*
+    subject = subject;
+    - season = season;
+    - camera = camera;
+    - lens = lens;
+    - filters = filters;
+    - film = film;
+    - format = format;
+    - date = date;
+    - direction = direction;
+    - rating = rating;
+    caption = caption;
+    
+    11 items, 4 rows and 3 columns...
+    */
+    
+    var md = imageList[index].metadata;
+    
+    var theTable = $('<table class=\"metadatatable\"></table>');
+    
+    // Row 1
+    var theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:33%\"><b><i>Taken:</b></i></td>') );
+    theRow.append( $('<td>'+md.date+'</td>') );
+    theRow.append( $('<td style=\"width:33%\"><b><i>Season:</b></i></td>') );
+    theRow.append( $('<td>'+md.season+'</td>') );
+    theRow.append( $('<td style=\"width:33%\"><b><i>Direction:</b></i></td>') );
+    theRow.append( $('<td>'+md.direction+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 2
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:33%\"><b><i>Camera:</b></i></td>') );
+    theRow.append( $('<td>'+md.camera+'</td>') );
+    theRow.append( $('<td style=\"width:33%\"><b><i>Lens:</b></i></td>') );
+    theRow.append( $('<td>'+md.lens+'</td>') );
+    theRow.append( $('<td style=\"width:33%\"><b><i>Filters:</b></i></td>') );
+    theRow.append( $('<td>'+md.filters+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 3
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:33%\"><b><i>Film:</b></i></td>') );
+    theRow.append( $('<td>'+md.film+'</td>') );
+    theRow.append( $('<td style=\"width:33%\"><b><i>Format:</b></i></td>') );
+    theRow.append( $('<td>'+md.format+'</td>') );
+    theRow.append( $('<td style=\"width:33%\"><b><i>Rating:</b></i></td>') );
+    theRow.append( $('<td>'+md.rating+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 4
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:33%\"><b><i>Notes:</b></i></td>') );
+    theRow.append( $('<td colspan="5">'+md.caption+'</td>') );
+    theTable.append(theRow);
+    
+    return theTable;
 }
 
 function adjustCurrentImageSize()
@@ -971,9 +1047,7 @@ function setupButton(imageIndex, theDivName)
     }
     else
     {
-        var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].filePath;
-        var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].metadata.title;
-        $div.click(function() { showImage(nextFilePath, nextImageTitle); });
+        $div.click(function() { showImage(categoryList[currentCategoryValue].imageIndexes[imageIndex]); });
         $div.hover(function() {
             var cssSettings = {
                 'background-color': 'gray',
@@ -1086,7 +1160,7 @@ function showRandomImage( categoryValue )
         {
             if ( foundIndex == index )
             {
-                showImage( imageList[imageIndex].filePath, escape(imageList[imageIndex].metadata.title) );
+                showImage(imageIndex);
                 break;
             }
             else
@@ -1128,69 +1202,60 @@ this.initializeTooltips = function(tagName)
     if (tagName == null)
         tagName = "a";
 
-    yOffset = 0;
-    xOffset = 10;
-
     $(tagName + ".tooltip").hover(function(e) {
+        $("#tooltip").remove();
+        
         if ( this.title == "" )
+        {
+            console.log("ERROR: No title for "+this.innerHTML);
             return;
+        }
             
         this.t = this.title;
         this.title = "";
         $("body").append("<p id='tooltip'>" + unescape(this.t) + "</p>");
 
-        var leftValue = e.pageX + xOffset;
-        var tipWidth = $("#tooltip").width();
-        var rightExtent = leftValue + tipWidth + 15;
-        if (rightExtent > $(window).width())
-            leftValue -= (rightExtent - $(window).width());
-
-        var topValue = e.pageY - yOffset;
-        var tipHeight = $("#tooltip").height();
-        var topExtent = topValue + tipHeight + 15;
-        if (topExtent > $(window).height())
-            topValue -= (topExtent - $(window).height());
+        var loc = getTipLocation(e);
 
         $("#tooltip")
-            .css("top", topValue + "px")
-            .css("left", leftValue + "px")
+            .css("top", loc.top + "px")
+            .css("left", loc.left + "px")
             .fadeIn("fast");
     },
 	function() {
         if ( this.t != "" )
-            this.title = this.t;            
+            this.title = this.t;
         
 	    this.t = "";
 	    $("#tooltip").remove();
 	});
     $(tagName + ".tooltip").mousemove(function(e) {
-        var leftValue = e.pageX + xOffset;
-        var tipWidth = $("#tooltip").width();
-        var rightExtent = leftValue + tipWidth + 15;
-        if (rightExtent > $(window).width())
-            leftValue -= (rightExtent - $(window).width());
-
-        var topValue = e.pageY - yOffset;
-        var tipHeight = $("#tooltip").height();
-        var topExtent = topValue + tipHeight + 15;
-        if (topExtent > $(window).height())
-            topValue -= (topExtent - $(window).height());
+        var loc = getTipLocation(e);
 
         $("#tooltip")
-            .css("top", topValue + "px")
-            .css("left", leftValue + "px");
+            .css("top", loc.top + "px")
+            .css("left", loc.left + "px");
     });
 };
 
-function terminateTooltips(tagName)
+function getTipLocation(e)
 {
-    if (isIE6()) // Lots of weirdness with this function in IE6
-        return;
-        
-    if (tagName == null)
-        tagName = "a";
+    yOffset = 0;
+    xOffset = 10;
+    
+    var leftValue = e.pageX + xOffset;
+    var tipWidth = $("#tooltip").width();
+    var rightExtent = leftValue + tipWidth + 15;
+    if (rightExtent > $(window).width())
+        leftValue -= (rightExtent - $(window).width());
 
-    $(tagName+".tooltip").unbind('mouseover').unbind('mouseout');
+    var topValue = e.pageY - yOffset;
+    var tipHeight = $("#tooltip").height();
+    var topExtent = topValue + tipHeight + 15;
+    if (topExtent > $(window).height())
+        topValue -= (topExtent - $(window).height());
+        
+    return { top: topValue, left: leftValue };
 }
 
 function isIE6() {
