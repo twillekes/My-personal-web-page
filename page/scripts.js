@@ -824,8 +824,15 @@ function hideImage()
         if ( theElement == null )
             return;
         
-        theElement.childNodes[0].setAttribute('style',
-            'outline: 0; -moz-box-shadow: 8px 8px 6px #808080; -webkit-box-shadow: 8px 8px 6px #808080; box-shadow: 8px 8px 6px #808080;');
+        if ( isIE7OrLower() )
+            theElement.childNodes[0].style.border = '0';
+        else
+            theElement.childNodes[0].setAttribute('style',
+                'outline: 0;\
+                -moz-box-shadow: 8px 8px 6px #808080;\
+                -webkit-box-shadow: 8px 8px 6px #808080;\
+                box-shadow: 8px 8px 6px #808080;');
+
         currentlySelectedImage = null;
     }
 }
@@ -861,7 +868,7 @@ function showImage( index )
 function imageLoaded( theImage, index )
 {
     var filePath = imageList[index].filePath;
-    var theHTML = "<img src=\"" + theImage.src + "\" id=\"displayedimage\" origHeight=\"" +
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
                   theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"shadowKnows\"/>";
                   
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
@@ -870,9 +877,14 @@ function imageLoaded( theImage, index )
     theElement = document.getElementById(filePath);
     if ( theElement != null )
     {
-        theElement.childNodes[0].setAttribute('style',
-                'outline: 7px solid #606060; -moz-box-shadow: 0px 0px 0px #808080;\
-                -webkit-box-shadow: 0px 0px 0px #808080; box-shadow: 0px 0px 0px #808080;');
+        if ( isIE7OrLower() )
+            theElement.childNodes[0].style.border = '7px solid #606060';
+        else
+            theElement.childNodes[0].setAttribute('style',
+                'outline: 7px solid #606060;\
+                -moz-box-shadow: 0px 0px 0px #808080;\
+                -webkit-box-shadow: 0px 0px 0px #808080;\
+                box-shadow: 0px 0px 0px #808080;');
             
         currentlySelectedImage = new currentlySelectedImageRecord( filePath );
     }
@@ -1273,11 +1285,24 @@ function getTipLocation(e)
     return { top: topValue, left: leftValue };
 }
 
-function isIE6() {
+function isIE6() // Has issues with hover for tooltips
+{
     var browserName=navigator.appName; 
     if (browserName=="Microsoft Internet Explorer") {
         var browserVer = parseInt(navigator.appVersion);
         if (browserVer <= 6)
+            return true;
+    }
+    
+    return false;
+}
+
+function isIE7OrLower() // Doesn't support "outline" property
+{
+    var browserName=navigator.appName; 
+    if (browserName=="Microsoft Internet Explorer") {
+        var browserVer = parseInt(navigator.appVersion);
+        if (browserVer <= 7)
             return true;
     }
     
