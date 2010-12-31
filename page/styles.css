@@ -160,6 +160,7 @@ html>body #articleList a
     width: 66%; /* was 100% */
     color: black;
     text-decoration: none;
+    word-wrap: break-word;
     }
 html>body #menubar a
 {
@@ -225,9 +226,11 @@ html>body #prevnextbuttondiv div
 }*/
 #prevnextbuttondiv  table,td
 {
+    table-layout: fixed;
     margin-top: 1em;
-    width: 50%;
+    width: 66%;
     text-align: center;
+    word-wrap: break-word;
 }
 
 

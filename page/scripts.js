@@ -35,7 +35,7 @@ var welcomeImageChangeTimeout = 10000; // In milliseconds
 // Appearance mode
 var supportLightbox = true;
 var usingLightbox = false;
-var showMetadata = true;
+var showingMetadata = false;
 
 /*
 
@@ -323,8 +323,8 @@ function toSingleImageView(filePath)
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                     <div id=\"metadatadiv\"></div>\n\
+                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n';  
      
@@ -391,10 +391,9 @@ function getImageDisplayHTML()
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <div id=\"prevnextbuttondiv\">\n\
-                    </div>\n\
-                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                    <div id=\"prevnextbuttondiv\"></div>\n\
                     <div id=\"metadatadiv\"></div>\n\
+                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n';  
             
@@ -894,36 +893,30 @@ function imageLoaded( theImage, index )
     currentlySelectedImage = new currentlySelectedImageRecord( filePath );
     
     addPrevNextButtons();
+    
     $('#metadatadiv').children().remove();
-    if ( showMetadata )
-        $('#metadatadiv').append(getMetadata(index));
+    $('#metadatadiv').hide().append(getMetadataDiv(index));
+    if ( showingMetadata )
+        $('#metadatadiv').slideDown(2000);
     
     parent.location.hash = "showCat=" + escape(currentCategorization) +
                            "&showCatVal=" + escape(currentCategoryValue) +
                            "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
 }
 
-function getMetadata(index)
+function getMetadataDiv(index)
 {
-    /*
-    subject = subject;
-    - season = season;
-    - camera = camera;
-    - lens = lens;
-    - filters = filters;
-    - film = film;
-    - format = format;
-    - date = date;
-    - direction = direction;
-    - rating = rating;
-    caption = caption;
-    
-    11 items, 4 rows and 3 columns...
-    */
-    
     var md = imageList[index].metadata;
     
     var theTable = $('<table class=\"metadatatable\"></table>');
+    
+    var theFilters = "";
+    if ( md.filters != null )
+        theFilters = md.filters;
+        
+    var theNotes = "";
+    if ( md.caption != null && md.caption != "None" )
+        theNotes = md.caption;
     
     // Row 1
     var theRow = $('<tr></tr>');
@@ -942,7 +935,7 @@ function getMetadata(index)
     theRow.append( $('<td style=\"width:33%\"><b><i>Lens:</b></i></td>') );
     theRow.append( $('<td>'+md.lens+'</td>') );
     theRow.append( $('<td style=\"width:33%\"><b><i>Filters:</b></i></td>') );
-    theRow.append( $('<td>'+md.filters+'</td>') );
+    theRow.append( $('<td>'+theFilters+'</td>') );
     theTable.append(theRow);
     
     // Row 3
@@ -958,10 +951,26 @@ function getMetadata(index)
     // Row 4
     theRow = $('<tr></tr>');
     theRow.append( $('<td style=\"width:33%\"><b><i>Notes:</b></i></td>') );
-    theRow.append( $('<td colspan="5">'+md.caption+'</td>') );
+    theRow.append( $('<td colspan="5">'+theNotes+'</td>') );
     theTable.append(theRow);
     
     return theTable;
+}
+
+function toggleMetadata()
+{
+    if ( !showingMetadata )
+    {
+        $('#metadatadiv').slideDown(1000);
+        $('#infobuttondiv').html('Hide Info');
+        showingMetadata = true;
+    }
+    else
+    {
+        $('#metadatadiv').slideUp(1000);
+        $('#infobuttondiv').html('Show Info');
+        showingMetadata = false;
+    }
 }
 
 function adjustCurrentImageSize()
@@ -1000,6 +1009,7 @@ function addPrevNextButtons()
                        "<table style=\"margin-left: auto; margin-right: auto;\">\n\
                             <tr>\n\
                                 <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
+                                <td><div id=\"infobuttondiv\">Show Info</div></td>\n\
                                 <td><div id=\"nextbuttondiv\">Next</div></td>\n\
                             </tr>\n\
                         </table>\n";
@@ -1027,11 +1037,12 @@ function addPrevNextButtons()
     // For some reason, using an HTML anchor tag for the prev/next buttons results in the
     // showImage call failing when the title has an apostrophe (even though it's escaped). WTF?
     
-    setupButton(prevIndex, "prevbuttondiv");
-    setupButton(nextIndex, "nextbuttondiv");
+    setupButton("prevbuttondiv", prevIndex);
+    setupButton("infobuttondiv");
+    setupButton("nextbuttondiv", nextIndex);
 }
 
-function setupButton(imageIndex, theDivName)
+function setupButton(theDivName, imageIndex)
 {
     var divName = "#" + theDivName;
     $div = $(divName);
@@ -1047,7 +1058,18 @@ function setupButton(imageIndex, theDivName)
     }
     else
     {
-        $div.click(function() { showImage(categoryList[currentCategoryValue].imageIndexes[imageIndex]); });
+        if ( imageIndex != null )
+            $div.click(function() { showImage(categoryList[currentCategoryValue].imageIndexes[imageIndex]); });
+        else
+        {
+            if ( !showingMetadata )
+                $div.html("Show Info");
+            else
+                $div.html("Hide Info");
+                
+            $div.click(function() { toggleMetadata(); });
+        }
+            
         $div.hover(function() {
             var cssSettings = {
                 'background-color': 'gray',
