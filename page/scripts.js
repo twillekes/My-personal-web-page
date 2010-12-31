@@ -418,7 +418,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
 {
     var theThumbBar =
      '      <div id=\"titlearea\">\n\
-                <h1  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h1>\n\
+                <h1  style=\"text-align: center; margin: 0 0 0 0;\">' + categoryValue + '</h1>\n\
             </div>\n\
             <div id=\"thumbpage\">\n\
                 <ul style=\"list-style: none;\" id=\"thumbdisplaydiv\"></ul>\n\
@@ -467,16 +467,16 @@ function toImageView_lightbox(categoryValue, imageToShow)
 function toImageView_original(categoryValue, imageToShow)
 {
     var theCategoryNameArea =
-    "       <div id=\"categorynamearea\">\n\
-                <h3  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h3>\n\
-            </div>\n";
+    '       <div id=\"categorynamearea\">\n\
+                <h3  style=\"text-align: center; margin: 0 0 0 0;\">' + categoryValue + '</h3>\n\
+            </div>\n';
     
     var theThumbBar =
-     "     <div id=\"thumbbar\">\n\
+     '     <div id=\"thumbbar\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"thumbdisplaydiv2\"></div>\n\
                 </div>\n\
-            </div>\n";
+            </div>\n';
             
     theHTML = theCategoryNameArea + theThumbBar + getImageDisplayHTML();
      
