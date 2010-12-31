@@ -20,8 +20,11 @@ var totalNumArticles = 0;
 // Category management
 var currentCategorization = "subject";
 var currentCategoryValue = null; // E.g. "New" or "Houses" or ...
-var categoryList = new Array();
+var categoryList; // This is filled with the categoryValues
 var currentlySelectedImage = null;
+var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
+                            "format", "year", "month", "direction", "rating" );
+var nextCategoryIndex = 1;
 
 // Welcome page image timer
 var timerId = null;
@@ -53,8 +56,9 @@ Image information:
 - Rating (1-10)
 - Date captured
 - Filters
+- Discarded (yes/no)
 
-"Season" : "SEASON", "Camera" : "CAMERA", "filters" : "FILTERS", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None"
+"Season" : "SEASON", "Camera" : "CAMERA", "filters" : "FILTERS", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None", "isDiscarded" : 0
 
 
 */
@@ -117,6 +121,11 @@ function buildMenu()
 {
     findCategories();
     
+//    terminateTooltips();
+    
+    $("#menuitems").html("");
+    $("#otheritems").html("");
+    
     for ( index in categoryList )
     {
         if ( categoryList[index].imageIndexes.length == 0 )
@@ -125,7 +134,7 @@ function buildMenu()
         var extra = "images";
         if ( categoryList[index].imageIndexes.length == 1 )
             extra = "image";
-
+            
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
@@ -164,6 +173,21 @@ function buildMenu()
                          + lightboxHelpText + "\">" + modeText + "</a>\n";
         
         $("#otheritems").append(adiv);
+    }
+    
+    if ( true )
+    {
+        $("#catitem").html("");
+        
+        var categorizationHelp = "Change image categorization";
+        var categoryButtonText = "By " + categories[nextCategoryIndex];
+        
+        adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
+        adiv.innerHTML = "<a href=\"javascript:toNextCategorization();\" class=\"tooltip\" title=\""
+                         + categorizationHelp + "\">" + categoryButtonText + "</a>\n";
+        
+        $("#catitem").append(adiv);
     }
         
     initializeTooltips();
@@ -219,6 +243,17 @@ function buildMenu()
     }
     
     toWelcomeView();
+}
+
+function toNextCategorization()
+{
+    currentCategorization = categories[nextCategoryIndex];
+    
+    nextCategoryIndex++;
+    if ( nextCategoryIndex == categories.length )
+        nextCategoryIndex = 0;
+    
+    buildMenu();
 }
 
 function findImage(filePath)
@@ -604,7 +639,10 @@ function loadMetadata(metadataItem)
                 {
                     if ( json.type != "words" )
                     {
-                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
+                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite, item.isDiscarded,
+                                               item.season, item.camera, item.lens, item.filters, item.film,
+                                               item.chrome, item.format, item.year, item.month, item.date,
+                                               item.direction, item.rating, item.caption )
                         var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
                         imageList[totalNumImages++] = ir;
                     }
@@ -635,12 +673,28 @@ function loadMetadata(metadataItem)
     });
 }
 
-function metadata( title, subject, isNew, isFavorite )
+function metadata( title, subject, isNew, isFavorite, isDiscarded, season, camera, lens, filters,
+                   film, chrome, format, year, month, date, direction, rating, caption )
 {
     this.title = title;
     this.subject = subject;
     this.isNew = isNew;
     this.isFavorite = isFavorite;
+    this.isDiscarded = isDiscarded
+    this.season = season;
+    this.camera = camera;
+    this.lens = lens;
+    this.filters = filters;
+    this.film = film;
+    this.chrome = chrome;
+    this.format = format;
+    this.year = year;
+    this.month = month;
+    this.date = date;
+    this.direction = direction;
+    this.rating = rating;
+    this.caption = caption;
+    
     this.getCategoryValue = getCategoryValue;
 }
 
@@ -671,6 +725,46 @@ function getCategoryValue()
     {
         return this.subject;
     }
+    else if ( "season" == currentCategorization )
+    {
+        return this.season;
+    }
+    else if ( "camera" == currentCategorization )
+    {
+        return this.camera;
+    }
+    else if ( "lens" == currentCategorization )
+    {
+        return this.lens;
+    }
+    else if ( "film" == currentCategorization )
+    {
+        return this.film;
+    }
+    else if ( "chrome" == currentCategorization )
+    {
+        return this.chrome;
+    }
+    else if ( "format" == currentCategorization )
+    {
+        return this.format;
+    }
+    else if ( "year" == currentCategorization )
+    {
+        return this.year;
+    }
+    else if ( "month" == currentCategorization )
+    {
+        return this.month;
+    }
+    else if ( "direction" == currentCategorization )
+    {
+        return this.direction;
+    }
+    else if ( "rating" == currentCategorization )
+    {
+        return this.rating;
+    }
     else
     {
         return "undefined";
@@ -679,7 +773,7 @@ function getCategoryValue()
 
 function findCategories()
 {
-    categoryList.length = 0;
+    categoryList = new Array();
     
     var catRecord = new categoryRecord();
     categoryList["New"] = catRecord;
@@ -688,8 +782,14 @@ function findCategories()
     
     for ( index in imageList )
     {
+        if ( imageList[index].metadata.isNew )
+        {
+            categoryList["New"].imageIndexes.push(index);
+            continue;
+        }
+        
         var categoryValue = imageList[index].metadata.getCategoryValue();
-        if ( "Discarded" == categoryValue ) // Allows an image to be present but not displayed
+        if ( imageList[index].metadata.isDiscarded ) 
             continue;
             
         var found = 0;
@@ -714,9 +814,6 @@ function findCategories()
         {
             categoryList[foundIndex].imageIndexes.push(index);
         }
-        
-        if ( imageList[index].metadata.isNew )
-            categoryList["New"].imageIndexes.push(index);
         
         if ( imageList[index].metadata.isFavorite )
             categoryList["Favorites"].imageIndexes.push(index);
