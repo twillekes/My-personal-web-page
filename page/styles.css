@@ -195,6 +195,7 @@ html>body #menubar a
 }
 #prevnextbuttondiv div
     {
+	border: 1px solid black;
     background-color: #E6E6E6; /* was below */
     border: 1px solid black; /* was below */
     margin-left: auto; /* was below */
@@ -224,15 +225,20 @@ html>body #prevnextbuttondiv div
     background-color: gray;
     color: white;
 }*/
-#prevnextbuttondiv  table,td
+#prevnextbuttondiv table
 {
+	/*border: 1px solid black;*/
     table-layout: fixed;
     margin-top: 1em;
     width: 66%;
+	margin-left: auto;
+	margin-right: auto;
+}
+#prevnextbuttondiv td
+{
     text-align: center;
     word-wrap: break-word;
 }
-
 
 #feediconarea
     {
@@ -365,7 +371,7 @@ ol
 	display:none;
 	}
     
-.metadatatable
+#metadatatable 
 {
     text-align: left;
     width: 80%;
@@ -377,8 +383,9 @@ ol
     margin-top: 2em;
 }
 
-.metadatatable td
+#metadatatable td
 {
+	width: 16%;
     text-align: left;
     /*border: 1px solid black;*/
     word-wrap: break-word;

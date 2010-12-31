@@ -896,7 +896,7 @@ function getMetadataDiv(index)
 {
     var md = imageList[index].metadata;
     
-    var theTable = $('<table class=\"metadatatable\"></table>');
+    var theTable = $('<table id=\"metadatatable\"></table>');
     
     var theFilters = "";
     if ( md.filters != null )
@@ -912,31 +912,31 @@ function getMetadataDiv(index)
     
     // Row 1
     var theRow = $('<tr></tr>');
-    theRow.append( $('<td style=\"width:33%\"><b><i>Taken:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Taken:</b></i></td>') );
     theRow.append( $('<td>'+md.date+'</td>') );
-    theRow.append( $('<td style=\"width:33%\"><b><i>Season:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Season:</b></i></td>') );
     theRow.append( $('<td>'+md.season+'</td>') );
-    theRow.append( $('<td style=\"width:33%\"><b><i>Direction:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Direction:</b></i></td>') );
     theRow.append( $('<td>'+md.direction+'</td>') );
     theTable.append(theRow);
     
     // Row 2
     theRow = $('<tr></tr>');
-    theRow.append( $('<td style=\"width:33%\"><b><i>Camera:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Camera:</b></i></td>') );
     theRow.append( $('<td>'+md.camera+'</td>') );
-    theRow.append( $('<td style=\"width:33%\"><b><i>Lens:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Lens:</b></i></td>') );
     theRow.append( $('<td>'+theLens+'</td>') );
-    theRow.append( $('<td style=\"width:33%\"><b><i>Filters:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Filters:</b></i></td>') );
     theRow.append( $('<td>'+theFilters+'</td>') );
     theTable.append(theRow);
     
     // Row 3
     theRow = $('<tr></tr>');
-    theRow.append( $('<td style=\"width:33%\"><b><i>Film:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Film:</b></i></td>') );
     theRow.append( $('<td>'+md.film+'</td>') );
-    theRow.append( $('<td style=\"width:33%\"><b><i>Format:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Format:</b></i></td>') );
     theRow.append( $('<td>'+md.format+'</td>') );
-    theRow.append( $('<td style=\"width:33%\"><b><i>Rating:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Rating:</b></i></td>') );
     theRow.append( $('<td>'+md.rating+'</td>') );
     theTable.append(theRow);
     
