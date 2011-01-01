@@ -19,7 +19,7 @@ var totalNumArticles = 0;
 
 // Category management
 var currentCategorization = "subject";
-var currentCategoryValue = null; // E.g. "New" or "Houses" or ...
+var currentCategoryIndex = null; // E.g. "New" or "Houses" or ...
 var categoryList; // This is filled with the categoryValues
 var currentlySelectedImage = null;
 
@@ -139,9 +139,9 @@ function buildMenu()
             
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
+        adiv.innerHTML = "<a href=\"javascript:switchTo('" + categoryList[index].categoryValue +
                          "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
-                         index + "</a>\n";
+                         categoryList[index].categoryValue + "</a>\n";
         
         $("#menuitems").append(adiv);
     }
@@ -313,8 +313,8 @@ function toggleThumbView()
         usingLightbox = true;
     }
     
-    if ( currentCategoryValue != null )
-        toImageView(currentCategoryValue);
+    if ( currentCategoryIndex != null )
+        toImageView(categoryList[currentCategoryIndex].categoryValue);
 }
 
 function toSingleImageView(filePath)
@@ -340,7 +340,7 @@ function toWelcomeView()
         return;
         
     stopTimerEvents();
-    currentCategoryValue = null;
+    currentCategoryIndex = null;
     
     parent.location.hash = "";
 
@@ -394,6 +394,18 @@ function toImageView(categoryValue, imageToShow)
     currentView = "image";
 }
 
+function findCategoryIndex(categoryValue)
+{
+    for ( index in categoryList )
+    {
+        if ( categoryList[index].categoryValue == categoryValue )
+            return index;
+    }
+    
+    console.log("ERROR: Could not find category value "+categoryValue);
+    return null;
+}
+
 function toImageView_lightbox(categoryValue, imageToShow)
 {
     var theThumbBar =
@@ -412,7 +424,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
     if ( null == theElement )
         return;
         
-    currentCategoryValue = categoryValue;
+    currentCategoryIndex = findCategoryIndex(categoryValue);
         
     for ( index in imageList )
     {
@@ -440,7 +452,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
     });
 
     parent.location.hash = "showCat=" + escape(currentCategorization) +
-                           "&showCatVal=" + escape(currentCategoryValue) +
+                           "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
                            "&showMode=Lightbox";
 }
 
@@ -467,7 +479,7 @@ function toImageView_original(categoryValue, imageToShow)
     if ( null == theElement )
         return;
         
-    currentCategoryValue = categoryValue;
+    currentCategoryIndex = findCategoryIndex(categoryValue);
     var foundIndex = null;
         
     for ( index in imageList )
@@ -524,7 +536,7 @@ function showArticle( articleTitle )
 
 function toWordView()
 {
-    currentCategoryValue = null;
+    currentCategoryIndex = null;
     
     stopTimerEvents();
 
@@ -709,9 +721,10 @@ function imageRecord( filePath, metadata )
     this.metadata = metadata;
 }
 
-function categoryRecord()
+function categoryRecord(categoryValue)
 {
     this.imageIndexes = new Array();
+    this.categoryValue = categoryValue;
 }
 
 function article( title )
@@ -780,16 +793,14 @@ function findCategories()
 {
     categoryList = new Array();
     
-    var catRecord = new categoryRecord();
-    categoryList["New"] = catRecord;
-    catRecord = new categoryRecord();
-    categoryList["Favorites"] = catRecord;
+    var newCatRecord = new categoryRecord("New");
+    var favCatRecord = new categoryRecord("Favorites");
     
     for ( index in imageList )
     {
         if ( imageList[index].metadata.isNew )
         {
-            categoryList["New"].imageIndexes.push(index);
+            newCatRecord.imageIndexes.push(index);
             continue;
         }
         
@@ -801,7 +812,7 @@ function findCategories()
         var foundIndex;
         for ( catIndex in categoryList )
         {
-            if ( catIndex == categoryValue )
+            if ( categoryList[catIndex].categoryValue == categoryValue )
             {
                 found = 1;
                 foundIndex = catIndex;
@@ -811,9 +822,9 @@ function findCategories()
         
         if ( !found )
         {
-            catRecord = new categoryRecord();
+            catRecord = new categoryRecord(categoryValue);
             catRecord.imageIndexes.push(index);
-            categoryList[categoryValue] = catRecord;
+            categoryList.push(catRecord);
         }
         else
         {
@@ -821,8 +832,17 @@ function findCategories()
         }
         
         if ( imageList[index].metadata.isFavorite )
-            categoryList["Favorites"].imageIndexes.push(index);
+            favCatRecord.imageIndexes.push(index);
     }
+    
+    categoryList.sort( function(a,b)
+    {
+        return ( b.categoryValue > a.categoryValue );
+    });
+    
+    categoryList.push(favCatRecord);
+    categoryList.push(newCatRecord);
+    categoryList.reverse();
 }
 
 function hideImage()
@@ -905,9 +925,9 @@ function imageLoaded( theImage, index )
     if ( showingMetadata )
         $('#metadatadiv').slideDown(1000);
     
-    if ( currentCategoryValue != null )
+    if ( currentCategoryIndex != null )
         parent.location.hash = "showCat=" + escape(currentCategorization) +
-                               "&showCatVal=" + escape(currentCategoryValue) +
+                               "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
                                "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
     else
         parent.location.hash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
@@ -1030,18 +1050,18 @@ function addPrevNextButtons()
 
     var prevIndex = -1;
     var nextIndex = -1;
-    if ( currentCategoryValue != null )
+    if ( currentCategoryIndex != null )
     {
-        for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
+        for ( catIndex in categoryList[currentCategoryIndex].imageIndexes )
         {
-            if ( imageList[categoryList[currentCategoryValue].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
+            if ( imageList[categoryList[currentCategoryIndex].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
             {
                 if ( catIndex > 0 )
                 {
                     prevIndex = catIndex - 1;
                 }
                 
-                if ( catIndex < (categoryList[currentCategoryValue].imageIndexes.length-1) )
+                if ( catIndex < (categoryList[currentCategoryIndex].imageIndexes.length-1) )
                 {
                     nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
                     nextIndex++;
@@ -1072,7 +1092,7 @@ function setupButton(theDivName, imageIndex)
     
     if ( imageIndex != null )
     {
-        $div.click(function() { showImage(categoryList[currentCategoryValue].imageIndexes[imageIndex]); });
+        $div.click(function() { showImage(categoryList[currentCategoryIndex].imageIndexes[imageIndex]); });
     }
     else
     {
@@ -1166,17 +1186,17 @@ function showRandomImage( categoryValue )
     var numImages = 0;
     if ( categoryValue == "New" )
     {
-        numImages = categoryList["New"].imageIndexes.length;
+        numImages = categoryList[findCategoryIndex("New")].imageIndexes.length;
     }
     else if ( categoryValue == "Favorites" )
     {
-        numImages = categoryList["Favorites"].imageIndexes.length;
+        numImages = categoryList[findCategoryIndex("Favorites")].imageIndexes.length;
     }
     else
     {
         for ( catRecordIndex in categoryList )
         {
-            if ( categoryValue == catRecordIndex )
+            if ( categoryValue == categoryList[catRecordIndex].categoryValue )
             {
                 numImages = categoryList[catRecordIndex].imageIndexes.length;
             }
