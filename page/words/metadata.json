@@ -5,6 +5,13 @@
     [
         { "filename" : "aboot.htm", "title" : "Aboot" },
         { "filename" : "seasons.htm", "title" : "Seasons" },
-        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range", "isNotReady" : 1 }
+        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range", "isNotReady" : 1 },
+        { "filename" : "dynamicRange.htm", "title" : "Epson V750 Scanner Usage", "isNotReady" : 1 },
+        { "filename" : "dynamicRange.htm", "title" : "Metering Techniques", "isNotReady" : 1 },
+        { "filename" : "dynamicRange.htm", "title" : "Light Chasing 101", "isNotReady" : 1 },
+        { "filename" : "dynamicRange.htm", "title" : "The Hasselblad V-System", "isNotReady" : 1 },
+        { "filename" : "dynamicRange.htm", "title" : "Large Format Photography", "isNotReady" : 1 },
+        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range", "isNotReady" : 1 },
+        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range", "isNotReady" : 1 },
     ]
 }
