@@ -432,7 +432,8 @@ function toImageView_lightbox(categoryValue, imageToShow)
                 ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
                 ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
                 ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
-                )
+                ) ||
+                ( imageList[index].metadata.isNew && categoryValue != "New" )
             )
             continue;
             
@@ -488,7 +489,8 @@ function toImageView_original(categoryValue, imageToShow)
                 ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
                 ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
                 ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
-                )
+                ) ||
+                ( imageList[index].metadata.isNew && categoryValue != "New" )
             )
             continue;
             
@@ -798,7 +800,7 @@ function findCategories()
     
     for ( index in imageList )
     {
-        if ( imageList[index].metadata.isNew )
+        if ( imageList[index].metadata.isNew == 1 )
         {
             newCatRecord.imageIndexes.push(index);
             continue;
@@ -828,6 +830,7 @@ function findCategories()
         }
         else
         {
+            if ( categoryList[foundIndex].categoryValue == "Prairie" )
             categoryList[foundIndex].imageIndexes.push(index);
         }
         
