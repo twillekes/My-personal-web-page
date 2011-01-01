@@ -806,9 +806,10 @@ function findCategories()
             continue;
         }
         
-        var categoryValue = imageList[index].metadata.getCategoryValue();
         if ( imageList[index].metadata.isDiscarded ) 
             continue;
+            
+        var categoryValue = imageList[index].metadata.getCategoryValue();
             
         var found = 0;
         var foundIndex;
@@ -830,7 +831,6 @@ function findCategories()
         }
         else
         {
-            if ( categoryList[foundIndex].categoryValue == "Prairie" )
             categoryList[foundIndex].imageIndexes.push(index);
         }
         
@@ -846,6 +846,11 @@ function findCategories()
     categoryList.push(favCatRecord);
     categoryList.push(newCatRecord);
     categoryList.reverse();
+    
+//    for ( index in categoryList )
+//    {
+//        console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
+//    }
 }
 
 function hideImage()
