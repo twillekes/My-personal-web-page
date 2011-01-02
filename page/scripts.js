@@ -37,6 +37,7 @@ var currentView = null;
 var supportLightbox = true;
 var usingLightbox = false;
 var showingMetadata = false;
+var $currentlySelectedButton = null;
 
 /*
 
@@ -138,6 +139,7 @@ function buildMenu()
             
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
+        adiv.setAttribute('id', categoryList[index].categoryValue.split(' ').join('_'));
         adiv.innerHTML = "<a href=\"javascript:switchTo('" + categoryList[index].categoryValue +
                          "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
                          categoryList[index].categoryValue + "</a>\n";
@@ -155,6 +157,7 @@ function buildMenu()
             
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
+        adiv.setAttribute('id','words');
         adiv.innerHTML = "<a href=\"javascript:toWordView();\" class=\"tooltip\" title=\"" + textToShow + "\">Words</a>\n";
         
         $("#otheritems").append(adiv);
@@ -338,6 +341,8 @@ function toWelcomeView()
     if ( currentView == "welcome" )
         return;
         
+    updateSelectedButton("menubar");
+        
     stopTimerEvents();
     currentCategoryIndex = null;
     
@@ -391,6 +396,19 @@ function toImageView(categoryValue, imageToShow)
         toImageView_original(categoryValue, imageToShow);
         
     currentView = "image";
+    updateSelectedButton(categoryValue.split(' ').join('_'));
+}
+
+function updateSelectedButton(divName)
+{
+    if ( $currentlySelectedButton != null )
+        $currentlySelectedButton.css('background', '#E6E6E6');
+    
+    if ( divName != null )
+    {
+        $currentlySelectedButton = $("#"+divName+">a");
+        $currentlySelectedButton.css('background', '#B0B0B0');
+    }
 }
 
 function findCategoryIndex(categoryValue)
@@ -438,8 +456,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
             continue;
             
         var thumbFilePath = imageList[index].filePath;
-        if ( true )
-            thumbFilePath = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
+        thumbFilePath     = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
                             thumbFilePath.substring(thumbFilePath.lastIndexOf('.')+1);
         
         var thediv = document.createElement('li');
@@ -505,8 +522,7 @@ function toImageView_original(categoryValue, imageToShow)
         thediv.setAttribute('class','tooltip');
         
         var thumbFilePath = imageList[index].filePath;
-        if ( true )
-            thumbFilePath = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
+        thumbFilePath     = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
                             thumbFilePath.substring(thumbFilePath.lastIndexOf('.')+1);
         
         thediv.innerHTML = '<img src=\"' + thumbFilePath +
@@ -596,6 +612,7 @@ function toWordView()
         
     parent.location.hash = "showArticles";
     currentView = "words";
+    updateSelectedButton("words");
 }
 
 function showArticleAt( articleFilePath )
