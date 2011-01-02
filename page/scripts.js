@@ -439,7 +439,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
-    var theElement = document.getElementById("thumbdisplaydiv");
+    theElement = document.getElementById("thumbdisplaydiv");
     if ( null == theElement )
         return;
         
@@ -499,7 +499,7 @@ function toImageView_original(categoryValue, imageToShow)
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
     
-    var theElement = document.getElementById("thumbdisplaydiv2");
+    theElement = document.getElementById("thumbdisplaydiv2");
     if ( null == theElement )
         return;
         
@@ -1374,10 +1374,10 @@ function getTipLocation(e)
 
 function isIE6() // Has issues with hover for tooltips
 {
-    var browserName=navigator.appName; 
-    if (browserName=="Microsoft Internet Explorer") {
-        var browserVer = parseInt(navigator.appVersion);
-        if (browserVer <= 6)
+    var exVer = getInternetExplorerVersion();
+    if ( exVer != -1 )
+    {
+        if ( exVer <= 6.0 )
             return true;
     }
     
@@ -1386,12 +1386,27 @@ function isIE6() // Has issues with hover for tooltips
 
 function isIE7OrLower() // Doesn't support "outline" property
 {
-    var browserName=navigator.appName; 
-    if (browserName=="Microsoft Internet Explorer") {
-        var browserVer = parseInt(navigator.appVersion);
-        if (browserVer <= 7)
+    var exVer = getInternetExplorerVersion();
+    if ( exVer != -1 )
+    {
+        if ( exVer <= 7.0 )
             return true;
     }
     
     return false;
+}
+
+function getInternetExplorerVersion()
+// Returns the version of Internet Explorer or a -1
+// (indicating the use of another browser).
+{
+    var rv = -1; // Return value assumes failure.
+    if (navigator.appName == 'Microsoft Internet Explorer')
+    {
+        var ua = navigator.userAgent;
+        var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+            rv = parseFloat( RegExp.$1 );
+    }
+    return rv;
 }
