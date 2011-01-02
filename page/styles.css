@@ -269,6 +269,10 @@ html>body #prevnextbuttondiv div
     overflow: auto;
     width: 15%;
     }
+#thumbbar img
+{
+    cursor: pointer;
+}
 #thumbpage
     {
     position: absolute;
