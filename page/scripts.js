@@ -64,7 +64,6 @@ Image information:
 
 "Season" : "SEASON", "Camera" : "CAMERA", "filters" : "FILTERS", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None", "isDiscarded" : 0
 
-
 */
 
 function lostFocus()
@@ -403,6 +402,7 @@ function findCategoryIndex(categoryValue)
     }
     
     console.log("ERROR: Could not find category value "+categoryValue);
+    //alert("ERROR: Could not find category value "+categoryValue);
     return null;
 }
 
@@ -437,10 +437,15 @@ function toImageView_lightbox(categoryValue, imageToShow)
             )
             continue;
             
+        var thumbFilePath = imageList[index].filePath;
+        if ( true )
+            thumbFilePath = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
+                            thumbFilePath.substring(thumbFilePath.lastIndexOf('.')+1);
+        
         var thediv = document.createElement('li');
         thediv.innerHTML = 
             "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.title +
-            "\" class=\"lightbox\"><img src=\"" + imageList[index].filePath + "\" /></a>\n"
+            "\" class=\"lightbox\"><img src=\"" + thumbFilePath + "\" /></a>\n"
         
         theElement.appendChild(thediv);
     }
@@ -498,7 +503,13 @@ function toImageView_original(categoryValue, imageToShow)
         thediv.setAttribute('id',imageList[index].filePath);
         thediv.setAttribute('title',imageList[index].metadata.title);
         thediv.setAttribute('class','tooltip');
-        thediv.innerHTML = '<img src=\"' + imageList[index].filePath +
+        
+        var thumbFilePath = imageList[index].filePath;
+        if ( true )
+            thumbFilePath = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
+                            thumbFilePath.substring(thumbFilePath.lastIndexOf('.')+1);
+        
+        thediv.innerHTML = '<img src=\"' + thumbFilePath +
                            '\" onclick=\"showImage('  + index + 
                            ');\" class=\"thumbnailImage\" style=\"outline: 0;\
                            -moz-box-shadow: 8px 8px 6px #808080;\
@@ -578,7 +589,7 @@ function toWordView()
             $("#articleHeader").html(data);
         },
         error: function(request, status, error) {
-            //alert("failed with: "+status+" and "+error);
+            //alert("ERROR: Fetch of articleHeader.htm failed with status "+status+" and error "+error);
             console.log("ERROR: Fetch of articleHeader.htm failed with status "+status+" and error "+error);
         }
         });
@@ -611,7 +622,7 @@ function showArticleAt( articleFilePath )
             } ); // Add the fully resolved path for images
         },
         error: function(request, status, error) {
-            //alert("failed with: "+status+" and "+error);
+            //alert("ERROR: Fetch of "+articleFilePath+" failed with status "+status+" and error "+error);
             console.log("ERROR: Fetch of "+articleFilePath+" failed with status "+status+" and error "+error);
         }
         });
@@ -686,7 +697,7 @@ function loadMetadata(metadataItem)
             }
         },
         error: function(request, status, error) {
-            //alert("failed with: "+status+" and "+error);
+            //alert("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
             console.log("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
         }
     });
@@ -884,6 +895,7 @@ function showImage( index )
     var theElement = document.getElementById("imagetitlediv");
     if ( null == theElement )
     {
+        //alert("ERROR: No imagetitlediv in showImage");
         console.log("ERROR: No imagetitlediv in showImage");
         return;
     }
@@ -893,6 +905,7 @@ function showImage( index )
     theElement = document.getElementById("imagedisplaydiv");
     if ( null == theElement )
     {
+        //alert("ERROR: No imagedisplaydiv in showImage");
         console.log("ERROR: No imagedisplaydiv in showImage");
         return;
     }
@@ -1043,6 +1056,7 @@ function addPrevNextButtons()
     var theElement = document.getElementById("prevnextbuttondiv");
     if ( null == theElement )
     {
+        //alert("ERROR: No prevnextbuttondiv in addPrevNextButtons");
         console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
         return;
     }
@@ -1271,6 +1285,7 @@ this.initializeTooltips = function(tagName)
         
         if ( this.title == "" )
         {
+            //alert("ERROR: No title for "+this.innerHTML);
             console.log("ERROR: No title for "+this.innerHTML);
             return;
         }

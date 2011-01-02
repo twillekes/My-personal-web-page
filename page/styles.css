@@ -282,7 +282,6 @@ html>body #prevnextbuttondiv div
 }
 #thumbpage img
 {
-    height: 100px;
     margin: 10px;
     vertical-align: middle;
     border: 0;
@@ -354,7 +353,6 @@ ol
 .thumbnailImage
     {
         text-align: center;
-        width: 80%;
         height: auto;
         margin-bottom: 6px;
         margin-top: 6px;
