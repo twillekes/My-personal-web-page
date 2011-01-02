@@ -1017,7 +1017,7 @@ function getMetadataDiv(index)
     theRow.append( $('<td>'+md.film+'</td>') );
     theRow.append( $('<td style=\"width:10%\"><b><i>Format:</b></i></td>') );
     theRow.append( $('<td>'+md.format+'</td>') );
-    theRow.append( $('<td style=\"width:10%\"><b><i>Rating:</b></i></td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Score (/10):</b></i></td>') );
     theRow.append( $('<td>'+md.rating+'</td>') );
     theTable.append(theRow);
     
