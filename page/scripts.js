@@ -120,6 +120,11 @@ function getParams()
     return tempParams;
 }
 
+function switchTo()
+{
+    toImageView(this.innerHTML);
+    this.origBackgroundColor = '#B0B0B0';
+}
 
 function buildMenu()
 {
@@ -140,9 +145,9 @@ function buildMenu()
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id', categoryList[index].categoryValue.split(' ').join('_'));
-        adiv.innerHTML = "<a href=\"javascript:switchTo('" + categoryList[index].categoryValue +
-                         "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
+        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\" style=\"background-color: #E6E6E6;\">" +
                          categoryList[index].categoryValue + "</a>\n";
+        adiv.firstChild.onclick = switchTo;
         
         $("#menuitems").append(adiv);
     }
@@ -158,7 +163,8 @@ function buildMenu()
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id','words');
-        adiv.innerHTML = "<a href=\"javascript:toWordView();\" class=\"tooltip\" title=\"" + textToShow + "\">Words</a>\n";
+        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + textToShow + "\" style=\"background-color: #E6E6E6;\">Words</a>\n";
+        adiv.firstChild.onclick = toWordView;
         
         $("#otheritems").append(adiv);
     }
@@ -193,7 +199,7 @@ function buildMenu()
         $("#catitem").append(adiv);
     }
         
-    initializeTooltips();
+    initializeTooltips(true);
     
     var imageToShow = null;
     var catValToShow = null;
@@ -331,11 +337,6 @@ function toSingleImageView(filePath)
     return;
 }
 
-function switchTo( categoryValue )
-{
-    toImageView(categoryValue);
-}
-
 function toWelcomeView()
 {
     if ( currentView == "welcome" )
@@ -402,12 +403,12 @@ function toImageView(categoryValue, imageToShow)
 function updateSelectedButton(divName)
 {
     if ( $currentlySelectedButton != null )
-        $currentlySelectedButton.css('background', '#E6E6E6');
+        $currentlySelectedButton.css('background-color', '#E6E6E6');
     
     if ( divName != null )
     {
         $currentlySelectedButton = $("#"+divName+">a");
-        $currentlySelectedButton.css('background', '#B0B0B0');
+        $currentlySelectedButton.css('background-color', '#B0B0B0');
     }
 }
 
@@ -540,7 +541,7 @@ function toImageView_original(categoryValue, imageToShow)
         }
     }
     
-    initializeTooltips("div");
+    initializeTooltips(false,"div");
     
     if ( foundIndex == null )
         showRandomImage(categoryValue);
@@ -612,6 +613,7 @@ function toWordView()
         
     parent.location.hash = "showArticles";
     currentView = "words";
+    this.origBackgroundColor = '#B0B0B0';
     updateSelectedButton("words");
 }
 
@@ -1289,7 +1291,7 @@ function stopTimerEvents()
     $("#tooltip").remove();
 }
 
-this.initializeTooltips = function(tagName)
+this.initializeTooltips = function(changeBackground, tagName)
 {
     if (isIE6()) // Lots of weirdness with this function in IE6
         return;
@@ -1317,6 +1319,15 @@ this.initializeTooltips = function(tagName)
             .css("top", loc.top + "px")
             .css("left", loc.left + "px")
             .fadeIn("fast");
+        
+        if ( changeBackground )
+        {
+            //console.log("Saving "+this.style.backgroundColor);
+            this.origBackgroundColor = this.style.backgroundColor;
+            this.origColor = this.style.color;
+            this.style.backgroundColor = 'gray';
+            this.style.color = 'white';
+        }
     },
 	function() {
         if ( this.t != "" )
@@ -1324,6 +1335,13 @@ this.initializeTooltips = function(tagName)
         
 	    this.t = "";
 	    $("#tooltip").remove();
+        
+        if ( changeBackground )
+        {
+            //console.log("Restoring "+this.origBackgroundColor);
+            this.style.backgroundColor = this.origBackgroundColor;
+            this.style.color = this.origColor;
+        }
 	});
     $(tagName + ".tooltip").mousemove(function(e) {
         var loc = getTipLocation(e);

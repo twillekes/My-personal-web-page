@@ -173,8 +173,9 @@ html>body #menubar a
 }
 #menubar a:hover
 {
-    background-color: gray;
-    color: white;
+    cursor: pointer;
+/*    background-color: gray;
+    color: white;*/
 }
 .buttondiv
 {
