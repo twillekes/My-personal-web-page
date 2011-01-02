@@ -144,7 +144,7 @@ function buildMenu()
             
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.setAttribute('id', categoryList[index].categoryValue.split(' ').join('_').split('.').join('_').split('/').join('_'));
+        adiv.setAttribute('id', getCategoryValue(categoryList[index].categoryValue));
         adiv.innerHTML = "<a class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\" style=\"background-color: #E6E6E6;\">" +
                          categoryList[index].categoryValue + "</a>\n";
         adiv.firstChild.onclick = switchTo;
@@ -387,6 +387,11 @@ function getImageDisplayHTML()
     return theImageDisplayArea;
 }
 
+function getCategoryValue(categoryValue)
+{
+    return categoryValue.split(' ').join('_').split('.').join('_').split('/').join('_');
+}
+
 function toImageView(categoryValue, imageToShow)
 {
     stopTimerEvents();
@@ -397,7 +402,7 @@ function toImageView(categoryValue, imageToShow)
         toImageView_original(categoryValue, imageToShow);
         
     currentView = "image";
-    updateSelectedButton(categoryValue.split(' ').join('_').split('.').join('_').split('/').join('_'));
+    updateSelectedButton(getCategoryValue(categoryValue));
 }
 
 function updateSelectedButton(divName)
