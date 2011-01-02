@@ -19,17 +19,24 @@ var totalNumArticles = 0;
 
 // Category management
 var currentCategorization = "subject";
-var currentCategoryValue = null; // E.g. "New" or "Houses" or ...
-var categoryList = new Array();
+var currentCategoryIndex = null; // E.g. "New" or "Houses" or ...
+var categoryList; // This is filled with the categoryValues
 var currentlySelectedImage = null;
+
+var supportPivot = false;
+var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
+                            "format", "year", "month", "direction", "rating" );
+var nextCategoryIndex = 1;
 
 // Welcome page image timer
 var timerId = null;
 var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // Appearance mode
+var currentView = null;
 var supportLightbox = true;
 var usingLightbox = false;
+var showingMetadata = false;
 
 /*
 
@@ -53,8 +60,9 @@ Image information:
 - Rating (1-10)
 - Date captured
 - Filters
+- Discarded (yes/no)
 
-"Season" : "SEASON", "Camera" : "CAMERA", "filters" : "FILTERS", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None"
+"Season" : "SEASON", "Camera" : "CAMERA", "filters" : "FILTERS", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None", "isDiscarded" : 0
 
 
 */
@@ -117,6 +125,9 @@ function buildMenu()
 {
     findCategories();
     
+    $("#menuitems").children().remove();
+    $("#otheritems").children().remove();
+    
     for ( index in categoryList )
     {
         if ( categoryList[index].imageIndexes.length == 0 )
@@ -125,12 +136,12 @@ function buildMenu()
         var extra = "images";
         if ( categoryList[index].imageIndexes.length == 1 )
             extra = "image";
-
+            
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a href=\"javascript:switchTo('" + index +
+        adiv.innerHTML = "<a href=\"javascript:switchTo('" + categoryList[index].categoryValue +
                          "');\" class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\">" +
-                         index + "</a>\n";
+                         categoryList[index].categoryValue + "</a>\n";
         
         $("#menuitems").append(adiv);
     }
@@ -165,6 +176,20 @@ function buildMenu()
         
         $("#otheritems").append(adiv);
     }
+    
+    $("#catitem").children().remove();
+    if ( supportPivot )
+    {
+        var categorizationHelp = "Change image categorization";
+        var categoryButtonText = "Pivot by " + categories[nextCategoryIndex];
+        
+        adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
+        adiv.innerHTML = "<a href=\"javascript:toNextCategorization();\" class=\"tooltip\" title=\""
+                         + categorizationHelp + "\">" + categoryButtonText + "</a>\n";
+        
+        $("#catitem").append(adiv);
+    }
         
     initializeTooltips();
     
@@ -182,7 +207,13 @@ function buildMenu()
             else if ( index == "showCatVal" )
             {
                 catValToShow = unescape(loadParameters[index]);
-            } // TODO: Add support for showCat
+            }
+            else if ( index == "showCat" )
+            {
+                currentCategorization = unescape(loadParameters[index]);
+                delete loadParameters[index];
+                buildMenu();
+            }
             else if ( index == "showArticles" )
             {
                 toWordView();
@@ -199,6 +230,16 @@ function buildMenu()
                     usingLightbox = true;
                 else
                     usingLightbox = false;
+            }
+            else if ( index == "showPivot" )
+            {
+                if ( supportPivot )
+                    supportPivot = false;
+                else
+                    supportPivot = true;
+
+                delete loadParameters[index];
+                buildMenu();
             }
         }
     }
@@ -221,10 +262,23 @@ function buildMenu()
     toWelcomeView();
 }
 
+function toNextCategorization()
+{
+    currentCategorization = categories[nextCategoryIndex];
+    
+    nextCategoryIndex++;
+    if ( nextCategoryIndex == categories.length )
+        nextCategoryIndex = 0;
+    
+    buildMenu();
+    toWelcomeView();
+}
+
 function findImage(filePath)
 {
     var imageTitle = null;
     var newFilePath = filePath;
+    var foundIndex = null;
     for ( index in imageList )
     {
         var idx = imageList[index].filePath.indexOf(filePath);
@@ -232,6 +286,7 @@ function findImage(filePath)
         {
             newFilePath = imageList[index].filePath;
             imageTitle = imageList[index].metadata.title;
+            foundIndex = index;
             break;
         }
     }
@@ -242,7 +297,7 @@ function findImage(filePath)
         imageTitle = imageList[0].metadata.title;
     }
 
-    return { imageTitle : imageTitle, filePath : newFilePath };
+    return { imageTitle : imageTitle, filePath : newFilePath, index : foundIndex };
 }
 
 function toggleThumbView()
@@ -258,48 +313,20 @@ function toggleThumbView()
         usingLightbox = true;
     }
     
-    if ( currentCategoryValue != null )
-        toImageView(currentCategoryValue);
+    if ( currentCategoryIndex != null )
+        toImageView(categoryList[currentCategoryIndex].categoryValue);
 }
 
 function toSingleImageView(filePath)
 {
     stopTimerEvents();
     
-    var imageData = findImage( filePath );
-    var imageTitle = imageData.imageTitle;
-    filePath = imageData.filePath;
-    
-    var theHTML =
-     "      <div id=\"singleImage\">\n\
-                <div class=\"centeredImage\">\n\
-                    <div id=\"imagetitlediv\"></div>\n\
-                    <div id=\"imagedisplaydiv\"></div>\n\
-                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
-                </div>\n\
-            </div>\n";  
-     
     var theElement = document.getElementById("contentplaceholder");
-    theElement.innerHTML = theHTML;
+    theElement.innerHTML = getImageDisplayHTML();
 
-    var titleHTML = "<h3 id=\"imagetitlearea\">" + imageTitle + "</h3>";
-    var theElement = document.getElementById("imagetitlediv");
-    if ( null == theElement )
-        return;
-        
-    theElement.innerHTML = titleHTML;
-    
-    theElement = document.getElementById("imagedisplaydiv");
-    if ( null == theElement )
-        return;
-        
-    var theImage = new Image();
-    theImage.src = filePath;
-
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" class=\"shadowKnows\" origWidth=\""
-        + theImage.width + "\" origHeight=\"" + theImage.height + "\"/>";
-    $("#imagedisplaydiv").hide().html(theHTML).fadeIn( 1000 );
-    adjustCurrentImageSize();
+    showImage(findImage(filePath).index);
+    currentView = "single";
+    return;
 }
 
 function switchTo( categoryValue )
@@ -309,13 +336,16 @@ function switchTo( categoryValue )
 
 function toWelcomeView()
 {
+    if ( currentView == "welcome" )
+        return;
+        
     stopTimerEvents();
-    currentCategoryValue = null;
+    currentCategoryIndex = null;
     
     parent.location.hash = "";
 
     var theHTML =
-     "\
+     '\
             <!--\n\
              Front page mode\n\
               -->\n\
@@ -327,26 +357,27 @@ function toWelcomeView()
                 <div class=\"centeredImage\" >\n\
                     <div id=\"welcomeimagedisplaydiv\" style=\"position:relative;\"></div>\n\
                 </div>\n\
-            </div>";
+            </div>';
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
     
     showRandomWelcomeImage(true);
+    currentView = "welcome";
 }
 
 function getImageDisplayHTML()
 {
     var theImageDisplayArea =
-     "      <div id=\"imagedisplayarea\">\n\
+     '      <div id=\"imagedisplayarea\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
-                    <div id=\"prevnextbuttondiv\">\n\
-                    </div>\n\
+                    <div id=\"prevnextbuttondiv\"></div>\n\
+                    <div id=\"metadatadiv\"></div>\n\
                     <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
                 </div>\n\
-            </div>\n";  
+            </div>\n';  
             
     return theImageDisplayArea;
 }
@@ -359,17 +390,31 @@ function toImageView(categoryValue, imageToShow)
         toImageView_lightbox(categoryValue, imageToShow);
     else
         toImageView_original(categoryValue, imageToShow);
+        
+    currentView = "image";
+}
+
+function findCategoryIndex(categoryValue)
+{
+    for ( index in categoryList )
+    {
+        if ( categoryList[index].categoryValue == categoryValue )
+            return index;
+    }
+    
+    console.log("ERROR: Could not find category value "+categoryValue);
+    return null;
 }
 
 function toImageView_lightbox(categoryValue, imageToShow)
 {
     var theThumbBar =
-     "      <div id=\"titlearea\">\n\
-                <h1  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h1>\n\
+     '      <div id=\"titlearea\">\n\
+                <h1  style=\"text-align: center; margin: 0 0 0 0;\">' + categoryValue + '</h1>\n\
             </div>\n\
             <div id=\"thumbpage\">\n\
                 <ul style=\"list-style: none;\" id=\"thumbdisplaydiv\"></ul>\n\
-            </div>\n";
+            </div>\n';
             
     theHTML = theThumbBar;
      
@@ -379,7 +424,7 @@ function toImageView_lightbox(categoryValue, imageToShow)
     if ( null == theElement )
         return;
         
-    currentCategoryValue = categoryValue;
+    currentCategoryIndex = findCategoryIndex(categoryValue);
         
     for ( index in imageList )
     {
@@ -387,7 +432,8 @@ function toImageView_lightbox(categoryValue, imageToShow)
                 ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
                 ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
                 ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
-                )
+                ) ||
+                ( imageList[index].metadata.isNew && categoryValue != "New" )
             )
             continue;
             
@@ -407,23 +453,23 @@ function toImageView_lightbox(categoryValue, imageToShow)
     });
 
     parent.location.hash = "showCat=" + escape(currentCategorization) +
-                           "&showCatVal=" + escape(currentCategoryValue) +
+                           "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
                            "&showMode=Lightbox";
 }
 
 function toImageView_original(categoryValue, imageToShow)
 {
     var theCategoryNameArea =
-    "       <div id=\"categorynamearea\">\n\
-                <h3  style=\"text-align: center; margin: 0 0 0 0;\">" + categoryValue + "</h3>\n\
-            </div>\n";
+    '       <div id=\"categorynamearea\">\n\
+                <h3  style=\"text-align: center; margin: 0 0 0 0;\">' + categoryValue + '</h3>\n\
+            </div>\n';
     
     var theThumbBar =
-     "     <div id=\"thumbbar\">\n\
+     '     <div id=\"thumbbar\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"thumbdisplaydiv2\"></div>\n\
                 </div>\n\
-            </div>\n";
+            </div>\n';
             
     theHTML = theCategoryNameArea + theThumbBar + getImageDisplayHTML();
      
@@ -434,9 +480,8 @@ function toImageView_original(categoryValue, imageToShow)
     if ( null == theElement )
         return;
         
-    currentCategoryValue = categoryValue;
-    var foundImagePath = null;
-    var foundImageTitle = null;
+    currentCategoryIndex = findCategoryIndex(categoryValue);
+    var foundIndex = null;
         
     for ( index in imageList )
     {
@@ -444,7 +489,8 @@ function toImageView_original(categoryValue, imageToShow)
                 ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
                 ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
                 ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
-                )
+                ) ||
+                ( imageList[index].metadata.isNew && categoryValue != "New" )
             )
             continue;
             
@@ -452,25 +498,27 @@ function toImageView_original(categoryValue, imageToShow)
         thediv.setAttribute('id',imageList[index].filePath);
         thediv.setAttribute('title',imageList[index].metadata.title);
         thediv.setAttribute('class','tooltip');
-        thediv.innerHTML = "<img src=\"" + imageList[index].filePath +
-                           "\" onclick=\"showImage('"  + imageList[index].filePath + "','" + escape(imageList[index].metadata.title) +
-                           "');\" class=\"thumbnailImage\" style=\"outline: 0; -moz-box-shadow: 8px 8px 6px #808080; -webkit-box-shadow: 8px 8px 6px #808080; box-shadow: 8px 8px 6px #808080;\"/>\n"
+        thediv.innerHTML = '<img src=\"' + imageList[index].filePath +
+                           '\" onclick=\"showImage('  + index + 
+                           ');\" class=\"thumbnailImage\" style=\"outline: 0;\
+                           -moz-box-shadow: 8px 8px 6px #808080;\
+                           -webkit-box-shadow: 8px 8px 6px #808080;\
+                           box-shadow: 8px 8px 6px #808080;\"/>\n';
         
         theElement.appendChild(thediv);
         
         if ( imageToShow != null && imageList[index].filePath.indexOf( imageToShow ) != -1 )
         {
-            foundImagePath = imageList[index].filePath;
-            foundImageTitle = imageList[index].metadata.title;
+            foundIndex = index;
         }
     }
     
     initializeTooltips("div");
     
-    if ( foundImagePath == null || foundImageTitle == null )
+    if ( foundIndex == null )
         showRandomImage(categoryValue);
     else
-        showImage(foundImagePath,foundImageTitle);
+        showImage(foundIndex);
 }
 
 function showArticle( articleTitle )
@@ -490,12 +538,12 @@ function showArticle( articleTitle )
 
 function toWordView()
 {
-    currentCategoryValue = null;
+    currentCategoryIndex = null;
     
     stopTimerEvents();
 
     var theHTML =
-     "\
+     '\
             <div id=\"titlearea\">\n\
                 <h1 style=\"text-align: center; margin: 0; padding: 0;\">Words</h1>\n\
             </div>\n\
@@ -509,8 +557,7 @@ function toWordView()
                 <p>\n\
                 <a href=\"http://members.shaw.ca/twillekes\">Home</a>\n\
                 </p>\n\
-            </div>\n\
-    ";
+            </div>\n';
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
@@ -532,10 +579,12 @@ function toWordView()
         },
         error: function(request, status, error) {
             //alert("failed with: "+status+" and "+error);
+            console.log("ERROR: Fetch of articleHeader.htm failed with status "+status+" and error "+error);
         }
         });
         
     parent.location.hash = "showArticles";
+    currentView = "words";
 }
 
 function showArticleAt( articleFilePath )
@@ -563,6 +612,7 @@ function showArticleAt( articleFilePath )
         },
         error: function(request, status, error) {
             //alert("failed with: "+status+" and "+error);
+            console.log("ERROR: Fetch of "+articleFilePath+" failed with status "+status+" and error "+error);
         }
         });
     
@@ -604,15 +654,21 @@ function loadMetadata(metadataItem)
                 {
                     if ( json.type != "words" )
                     {
-                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite );
+                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite, item.isDiscarded,
+                                               item.season, item.camera, item.lens, item.filters, item.film,
+                                               item.chrome, item.format, item.year, item.month, item.date,
+                                               item.direction, item.rating, item.caption );
                         var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
                         imageList[totalNumImages++] = ir;
                     }
                     else
                     {
-                        var art = new article( item.title );
-                        articleList[metadataFilePath+"/"+item.filename] = art;
-                        totalNumArticles++; // ".length" doesn't work for associative arrays
+                        if ( item.isNotReady == null || !item.isNotReady )
+                        {
+                            var art = new article( item.title );
+                            articleList[metadataFilePath+"/"+item.filename] = art;
+                            totalNumArticles++; // ".length" doesn't work for associative arrays
+                        }
 
                     }
                 }
@@ -631,16 +687,33 @@ function loadMetadata(metadataItem)
         },
         error: function(request, status, error) {
             //alert("failed with: "+status+" and "+error);
+            console.log("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
         }
     });
 }
 
-function metadata( title, subject, isNew, isFavorite )
+function metadata( title, subject, isNew, isFavorite, isDiscarded, season, camera, lens, filters,
+                   film, chrome, format, year, month, date, direction, rating, caption )
 {
     this.title = title;
     this.subject = subject;
     this.isNew = isNew;
     this.isFavorite = isFavorite;
+    this.isDiscarded = isDiscarded
+    this.season = season;
+    this.camera = camera;
+    this.lens = lens;
+    this.filters = filters;
+    this.film = film;
+    this.chrome = chrome;
+    this.format = format;
+    this.year = year;
+    this.month = month;
+    this.date = date;
+    this.direction = direction;
+    this.rating = rating;
+    this.caption = caption;
+    
     this.getCategoryValue = getCategoryValue;
 }
 
@@ -650,9 +723,10 @@ function imageRecord( filePath, metadata )
     this.metadata = metadata;
 }
 
-function categoryRecord()
+function categoryRecord(categoryValue)
 {
     this.imageIndexes = new Array();
+    this.categoryValue = categoryValue;
 }
 
 function article( title )
@@ -671,6 +745,46 @@ function getCategoryValue()
     {
         return this.subject;
     }
+    else if ( "season" == currentCategorization )
+    {
+        return this.season;
+    }
+    else if ( "camera" == currentCategorization )
+    {
+        return this.camera;
+    }
+    else if ( "lens" == currentCategorization )
+    {
+        return this.lens;
+    }
+    else if ( "film" == currentCategorization )
+    {
+        return this.film;
+    }
+    else if ( "chrome" == currentCategorization )
+    {
+        return this.chrome;
+    }
+    else if ( "format" == currentCategorization )
+    {
+        return this.format;
+    }
+    else if ( "year" == currentCategorization )
+    {
+        return this.year;
+    }
+    else if ( "month" == currentCategorization )
+    {
+        return this.month;
+    }
+    else if ( "direction" == currentCategorization )
+    {
+        return this.direction;
+    }
+    else if ( "rating" == currentCategorization )
+    {
+        return this.rating;
+    }
     else
     {
         return "undefined";
@@ -679,24 +793,29 @@ function getCategoryValue()
 
 function findCategories()
 {
-    categoryList.length = 0;
+    categoryList = new Array();
     
-    var catRecord = new categoryRecord();
-    categoryList["New"] = catRecord;
-    catRecord = new categoryRecord();
-    categoryList["Favorites"] = catRecord;
+    var newCatRecord = new categoryRecord("New");
+    var favCatRecord = new categoryRecord("Favorites");
     
     for ( index in imageList )
     {
-        var categoryValue = imageList[index].metadata.getCategoryValue();
-        if ( "Discarded" == categoryValue ) // Allows an image to be present but not displayed
+        if ( imageList[index].metadata.isNew == 1 )
+        {
+            newCatRecord.imageIndexes.push(index);
             continue;
+        }
+        
+        if ( imageList[index].metadata.isDiscarded ) 
+            continue;
+            
+        var categoryValue = imageList[index].metadata.getCategoryValue();
             
         var found = 0;
         var foundIndex;
         for ( catIndex in categoryList )
         {
-            if ( catIndex == categoryValue )
+            if ( categoryList[catIndex].categoryValue == categoryValue )
             {
                 found = 1;
                 foundIndex = catIndex;
@@ -706,22 +825,32 @@ function findCategories()
         
         if ( !found )
         {
-            catRecord = new categoryRecord();
+            catRecord = new categoryRecord(categoryValue);
             catRecord.imageIndexes.push(index);
-            categoryList[categoryValue] = catRecord;
+            categoryList.push(catRecord);
         }
         else
         {
             categoryList[foundIndex].imageIndexes.push(index);
         }
         
-        if ( imageList[index].metadata.isNew )
-            categoryList["New"].imageIndexes.push(index);
-        
         if ( imageList[index].metadata.isFavorite )
-            categoryList["Favorites"].imageIndexes.push(index);
-
+            favCatRecord.imageIndexes.push(index);
     }
+    
+    categoryList.sort( function(a,b)
+    {
+        return ( b.categoryValue > a.categoryValue );
+    });
+    
+    categoryList.push(favCatRecord);
+    categoryList.push(newCatRecord);
+    categoryList.reverse();
+    
+//    for ( index in categoryList )
+//    {
+//        console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
+//    }
 }
 
 function hideImage()
@@ -732,56 +861,157 @@ function hideImage()
         if ( theElement == null )
             return;
         
-        theElement.childNodes[0].setAttribute('style',
-            'outline: 0; -moz-box-shadow: 8px 8px 6px #808080; -webkit-box-shadow: 8px 8px 6px #808080; box-shadow: 8px 8px 6px #808080;');
+        if ( isIE7OrLower() )
+            theElement.childNodes[0].style.border = '0';
+        else
+            theElement.childNodes[0].setAttribute('style',
+                'outline: 0;\
+                -moz-box-shadow: 8px 8px 6px #808080;\
+                -webkit-box-shadow: 8px 8px 6px #808080;\
+                box-shadow: 8px 8px 6px #808080;');
+
         currentlySelectedImage = null;
     }
 }
 
-function showImage( filePath, imageTitle )
+function showImage( index )
 {
     stopTimerEvents();
 
     hideImage();
     
-    var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageTitle) + "</h3>";
+    var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageList[index].metadata.title) + "</h3>";
     var theElement = document.getElementById("imagetitlediv");
     if ( null == theElement )
+    {
+        console.log("ERROR: No imagetitlediv in showImage");
         return;
+    }
         
     theElement.innerHTML = titleHTML;
     
     theElement = document.getElementById("imagedisplaydiv");
     if ( null == theElement )
+    {
+        console.log("ERROR: No imagedisplaydiv in showImage");
         return;
+    }
 
     var theImage = new Image();
-    theImage.onload = function() { imageLoaded(theImage,filePath); }
-    theImage.src = filePath;
+    theImage.onload = function() { imageLoaded(theImage,index); }
+    theImage.src = imageList[index].filePath;
 }
 
-function imageLoaded( theImage, filePath )
+function imageLoaded( theImage, index )
 {
-    var theHTML = "<img src=\"" + theImage.src + "\" id=\"displayedimage\" origHeight=\"" +
+    var filePath = imageList[index].filePath;
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
                   theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"shadowKnows\"/>";
                   
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
     adjustCurrentImageSize();
     
     theElement = document.getElementById(filePath);
-    if ( theElement == null )
-        return;
-        
-    theElement.childNodes[0].setAttribute('style',
-            'outline: 7px solid #606060; -moz-box-shadow: 0px 0px 0px #808080; -webkit-box-shadow: 0px 0px 0px #808080; box-shadow: 0px 0px 0px #808080;');
-        
-    currentlySelectedImage = new currentlySelectedImageRecord( filePath );
+    if ( theElement != null )
+    {
+        if ( isIE7OrLower() )
+            theElement.childNodes[0].style.border = '7px solid #606060';
+        else
+            theElement.childNodes[0].setAttribute('style',
+                'outline: 7px solid #606060;\
+                -moz-box-shadow: 0px 0px 0px #808080;\
+                -webkit-box-shadow: 0px 0px 0px #808080;\
+                box-shadow: 0px 0px 0px #808080;');
+            
+        currentlySelectedImage = new currentlySelectedImageRecord( filePath );
+    }
     
     addPrevNextButtons();
     
-    parent.location.hash = "showCat=" + escape(currentCategorization) +
-                           "&showCatVal=" + escape(currentCategoryValue) +
-                           "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+    $('#metadatadiv').children().remove();
+    $('#metadatadiv').hide().append(getMetadataDiv(index));
+    if ( showingMetadata )
+        $('#metadatadiv').slideDown(1000);
+    
+    if ( currentCategoryIndex != null )
+        parent.location.hash = "showCat=" + escape(currentCategorization) +
+                               "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
+                               "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+    else
+        parent.location.hash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+}
+
+function getMetadataDiv(index)
+{
+    var md = imageList[index].metadata;
+    
+    var theTable = $('<table id=\"metadatatable\"></table>');
+    
+    var theFilters = "";
+    if ( md.filters != null )
+        theFilters = md.filters;
+        
+    var theNotes = "";
+    if ( md.caption != null && md.caption != "None" )
+        theNotes = md.caption;
+        
+    var theLens = "";
+    if ( md.lens != null && md.lens != "Unknown" )
+        theLens = md.lens;
+    
+    // Row 1
+    var theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:10%\"><b><i>Taken:</b></i></td>') );
+    theRow.append( $('<td>'+md.date+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Season:</b></i></td>') );
+    theRow.append( $('<td>'+md.season+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Direction:</b></i></td>') );
+    theRow.append( $('<td>'+md.direction+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 2
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:10%\"><b><i>Camera:</b></i></td>') );
+    theRow.append( $('<td>'+md.camera+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Lens:</b></i></td>') );
+    theRow.append( $('<td>'+theLens+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Filters:</b></i></td>') );
+    theRow.append( $('<td>'+theFilters+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 3
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:10%\"><b><i>Film:</b></i></td>') );
+    theRow.append( $('<td>'+md.film+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Format:</b></i></td>') );
+    theRow.append( $('<td>'+md.format+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Rating:</b></i></td>') );
+    theRow.append( $('<td>'+md.rating+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 4
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:33%\"><b><i>Notes:</b></i></td>') );
+    theRow.append( $('<td colspan="5">'+theNotes+'</td>') );
+    theTable.append(theRow);
+    
+    return theTable;
+}
+
+function toggleMetadata()
+{
+    if ( !showingMetadata )
+    {
+        $('#metadatadiv').slideDown(1000);
+        $('#infobuttondiv').html('Hide Info');
+        showingMetadata = true;
+    }
+    else
+    {
+        $('#metadatadiv').slideUp(1000);
+        $('#infobuttondiv').html('Show Info');
+        showingMetadata = false;
+    }
 }
 
 function adjustCurrentImageSize()
@@ -813,6 +1043,7 @@ function addPrevNextButtons()
     var theElement = document.getElementById("prevnextbuttondiv");
     if ( null == theElement )
     {
+        console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
         return;
     }
         
@@ -820,73 +1051,83 @@ function addPrevNextButtons()
                        "<table style=\"margin-left: auto; margin-right: auto;\">\n\
                             <tr>\n\
                                 <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
+                                <td><div id=\"infobuttondiv\">Show Info</div></td>\n\
                                 <td><div id=\"nextbuttondiv\">Next</div></td>\n\
                             </tr>\n\
                         </table>\n";
 
     var prevIndex = -1;
     var nextIndex = -1;
-    for ( catIndex in categoryList[currentCategoryValue].imageIndexes )
+    if ( currentCategoryIndex != null )
     {
-        if ( imageList[categoryList[currentCategoryValue].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
+        for ( catIndex in categoryList[currentCategoryIndex].imageIndexes )
         {
-            if ( catIndex > 0 )
+            if ( imageList[categoryList[currentCategoryIndex].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
             {
-                prevIndex = catIndex - 1;
+                if ( catIndex > 0 )
+                {
+                    prevIndex = catIndex - 1;
+                }
+                
+                if ( catIndex < (categoryList[currentCategoryIndex].imageIndexes.length-1) )
+                {
+                    nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
+                    nextIndex++;
+                }
+                break;
             }
-            
-            if ( catIndex < (categoryList[currentCategoryValue].imageIndexes.length-1) )
-            {
-                nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
-                nextIndex++;
-            }
-            break;
         }
     }
     
     // For some reason, using an HTML anchor tag for the prev/next buttons results in the
     // showImage call failing when the title has an apostrophe (even though it's escaped). WTF?
     
-    setupButton(prevIndex, "prevbuttondiv");
-    setupButton(nextIndex, "nextbuttondiv");
+    setupButton("prevbuttondiv", prevIndex);
+    setupButton("infobuttondiv");
+    setupButton("nextbuttondiv", nextIndex);
 }
 
-function setupButton(imageIndex, theDivName)
+function setupButton(theDivName, imageIndex)
 {
     var divName = "#" + theDivName;
     $div = $(divName);
 
-    if (imageIndex == -1) {
-        var cssSettings = {
-            'background-color': '#E6E6E6',
-            'color': 'gray',
-            'cursor': 'not-allowed'
-        };
-        $div.css(cssSettings);
-        $div.unbind('mouseover').unbind('mouseout').unbind('click');
+    if (imageIndex == -1)
+    {
+        $div.remove();
+        return;
+    }
+    
+    if ( imageIndex != null )
+    {
+        $div.click(function() { showImage(categoryList[currentCategoryIndex].imageIndexes[imageIndex]); });
     }
     else
     {
-        var nextFilePath = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].filePath;
-        var nextImageTitle = imageList[categoryList[currentCategoryValue].imageIndexes[imageIndex]].metadata.title;
-        $div.click(function() { showImage(nextFilePath, nextImageTitle); });
-        $div.hover(function() {
-            var cssSettings = {
-                'background-color': 'gray',
-                'color': 'white',
-                'cursor': 'pointer'
-            };
-            $(divName).css(cssSettings);
-        },
-        function() {
-            var cssSettings = {
-                'background-color': '#E6E6E6',
-                'color': 'black',
-                'cursor': 'auto'
-            };
-            $(divName).css(cssSettings);
-        });
+        if ( !showingMetadata )
+            $div.html("Show Info");
+        else
+            $div.html("Hide Info");
+            
+        $div.click(function() { toggleMetadata(); });
     }
+        
+    $div.hover(function() {
+        var cssSettings = {
+            'background-color': 'gray',
+            'color': 'white',
+            'cursor': 'pointer'
+        };
+        $(divName).css(cssSettings);
+    },
+    function() {
+        var cssSettings = {
+            'background-color': '#E6E6E6',
+            'color': 'black',
+            'cursor': 'auto'
+        };
+        $(divName).css(cssSettings);
+    });
 }
 
 function showRandomWelcomeImage( shouldStopFirst )
@@ -899,7 +1140,7 @@ function showRandomWelcomeImage( shouldStopFirst )
     var theImage = new Image();
     theImage.onload = function () {
         var theHTML = "<img src=\"" + this.src +
-            "\" id=\"displayedimage\" class=\"shadowKnows\" style=\"height: 0; position: relative;\" origWidth=\""
+            "\" id=\"displayedwelcomeimage\" class=\"shadowKnows\" style=\"height: 0; position: relative;\" origWidth=\""
             + this.width + "\" origHeight=\"" + this.height + "\"/>";
             
         $("#welcomeimagedisplaydiv").html(theHTML);
@@ -925,18 +1166,18 @@ function showRandomWelcomeImage( shouldStopFirst )
             }
         }
         
-        var $imageDiv = $("#displayedimage");
+        var $imageDiv = $("#displayedwelcomeimage");
         $imageDiv.offset( { top: theHeight/2+$("#welcome").offset().top+25 } ); // ... fudge
         $imageDiv.animate( { height: theHeight, top: "-="+(theHeight/2) }, { duration: 2000 , complete: function ()
         {
             timerId = setTimeout(
                         function ()
                         {
-                            var $div = $("#displayedimage");
+                            var $div = $("#displayedwelcomeimage");
                             var theHeight = $div.height();
                             $div.animate( { height : 0, width: 0, top : "+=" + (theHeight/2) }, { duration: 2000, complete: function ()
                                 {
-                                    $("#displayedimage").hide();
+                                    $("#displayedwelcomeimage").hide();
                                     timerId = null;
                                     showRandomWelcomeImage(false);
                                 } } );
@@ -953,17 +1194,17 @@ function showRandomImage( categoryValue )
     var numImages = 0;
     if ( categoryValue == "New" )
     {
-        numImages = categoryList["New"].imageIndexes.length;
+        numImages = categoryList[findCategoryIndex("New")].imageIndexes.length;
     }
     else if ( categoryValue == "Favorites" )
     {
-        numImages = categoryList["Favorites"].imageIndexes.length;
+        numImages = categoryList[findCategoryIndex("Favorites")].imageIndexes.length;
     }
     else
     {
         for ( catRecordIndex in categoryList )
         {
-            if ( categoryValue == catRecordIndex )
+            if ( categoryValue == categoryList[catRecordIndex].categoryValue )
             {
                 numImages = categoryList[catRecordIndex].imageIndexes.length;
             }
@@ -982,7 +1223,7 @@ function showRandomImage( categoryValue )
         {
             if ( foundIndex == index )
             {
-                showImage( imageList[imageIndex].filePath, escape(imageList[imageIndex].metadata.title) );
+                showImage(imageIndex);
                 break;
             }
             else
@@ -1014,6 +1255,7 @@ function stopTimerEvents()
     }
     
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
+    $("#tooltip").remove();
 }
 
 this.initializeTooltips = function(tagName)
@@ -1024,65 +1266,80 @@ this.initializeTooltips = function(tagName)
     if (tagName == null)
         tagName = "a";
 
-    yOffset = 0;
-    xOffset = 10;
-
     $(tagName + ".tooltip").hover(function(e) {
+        $("#tooltip").remove();
+        
         if ( this.title == "" )
+        {
+            console.log("ERROR: No title for "+this.innerHTML);
             return;
+        }
             
         this.t = this.title;
         this.title = "";
         $("body").append("<p id='tooltip'>" + unescape(this.t) + "</p>");
 
-        var leftValue = e.pageX + xOffset;
-        var tipWidth = $("#tooltip").width();
-        var rightExtent = leftValue + tipWidth + 15;
-        if (rightExtent > $(window).width())
-            leftValue -= (rightExtent - $(window).width());
-
-        var topValue = e.pageY - yOffset;
-        var tipHeight = $("#tooltip").height();
-        var topExtent = topValue + tipHeight + 15;
-        if (topExtent > $(window).height())
-            topValue -= (topExtent - $(window).height());
+        var loc = getTipLocation(e);
 
         $("#tooltip")
-            .css("top", topValue + "px")
-            .css("left", leftValue + "px")
+            .css("top", loc.top + "px")
+            .css("left", loc.left + "px")
             .fadeIn("fast");
     },
 	function() {
         if ( this.t != "" )
-            this.title = this.t;            
+            this.title = this.t;
         
 	    this.t = "";
 	    $("#tooltip").remove();
 	});
     $(tagName + ".tooltip").mousemove(function(e) {
-        var leftValue = e.pageX + xOffset;
-        var tipWidth = $("#tooltip").width();
-        var rightExtent = leftValue + tipWidth + 15;
-        if (rightExtent > $(window).width())
-            leftValue -= (rightExtent - $(window).width());
-
-        var topValue = e.pageY - yOffset;
-        var tipHeight = $("#tooltip").height();
-        var topExtent = topValue + tipHeight + 15;
-        if (topExtent > $(window).height())
-            topValue -= (topExtent - $(window).height());
+        var loc = getTipLocation(e);
 
         $("#tooltip")
-            .css("top", topValue + "px")
-            .css("left", leftValue + "px");
+            .css("top", loc.top + "px")
+            .css("left", loc.left + "px");
     });
 };
 
-function isIE6() {
+function getTipLocation(e)
+{
+    yOffset = 0;
+    xOffset = 10;
+    
+    var leftValue = e.pageX + xOffset;
+    var tipWidth = $("#tooltip").width();
+    var rightExtent = leftValue + tipWidth + 15;
+    if (rightExtent > $(window).width())
+        leftValue -= (rightExtent - $(window).width());
+
+    var topValue = e.pageY - yOffset;
+    var tipHeight = $("#tooltip").height();
+    var topExtent = topValue + tipHeight + 15;
+    if (topExtent > $(window).height())
+        topValue -= (topExtent - $(window).height());
+        
+    return { top: topValue, left: leftValue };
+}
+
+function isIE6() // Has issues with hover for tooltips
+{
     var browserName=navigator.appName; 
     if (browserName=="Microsoft Internet Explorer") {
         var browserVer = parseInt(navigator.appVersion);
         if (browserVer <= 6)
+            return true;
+    }
+    
+    return false;
+}
+
+function isIE7OrLower() // Doesn't support "outline" property
+{
+    var browserName=navigator.appName; 
+    if (browserName=="Microsoft Internet Explorer") {
+        var browserVer = parseInt(navigator.appVersion);
+        if (browserVer <= 7)
             return true;
     }
     

@@ -1,10 +1,19 @@
 {
-    "_comment" : "This is how articles in a folder are declared",
+    "_comment" : "Use isNotReady=1 to avoid loading articles",
     "type" : "words",
     "items":
     [
         { "filename" : "aboot.htm", "title" : "Aboot" },
         { "filename" : "seasons.htm", "title" : "Seasons" },
-        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range" }
+        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Epson V750 Scanner Usage", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Metering Techniques", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Light Chasing 101", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "The Hasselblad V-System", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Large Format Photography", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Blending Image Scans", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Focusing 101", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Focusing 101", "isNotReady" : 1 },
+        { "filename" : "none.htm", "title" : "Focusing 101", "isNotReady" : 1 },
     ]
 }

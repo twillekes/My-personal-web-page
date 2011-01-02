@@ -60,25 +60,17 @@
 #welcometextdiv
 	{
 	/*height: expression(document.body.clientHeight + "px");*/
-	width: expression( 66 / 100 * (document.body.clientWidth - ( (document.body.clientWidth * 15 / 100) + (document.body.clientWidth * 1 / 100 * 2) )) + "px");
+	width: expression( document.body.clientWidth - ( (document.body.clientWidth * 15 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
 	}
 #imagetitlearea
 	{
 	/*height: expression(document.body.clientHeight - ( (document.body.clientHeight * 95 / 100) + (document.body.clientHeight * 1 / 100 * 2) ) + "px");*/
-	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 35 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
 	}
 #imagedisplayarea
 	{
 	height: expression(document.body.clientHeight + "px");
-	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 33 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-	}
-#header
-	{
-	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
-	}
-#footer
-	{
-	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 20 / 100) + (document.body.clientWidth * 30 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 28 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
 	}
 </style>
 <![endif]-->
@@ -91,6 +83,7 @@
             <a href="javascript:toWelcomeView()" style="font-size: larger;">Home</a>
             <div id = "menuitems"></div>
             <div id = "otheritems"></div>
+            <div id = "catitem"></div>
         </div>
         <div id="feediconarea" style="text-align: center;">
             <a type="application/rss+xml" href="feed.xml"><img width=28 src="FeedIcon.gif" style="border:none;"/></a>
