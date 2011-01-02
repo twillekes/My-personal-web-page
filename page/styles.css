@@ -151,6 +151,7 @@ html>body #articleList a
     }
 #menubar a
     {
+    cursor: pointer;
     background-color: #E6E6E6; /* was below */
     border: 1px solid black; /* was below */
     font: bold 13px Verdana;
@@ -171,12 +172,12 @@ html>body #menubar a
     -webkit-box-shadow: 8px 8px 6px #808080;
     box-shadow: 8px 8px 6px #808080;
 }
-#menubar a:hover
+/*#menubar a:hover
 {
     cursor: pointer;
-/*    background-color: gray;
-    color: white;*/
-}
+    background-color: gray;
+    color: white;
+}*/
 .buttondiv
 {
     margin-top: 5px; 
