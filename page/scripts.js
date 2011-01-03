@@ -23,7 +23,6 @@ var currentCategoryIndex = null; // E.g. "New" or "Houses" or ...
 var categoryList; // This is filled with the categoryValues
 var currentlySelectedImage = null;
 
-var supportPivot = false;
 var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
                             "format", "year", "month", "direction", "rating" );
 var nextCategoryIndex = 1;
@@ -34,13 +33,17 @@ var welcomeImageChangeTimeout = 10000; // In milliseconds
 
 // Appearance mode
 var currentView = null;
-var supportLightbox = true;
 var usingLightbox = false;
 var showingMetadata = false;
 var $currentlySelectedButton = null;
+var $pivotMenu = null;
 
 // URL monitoring
 var currentHash = null;
+
+var supportPivot = false;
+var supportLightbox = true;
+var supportUrlHash = false;
 
 /*
 
@@ -100,7 +103,8 @@ function initializePage()
         adjustCurrentImageSize();
     } );
     
-    $(window).bind( 'hashchange', function(e) { syncToUrl(); } );
+    if ( true )//supportUrlHash )
+        $(window).bind( 'hashchange', function(e) { window.location.reload(true);/*syncToUrl();*/ } );
 }
 
 function setCurrentHash(theHash)
@@ -218,8 +222,6 @@ function switchTo()
 
 function buildMenu()
 {
-    findCategories();
-    
     $("#menuitems").children().remove();
     $("#otheritems").children().remove();
     $("#catitem").children().remove();
@@ -277,7 +279,7 @@ function buildMenu()
         $("#otheritems").append(adiv);
     }
     
-    if ( supportPivot )
+    if ( false )
     {
         var categorizationHelp = "Change image categorization";
         var categoryButtonText = "Pivot by " + categories[nextCategoryIndex];
@@ -289,8 +291,41 @@ function buildMenu()
         
         $("#catitem").append(adiv);
     }
+    
+    if ( $pivotMenu != null )
+    {
+        adiv = document.createElement('div');
+        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu\" style=\"background-color: #E6E6E6;\">View: Pivot by</a>\n";
+        
+        $("#catitem").append(adiv);
+        
+        setupPopupMenu('pivotMenuButton', $pivotMenu, function(theHTML){
+            toCategorization(theHTML);
+        } );
+    }
         
     initializeTooltips(true);
+}
+
+function buildPivotMenu()
+{
+    if ( !supportPivot )
+        return;
+        
+    $pivotMenu = $('<div id=\"pivotMenu\"></div>');
+    for ( index in categories )
+    {
+        $pivotMenu.append( $('<a theIndex=\"' + index +
+                             '\" class=\"popupMenuButton\" style=\"background-color: #E6E6E6; color: black;\">' + categories[index] + '</a>') );
+    }
+}
+
+function toCategorization(category)
+{
+    currentCategorization = category;
+    findCategories();
+    buildMenu();
+    toWelcomeView();
 }
 
 function toNextCategorization()
@@ -744,6 +779,9 @@ function loadMetadata(metadataItem)
             }
             else
             {
+                // This is where initialization is completed...
+                findCategories();
+                buildPivotMenu();
                 buildMenu();
                 syncToUrl();
                 return;
@@ -1358,7 +1396,6 @@ this.initializeTooltips = function(changeBackground, tagName)
         
         if ( changeBackground )
         {
-            //console.log("Saving "+this.style.backgroundColor);
             this.origBackgroundColor = this.style.backgroundColor;
             this.origColor = this.style.color;
             this.style.backgroundColor = 'gray';
@@ -1374,7 +1411,6 @@ this.initializeTooltips = function(changeBackground, tagName)
         
         if ( changeBackground )
         {
-            //console.log("Restoring "+this.origBackgroundColor);
             this.style.backgroundColor = this.origBackgroundColor;
             this.style.color = this.origColor;
         }
@@ -1406,6 +1442,94 @@ function getTipLocation(e)
         topValue -= (topExtent - $(window).height());
         
     return { top: topValue, left: leftValue };
+}
+
+function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
+{
+    $('#'+ buttonDivName + '.popupMenu').hover(function(e) {
+        //$("#popupMenu").remove();
+    
+        if ( this.$popupMenu == null )
+        {
+            this.$popupMenu = $("<div id='popupMenu' style=\"width: 100px;\"></div>");
+            this.$popupMenu.append($theMenuDiv);
+        
+            $("body").append(this.$popupMenu);
+        }
+        this.$popupMenu.show();
+        
+        this.loc = getPopupLocation(buttonDivName, $theMenuDiv);
+        this.$popupMenu.offset({left:this.loc.left,top:this.loc.top}).fadeIn("slow");
+        
+        initializePopupMenu($theMenuDiv, this.loc, this.$popupMenu);
+        
+        //this.origBackgroundColor = this.style.backgroundColor;
+        //this.origColor = this.style.color;
+        //this.style.backgroundColor = 'gray';
+        //this.style.color = 'white';
+    },
+	function(e) {
+        if ( !isInRect( { left: e.pageX, top: e.pageY }, this.loc ) )
+        {
+            this.$popupMenu.hide();
+            //this.style.backroundColor = this.origBackgroundColor;
+            //this.style.color = this.origColor;
+        }
+	});
+    
+    $theMenuDiv.children().click(function() {
+        $("#popupMenu").remove();
+        if ( clickHandler != null )
+            clickHandler(this.innerHTML);
+    });
+}
+
+function initializePopupMenu($theMenuDiv, rect, $popupMenu)
+{
+    $popupMenu.hover(function(e){
+    },
+    function(e){
+        $popupMenu.hide();
+    });
+    
+    $theMenuDiv.children().hover(function(e) {
+//console.log("Saving "+this.style.backgroundColor);
+        //this.origBackgroundColor = this.style.backgroundColor;
+        //this.origColor = this.style.color;
+        //this.style.backgroundColor = 'gray';
+        //this.style.color = 'white';
+    },
+    function(e) {
+        //this.style.backroundColor = this.origBackgroundColor;
+        //this.style.color = this.origColor;
+//console.log("Restoring "+this.origBackgroundColor+" result: "+this.style.backgroundColor);
+    });
+}
+
+function getPopupLocation(buttonDivName, $theMenuDiv)
+{
+    var buttonX = $('#'+buttonDivName).offset().left+$('#'+buttonDivName).width();
+    var rightExtent = buttonX + $theMenuDiv.width();
+    if ( rightExtent > $(window).width() )
+        buttonX -= (rightExtent - $(window).width());
+        
+    var buttonY = $('#'+buttonDivName).offset().top + 10;
+    var topExtent = buttonY + $theMenuDiv.height();
+    if ( topExtent > $(window).height() )
+        buttonY -= (topExtent - $(window).height());
+        
+    return { top: buttonY, left: buttonX, height: $theMenuDiv.height(), width: $theMenuDiv.width() };
+}
+
+function isInRect(point,rect)
+{
+    if ( point.left < rect.left || point.left > (rect.left+rect.width) )
+        return false;
+        
+    if ( point.top < rect.top || point.top > (rect.top+rect.height) )
+        return false;
+        
+    return true;
 }
 
 function isIE6() // Has issues with hover for tooltips
