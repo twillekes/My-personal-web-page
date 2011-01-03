@@ -103,8 +103,8 @@ function initializePage()
         adjustCurrentImageSize();
     } );
     
-    if ( true )//supportUrlHash )
-        $(window).bind( 'hashchange', function(e) { window.location.reload(true);/*syncToUrl();*/ } );
+    if ( supportUrlHash )
+        $(window).bind( 'hashchange', function(e) { syncToUrl(); } );
 }
 
 function setCurrentHash(theHash)
