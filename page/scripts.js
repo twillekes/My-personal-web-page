@@ -39,6 +39,9 @@ var usingLightbox = false;
 var showingMetadata = false;
 var $currentlySelectedButton = null;
 
+// URL monitoring
+var currentHash = null;
+
 /*
 
 Image categories:
@@ -86,8 +89,6 @@ function initializePage()
 {
     var isMobile = isMobilePlatform();
         
-    loadParameters = getParams();
-    
     var isLocal = 0;
     var idx = document.URL.indexOf('file:');
     if ( idx != -1 )
@@ -98,108 +99,23 @@ function initializePage()
     $(window).resize( function() {
         adjustCurrentImageSize();
     } );
+    
+    $(window).bind( 'hashchange', function(e) { syncToUrl(); } );
 }
 
-function getParams()
+function setCurrentHash(theHash)
 {
-    var idx = document.URL.indexOf('?');
-    if ( idx == -1 )
-    {
-        idx = document.URL.indexOf('#');
-        if ( idx == -1 )
-            return null;
-    }
-    
-    var tempParams = new Object();
-    var pairs = document.URL.substring(idx+1,document.URL.length).split('&');
-    for (var i=0; i<pairs.length; i++)
-    {
-        nameVal = pairs[i].split('=');
-        tempParams[nameVal[0]] = nameVal[1];
-    }
-    return tempParams;
+    currentHash = theHash;
+    parent.location.hash = currentHash;
 }
 
-function switchTo()
+function syncToUrl()
 {
-    toImageView(this.innerHTML);
-    this.origBackgroundColor = '#B0B0B0';
-}
+    if ( (parent.location.hash == "" && currentHash == "") ||
+          parent.location.hash == "#"+currentHash )
+        return;
 
-function buildMenu()
-{
-    findCategories();
-    
-    $("#menuitems").children().remove();
-    $("#otheritems").children().remove();
-    
-    for ( index in categoryList )
-    {
-        if ( categoryList[index].imageIndexes.length == 0 )
-            continue;
-            
-        var extra = "images";
-        if ( categoryList[index].imageIndexes.length == 1 )
-            extra = "image";
-            
-        var adiv = document.createElement('div');
-        adiv.setAttribute('class', 'buttondiv');
-        adiv.setAttribute('id', encodeCategoryValue(categoryList[index].categoryValue));
-        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra + "\" style=\"background-color: #E6E6E6;\">" +
-                         categoryList[index].categoryValue + "</a>\n";
-        adiv.firstChild.onclick = switchTo;
-        
-        $("#menuitems").append(adiv);
-    }
-    
-    if ( totalNumArticles > 0 )
-    {
-        var textToShow = totalNumArticles;
-        if ( totalNumArticles == 1 )
-            textToShow += " article";
-        else
-            textToShow += " articles";
-            
-        adiv = document.createElement('div');
-        adiv.setAttribute('class', 'buttondiv');
-        adiv.setAttribute('id','words');
-        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + textToShow + "\" style=\"background-color: #E6E6E6;\">Words</a>\n";
-        adiv.firstChild.onclick = toWordView;
-        
-        $("#otheritems").append(adiv);
-    }
-    
-    if ( supportLightbox )
-    {
-        var lightboxHelpText = "Change the way image categories are viewed";
-        
-        var modeText = "View: Lightbox";
-        if ( usingLightbox )
-            modeText = "View: Original";
-            
-        adiv = document.createElement('div');
-        adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a href=\"javascript:toggleThumbView();\" class=\"tooltip\" id=\"toggleThumbView\" title=\""
-                         + lightboxHelpText + "\">" + modeText + "</a>\n";
-        
-        $("#otheritems").append(adiv);
-    }
-    
-    $("#catitem").children().remove();
-    if ( supportPivot )
-    {
-        var categorizationHelp = "Change image categorization";
-        var categoryButtonText = "Pivot by " + categories[nextCategoryIndex];
-        
-        adiv = document.createElement('div');
-        adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a href=\"javascript:toNextCategorization();\" class=\"tooltip\" title=\""
-                         + categorizationHelp + "\">" + categoryButtonText + "</a>\n";
-        
-        $("#catitem").append(adiv);
-    }
-        
-    initializeTooltips(true);
+    loadParameters = getParams();
     
     var imageToShow = null;
     var catValToShow = null;
@@ -208,7 +124,7 @@ function buildMenu()
     {
         for ( index in loadParameters )
         {
-            if ( index == "showImage" )
+           if ( index == "showImage" )
             {
                 imageToShow = unescape(loadParameters[index]);
             }
@@ -267,7 +183,114 @@ function buildMenu()
         return;
     }
     
-    toWelcomeView();
+    toWelcomeView();    
+}
+
+function getParams()
+{
+    var idx = document.URL.indexOf('?');
+    if ( idx == -1 )
+    {
+        idx = document.URL.indexOf('#');
+        if ( idx == -1 )
+            return null;
+            
+        var remainder = document.URL.substring(idx+1);
+        if ( remainder == "" )
+            return null;
+    }
+    
+    var tempParams = new Object();
+    var pairs = document.URL.substring(idx+1,document.URL.length).split('&');
+    for (var i=0; i<pairs.length; i++)
+    {
+        nameVal = pairs[i].split('=');
+        tempParams[nameVal[0]] = nameVal[1];
+    }
+    return tempParams;
+}
+
+function switchTo()
+{
+    toImageView(this.innerHTML);
+    this.origBackgroundColor = '#B0B0B0';
+}
+
+function buildMenu()
+{
+    findCategories();
+    
+    $("#menuitems").children().remove();
+    $("#otheritems").children().remove();
+    $("#catitem").children().remove();
+    
+    for ( index in categoryList )
+    {
+        if ( categoryList[index].imageIndexes.length == 0 )
+            continue;
+            
+        var extra = "images";
+        if ( categoryList[index].imageIndexes.length == 1 )
+            extra = "image";
+            
+        var adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
+        adiv.setAttribute('id', encodeValue(categoryList[index].categoryValue));
+        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
+                         "\" style=\"background-color: #E6E6E6;\">" +
+                         categoryList[index].categoryValue + "</a>\n";
+        adiv.firstChild.onclick = switchTo;
+        
+        $("#menuitems").append(adiv);
+    }
+    
+    if ( totalNumArticles > 0 )
+    {
+        var textToShow = totalNumArticles;
+        if ( totalNumArticles == 1 )
+            textToShow += " article";
+        else
+            textToShow += " articles";
+            
+        adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
+        adiv.setAttribute('id','words');
+        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + textToShow + "\" style=\"background-color: #E6E6E6;\">Words</a>\n";
+        adiv.firstChild.onclick = toWordView;
+        
+        $("#otheritems").append(adiv);
+    }
+    
+    if ( supportLightbox )
+    {
+        var lightboxHelpText = "Change the way image categories are viewed";
+        
+        var modeText = "View: Lightbox";
+        if ( usingLightbox )
+            modeText = "View: Original";
+            
+        adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
+        adiv.innerHTML = "<a href=\"javascript:toggleThumbView();\" class=\"tooltip\" id=\"toggleThumbView\" title=\""
+                         + lightboxHelpText + "\">" + modeText + "</a>\n";
+        
+        $("#otheritems").append(adiv);
+    }
+    
+    if ( supportPivot )
+    {
+        var categorizationHelp = "Change image categorization";
+        var categoryButtonText = "Pivot by " + categories[nextCategoryIndex];
+        
+        adiv = document.createElement('div');
+        adiv.setAttribute('class', 'buttondiv');
+        adiv.innerHTML = "<a href=\"javascript:toNextCategorization();\" class=\"tooltip\" title=\""
+                         + categorizationHelp + "\">" + categoryButtonText + "</a>\n";
+        
+        $("#catitem").append(adiv);
+    }
+        
+    initializeTooltips(true);
 }
 
 function toNextCategorization()
@@ -346,8 +369,6 @@ function toWelcomeView()
         
     stopTimerEvents();
     currentCategoryIndex = null;
-    
-    parent.location.hash = "";
 
     var theHTML =
      '\
@@ -369,6 +390,8 @@ function toWelcomeView()
     
     showRandomWelcomeImage(true);
     currentView = "welcome";
+    
+    setCurrentHash("");
 }
 
 function getImageDisplayHTML()
@@ -387,9 +410,14 @@ function getImageDisplayHTML()
     return theImageDisplayArea;
 }
 
-function encodeCategoryValue(categoryValue)
+function encodeValue(value)
 {
-    return categoryValue.split(' ').join('_').split('.').join('_').split('/').join('_');
+    return value.split(' ').join('_BLANK_').split('.').join('_DOT_').split('/').join('_SLASH_');
+}
+
+function decodeValue(value)
+{
+    return value.split('_BLANK_').join(' ').split('_DOT_').join('.').split('_SLASH_').join('/');
 }
 
 function toImageView(categoryValue, imageToShow)
@@ -402,7 +430,7 @@ function toImageView(categoryValue, imageToShow)
         toImageView_original(categoryValue, imageToShow);
         
     currentView = "image";
-    updateSelectedButton(encodeCategoryValue(categoryValue));
+    updateSelectedButton(encodeValue(categoryValue));
 }
 
 function updateSelectedButton(divName)
@@ -480,9 +508,9 @@ function toImageView_lightbox(categoryValue, imageToShow)
         overlayOpacity: 0.6
     });
 
-    parent.location.hash = "showCat=" + escape(currentCategorization) +
-                           "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
-                           "&showMode=Lightbox";
+    setCurrentHash( "showCat=" + escape(currentCategorization) +
+                    "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
+                    "&showMode=Lightbox" );
 }
 
 function toImageView_original(categoryValue, imageToShow)
@@ -616,7 +644,7 @@ function toWordView()
         }
         });
         
-    parent.location.hash = "showArticles";
+    setCurrentHash("showArticles");
     currentView = "words";
     this.origBackgroundColor = '#B0B0B0';
     updateSelectedButton("words");
@@ -651,7 +679,7 @@ function showArticleAt( articleFilePath )
         }
         });
     
-    parent.location.hash = "showArticle=" + escape(articleList[articleFilePath].title);
+    setCurrentHash("showArticle=" + escape(articleList[articleFilePath].title));
 }
 
 function loadImages(isLocal)
@@ -717,6 +745,7 @@ function loadMetadata(metadataItem)
             else
             {
                 buildMenu();
+                syncToUrl();
                 return;
             }
         },
@@ -971,11 +1000,13 @@ function imageLoaded( theImage, index )
         $('#metadatadiv').slideDown(1000);
     
     if ( currentCategoryIndex != null )
-        parent.location.hash = "showCat=" + escape(currentCategorization) +
-                               "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
-                               "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+        theHash = "showCat=" + escape(currentCategorization) +
+                  "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
+                  "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
     else
-        parent.location.hash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+        theHash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+        
+    setCurrentHash(theHash);
 }
 
 function getMetadataDiv(index)
