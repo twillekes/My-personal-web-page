@@ -19,13 +19,12 @@ var totalNumArticles = 0;
 
 // Category management
 var currentCategorization = "subject";
-var currentCategoryIndex = null; // E.g. "New" or "Houses" or ...
-var categoryList; // This is filled with the categoryValues
+var categoryList; // This is filled with the categoryValues, e.g. "houses", "new", etc.
 var currentlySelectedImage = null;
 
 var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
                             "format", "year", "month", "direction", "rating" );
-var nextCategoryIndex = 1;
+var currentCategoryIndex = 0; // E.g. "camera" or "subject" or ...
 
 // Welcome page image timer
 var timerId = null;
@@ -159,16 +158,6 @@ function syncToUrl()
                 else
                     usingLightbox = false;
             }
-            else if ( index == "showPivot" )
-            {
-                if ( supportPivot )
-                    supportPivot = false;
-                else
-                    supportPivot = true;
-
-                delete loadParameters[index];
-                buildMenu();
-            }
         }
     }
     
@@ -217,7 +206,7 @@ function getParams()
 function switchTo()
 {
     toImageView(this.innerHTML);
-    this.origBackgroundColor = '#B0B0B0';
+    this.origClass = 'buttonSelectedColors';
 }
 
 function buildMenu()
@@ -238,8 +227,8 @@ function buildMenu()
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id', encodeValue(categoryList[index].categoryValue));
-        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
-                         "\" style=\"background-color: #E6E6E6;\">" +
+        adiv.innerHTML = "<a class=\"tooltip buttonColors\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
+                         "\">" +
                          categoryList[index].categoryValue + "</a>\n";
         adiv.firstChild.onclick = switchTo;
         
@@ -257,7 +246,7 @@ function buildMenu()
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id','words');
-        adiv.innerHTML = "<a class=\"tooltip\" title=\"" + textToShow + "\" style=\"background-color: #E6E6E6;\">Words</a>\n";
+        adiv.innerHTML = "<a class=\"tooltip buttonColors\" title=\"" + textToShow + "\">Words</a>\n";
         adiv.firstChild.onclick = toWordView;
         
         $("#otheritems").append(adiv);
@@ -267,35 +256,22 @@ function buildMenu()
     {
         var lightboxHelpText = "Change the way image categories are viewed";
         
-        var modeText = "View: Lightbox";
+        var modeText = "Lightbox View";
         if ( usingLightbox )
-            modeText = "View: Original";
+            modeText = "Original View";
             
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a href=\"javascript:toggleThumbView();\" class=\"tooltip\" id=\"toggleThumbView\" title=\""
+        adiv.innerHTML = "<a href=\"javascript:toggleThumbView();\" class=\"tooltip buttonColors\" id=\"toggleThumbView\" title=\""
                          + lightboxHelpText + "\">" + modeText + "</a>\n";
         
         $("#otheritems").append(adiv);
     }
     
-    if ( false )
-    {
-        var categorizationHelp = "Change image categorization";
-        var categoryButtonText = "Pivot by " + categories[nextCategoryIndex];
-        
-        adiv = document.createElement('div');
-        adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a href=\"javascript:toNextCategorization();\" class=\"tooltip\" title=\""
-                         + categorizationHelp + "\">" + categoryButtonText + "</a>\n";
-        
-        $("#catitem").append(adiv);
-    }
-    
     if ( $pivotMenu != null )
     {
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu\" style=\"background-color: #E6E6E6;\">View: Pivot by</a>\n";
+        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu buttonColors\">Categorize by...</a>\n";
         
         $("#catitem").append(adiv);
         
@@ -315,8 +291,12 @@ function buildPivotMenu()
     $pivotMenu = $('<div id=\"pivotMenu\"></div>');
     for ( index in categories )
     {
+        var theClass = 'buttonColors';
+        if ( currentCategoryIndex != null && currentCategoryIndex == index )
+            theClass = 'buttonSelectedColors';
+            
         $pivotMenu.append( $('<a theIndex=\"' + index +
-                             '\" class=\"popupMenuButton\" style=\"background-color: #E6E6E6; color: black;\">' + categories[index] + '</a>') );
+                             '\" class=\"popupMenuButton ' + theClass + '\">' + categories[index] + '</a>') );
     }
 }
 
@@ -324,18 +304,6 @@ function toCategorization(category)
 {
     currentCategorization = category;
     findCategories();
-    buildMenu();
-    toWelcomeView();
-}
-
-function toNextCategorization()
-{
-    currentCategorization = categories[nextCategoryIndex];
-    
-    nextCategoryIndex++;
-    if ( nextCategoryIndex == categories.length )
-        nextCategoryIndex = 0;
-    
     buildMenu();
     toWelcomeView();
 }
@@ -370,12 +338,12 @@ function toggleThumbView()
 {        
     if ( usingLightbox )
     {
-        $("#toggleThumbView").html("View: Lightbox");
+        $("#toggleThumbView").html("Lightbox View");
         usingLightbox = false;
     }
     else
     {
-        $("#toggleThumbView").html("View: Original");
+        $("#toggleThumbView").html("Original View");
         usingLightbox = true;
     }
     
@@ -471,12 +439,12 @@ function toImageView(categoryValue, imageToShow)
 function updateSelectedButton(divName)
 {
     if ( $currentlySelectedButton != null )
-        $currentlySelectedButton.css('background-color', '#E6E6E6');
+        $currentlySelectedButton.removeClass('buttonSelectedColors').addClass('buttonColors');
     
     if ( divName != null )
     {
         $currentlySelectedButton = $("#"+divName+">a");
-        $currentlySelectedButton.css('background-color', '#B0B0B0');
+        $currentlySelectedButton.removeClass('buttonColors').addClass('buttonSelectedColors');
     }
 }
 
@@ -681,7 +649,7 @@ function toWordView()
         
     setCurrentHash("showArticles");
     currentView = "words";
-    this.origBackgroundColor = '#B0B0B0';
+    this.origClass = 'buttonSelectedColors';
     updateSelectedButton("words");
 }
 
@@ -1157,9 +1125,9 @@ function addPrevNextButtons()
     theElement.innerHTML =
                        "<table style=\"margin-left: auto; margin-right: auto;\">\n\
                             <tr>\n\
-                                <td><div id=\"prevbuttondiv\">Previous</div></td>\n\
-                                <td><div id=\"infobuttondiv\">Show Info</div></td>\n\
-                                <td><div id=\"nextbuttondiv\">Next</div></td>\n\
+                                <td><div id=\"prevbuttondiv\" class=\"buttonColors\">Previous</div></td>\n\
+                                <td><div id=\"infobuttondiv\" class=\"buttonColors\">Show Info</div></td>\n\
+                                <td><div id=\"nextbuttondiv\" class=\"buttonColors\">Next</div></td>\n\
                             </tr>\n\
                         </table>\n";
 
@@ -1220,20 +1188,10 @@ function setupButton(theDivName, imageIndex)
     }
         
     $div.hover(function() {
-        var cssSettings = {
-            'background-color': 'gray',
-            'color': 'white',
-            'cursor': 'pointer'
-        };
-        $(divName).css(cssSettings);
+        $(divName).removeClass('buttonColors').addClass('buttonHoveredColors').css('cursor','pointer');
     },
     function() {
-        var cssSettings = {
-            'background-color': '#E6E6E6',
-            'color': 'black',
-            'cursor': 'auto'
-        };
-        $(divName).css(cssSettings);
+        $(divName).removeClass('buttonHoveredColors').addClass('buttonColors').css('cursor','auto');
     });
 }
 
@@ -1396,10 +1354,8 @@ this.initializeTooltips = function(changeBackground, tagName)
         
         if ( changeBackground )
         {
-            this.origBackgroundColor = this.style.backgroundColor;
-            this.origColor = this.style.color;
-            this.style.backgroundColor = 'gray';
-            this.style.color = 'white';
+            this.origClass = this.className;
+            this.className = 'tooltip buttonHoveredColors';
         }
     },
 	function() {
@@ -1410,10 +1366,7 @@ this.initializeTooltips = function(changeBackground, tagName)
 	    $("#tooltip").remove();
         
         if ( changeBackground )
-        {
-            this.style.backgroundColor = this.origBackgroundColor;
-            this.style.color = this.origColor;
-        }
+            this.className = this.origClass;
 	});
     $(tagName + ".tooltip").mousemove(function(e) {
         var loc = getTipLocation(e);
@@ -1447,8 +1400,6 @@ function getTipLocation(e)
 function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
 {
     $('#'+ buttonDivName + '.popupMenu').hover(function(e) {
-        //$("#popupMenu").remove();
-    
         if ( this.$popupMenu == null )
         {
             this.$popupMenu = $("<div id='popupMenu' style=\"width: 100px;\"></div>");
@@ -1463,22 +1414,20 @@ function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
         
         initializePopupMenu($theMenuDiv, this.loc, this.$popupMenu);
         
-        //this.origBackgroundColor = this.style.backgroundColor;
-        //this.origColor = this.style.color;
-        //this.style.backgroundColor = 'gray';
-        //this.style.color = 'white';
+        this.origClass = this.className;
+        this.className = 'buttonHoveredColors';
     },
 	function(e) {
         if ( !isInRect( { left: e.pageX, top: e.pageY }, this.loc ) )
-        {
             this.$popupMenu.hide();
-            //this.style.backroundColor = this.origBackgroundColor;
-            //this.style.color = this.origColor;
-        }
+
+        this.className = this.origClass;
 	});
     
     $theMenuDiv.children().click(function() {
         $("#popupMenu").remove();
+        $theMenuDiv.children().removeClass('buttonSelectedColors').addClass('buttonColors');
+        this.className = 'popupMenuButton buttonSelectedColors';
         if ( clickHandler != null )
             clickHandler(this.innerHTML);
     });
@@ -1493,16 +1442,20 @@ function initializePopupMenu($theMenuDiv, rect, $popupMenu)
     });
     
     $theMenuDiv.children().hover(function(e) {
-//console.log("Saving "+this.style.backgroundColor);
-        //this.origBackgroundColor = this.style.backgroundColor;
-        //this.origColor = this.style.color;
-        //this.style.backgroundColor = 'gray';
-        //this.style.color = 'white';
+        if ( this.origClass != null )
+            return;
+            
+            console.log("Orig classes "+this.className);
+        this.origClass = this.className;
+        this.className = 'popupMenuButton buttonHoveredColors';
     },
     function(e) {
-        //this.style.backroundColor = this.origBackgroundColor;
-        //this.style.color = this.origColor;
-//console.log("Restoring "+this.origBackgroundColor+" result: "+this.style.backgroundColor);
+        if ( this.origClass == null )
+            return;
+            
+            console.log("Restoring "+this.origClass);
+        this.className = this.origClass;
+        this.origClass = null;
     });
 }
 

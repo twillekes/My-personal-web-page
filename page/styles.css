@@ -152,14 +152,12 @@ html>body #articleList a
 #menubar a
     {
     cursor: pointer;
-    background-color: #E6E6E6; /* was below */
     border: 1px solid black; /* was below */
     font: bold 13px Verdana;
     padding: 2px;
     padding-left: 4px;
     display: block;
     width: 66%; /* was 100% */
-    color: black;
     text-decoration: none;
     word-wrap: break-word;
     }
@@ -198,7 +196,6 @@ html>body #menubar a
 #prevnextbuttondiv div
     {
 	border: 1px solid black;
-    background-color: #E6E6E6; /* was below */
     border: 1px solid black; /* was below */
     margin-left: auto; /* was below */
     margin-right: auto; /* was below */
@@ -208,7 +205,6 @@ html>body #menubar a
     display: block;
     /*height: 100%;*/
     width: 50%; /* was 100% */
-    color: black;
     text-decoration: none;
     border-bottom: 1px solid black;
     }
@@ -245,13 +241,11 @@ html>body #prevnextbuttondiv div
 #popupMenu a
     {
     cursor: pointer;
-    background-color: #E6E6E6; /* was below */
     border: 1px solid black; /* was below */
     font: bold 13px Verdana;
     padding: 2px;
     padding-left: 4px;
     display: block;
-    color: black;
     text-decoration: none;
     word-wrap: break-word;
     margin-left: auto;
@@ -419,4 +413,22 @@ ol
     text-align: left;
     /*border: 1px solid black;*/
     word-wrap: break-word;
+}
+
+.buttonHoveredColors
+{
+    background-color: gray;
+    color: white;
+}
+
+.buttonColors
+{
+    background-color: #E6E6E6;
+    color: black;
+}
+
+.buttonSelectedColors
+{
+    background-color: #B0B0B0;
+    color: black;
 }
