@@ -44,6 +44,10 @@ var supportPivot = true;
 var supportLightbox = true;
 var supportUrlHash = false;
 
+var categorizationText = "View images by...";
+var origViewText = "View as original";
+var lbViewText = "View as lightbox";
+
 /*
 
 Image categories:
@@ -258,9 +262,9 @@ function buildMenu()
     {
         var lightboxHelpText = "Change the way image categories are viewed";
         
-        var modeText = "Lightbox View";
+        var modeText = lbViewText;
         if ( usingLightbox )
-            modeText = "Original View";
+            modeText = origViewText;
             
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
@@ -273,7 +277,7 @@ function buildMenu()
     if ( $pivotMenu != null )
     {
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu buttonColors\">Categorize by...</a>\n";
+        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu buttonColors\">" + categorizationText + "</a>\n";
         
         $("#viewitems").append(adiv);
         
@@ -335,12 +339,12 @@ function toggleThumbView()
 {        
     if ( usingLightbox )
     {
-        $("#toggleThumbView").html("Lightbox View");
+        $("#toggleThumbView").html(lbViewText);
         usingLightbox = false;
     }
     else
     {
-        $("#toggleThumbView").html("Original View");
+        $("#toggleThumbView").html(origViewText);
         usingLightbox = true;
     }
     
