@@ -20,11 +20,11 @@ var totalNumArticles = 0;
 // Category management
 var currentCategorization = "subject";
 var categoryList; // This is filled with the categoryValues, e.g. "houses", "new", etc.
+var currentCategoryIndex = 0; // E.g. "New" or "Houses" or ...
 var currentlySelectedImage = null;
 
 var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
                             "format", "year", "month", "direction", "rating" );
-var currentCategoryIndex = 0; // E.g. "camera" or "subject" or ...
 
 // Welcome page image timer
 var timerId = null;
@@ -40,7 +40,7 @@ var $pivotMenu = null;
 // URL monitoring
 var currentHash = null;
 
-var supportPivot = false;
+var supportPivot = true;
 var supportLightbox = true;
 var supportUrlHash = false;
 
@@ -139,6 +139,8 @@ function syncToUrl()
             {
                 currentCategorization = unescape(loadParameters[index]);
                 delete loadParameters[index];
+                buildPivotMenu();
+                findCategories();
                 buildMenu();
             }
             else if ( index == "showArticles" )
@@ -276,7 +278,10 @@ function buildMenu()
         $("#catitem").append(adiv);
         
         setupPopupMenu('pivotMenuButton', $pivotMenu, function(theHTML){
-            toCategorization(theHTML);
+            currentCategorization = theHTML;
+            findCategories();
+            buildMenu();
+            toWelcomeView();
         } );
     }
         
@@ -292,20 +297,12 @@ function buildPivotMenu()
     for ( index in categories )
     {
         var theClass = 'buttonColors';
-        if ( currentCategoryIndex != null && currentCategoryIndex == index )
+        if ( currentCategorization != null && currentCategorization == categories[index] )
             theClass = 'buttonSelectedColors';
             
         $pivotMenu.append( $('<a theIndex=\"' + index +
                              '\" class=\"popupMenuButton ' + theClass + '\">' + categories[index] + '</a>') );
     }
-}
-
-function toCategorization(category)
-{
-    currentCategorization = category;
-    findCategories();
-    buildMenu();
-    toWelcomeView();
 }
 
 function findImage(filePath)
@@ -366,7 +363,10 @@ function toSingleImageView(filePath)
 function toWelcomeView()
 {
     if ( currentView == "welcome" )
+    {
+        setCurrentHash("showCat="+currentCategorization);
         return;
+    }
         
     updateSelectedButton("menubar");
         
@@ -394,7 +394,7 @@ function toWelcomeView()
     showRandomWelcomeImage(true);
     currentView = "welcome";
     
-    setCurrentHash("");
+    setCurrentHash("showCat="+currentCategorization);
 }
 
 function getImageDisplayHTML()
@@ -1412,7 +1412,7 @@ function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
         this.loc = getPopupLocation(buttonDivName, $theMenuDiv);
         this.$popupMenu.offset({left:this.loc.left,top:this.loc.top}).fadeIn("slow");
         
-        initializePopupMenu($theMenuDiv, this.loc, this.$popupMenu);
+        initializePopupMenuItems($theMenuDiv, this.loc, this.$popupMenu);
         
         this.origClass = this.className;
         this.className = 'buttonHoveredColors';
@@ -1427,13 +1427,14 @@ function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
     $theMenuDiv.children().click(function() {
         $("#popupMenu").remove();
         $theMenuDiv.children().removeClass('buttonSelectedColors').addClass('buttonColors');
+        this.origClass = null;
         this.className = 'popupMenuButton buttonSelectedColors';
         if ( clickHandler != null )
             clickHandler(this.innerHTML);
     });
 }
 
-function initializePopupMenu($theMenuDiv, rect, $popupMenu)
+function initializePopupMenuItems($theMenuDiv, rect, $popupMenu)
 {
     $popupMenu.hover(function(e){
     },
@@ -1445,7 +1446,6 @@ function initializePopupMenu($theMenuDiv, rect, $popupMenu)
         if ( this.origClass != null )
             return;
             
-            console.log("Orig classes "+this.className);
         this.origClass = this.className;
         this.className = 'popupMenuButton buttonHoveredColors';
     },
@@ -1453,7 +1453,6 @@ function initializePopupMenu($theMenuDiv, rect, $popupMenu)
         if ( this.origClass == null )
             return;
             
-            console.log("Restoring "+this.origClass);
         this.className = this.origClass;
         this.origClass = null;
     });
