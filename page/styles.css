@@ -176,17 +176,6 @@ html>body #menubar a
     background-color: gray;
     color: white;
 }*/
-.buttondiv
-{
-    margin-top: 5px; 
-    margin-bottom: 5px;
-}
-#menuitems
-{
-    /*border: 1px solid black; */
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
 
 #prevnextbuttondiv
 {
@@ -431,4 +420,26 @@ ol
 {
     background-color: #B0B0B0;
     color: black;
+}
+
+.buttondiv
+{
+    margin-top: 3px; 
+    margin-bottom: 3px;
+}
+
+#menuitems
+{
+    /*border: 1px solid black; */
+    margin-top: 15px;
+}
+
+#otheritems
+{
+    margin-top: 15px;
+}
+
+#viewitems
+{
+    margin-top: 15px;
 }

@@ -215,7 +215,7 @@ function buildMenu()
 {
     $("#menuitems").children().remove();
     $("#otheritems").children().remove();
-    $("#catitem").children().remove();
+    $("#viewitems").children().remove();
     
     for ( index in categoryList )
     {
@@ -267,7 +267,7 @@ function buildMenu()
         adiv.innerHTML = "<a href=\"javascript:toggleThumbView();\" class=\"tooltip buttonColors\" id=\"toggleThumbView\" title=\""
                          + lightboxHelpText + "\">" + modeText + "</a>\n";
         
-        $("#otheritems").append(adiv);
+        $("#viewitems").append(adiv);
     }
     
     if ( $pivotMenu != null )
@@ -275,7 +275,7 @@ function buildMenu()
         adiv = document.createElement('div');
         adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu buttonColors\">Categorize by...</a>\n";
         
-        $("#catitem").append(adiv);
+        $("#viewitems").append(adiv);
         
         setupPopupMenu('pivotMenuButton', $pivotMenu, function(theHTML){
             currentCategorization = theHTML;
