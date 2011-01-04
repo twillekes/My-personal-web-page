@@ -102,9 +102,7 @@ function initializePage()
         
     loadImages(isLocal);
     
-    $(window).resize( function() {
-        adjustCurrentImageSize();
-    } );
+    $(window).resize( function() { adjustCurrentImageSize(); } );
     
     if ( supportUrlHash )
         $(window).bind( 'hashchange', function(e) { syncToUrl(); } );
@@ -112,25 +110,35 @@ function initializePage()
 
 function setCurrentHash(theHash)
 {
+//    if ( parent.location.hash == '#'+currentHash )
+//        return;
+        
+console.log("Changing hash to "+theHash+" from "+parent.location.hash);
     currentHash = theHash;
     parent.location.hash = currentHash;
 }
 
 function syncToUrl()
 {
+console.log("Syncing to URL "+document.URL+" hash is "+parent.location.hash);
     if ( (parent.location.hash == "" && currentHash == "") ||
           parent.location.hash == "#"+currentHash )
+    {
+    console.log("Already syncd to URL "+currentHash+", returning");
         return;
+    }
 
     loadParameters = getParams();
     
     var imageToShow = null;
     var catValToShow = null;
+    usingLightbox = false;
     
     if ( loadParameters != null )
     {
         for ( index in loadParameters )
         {
+        console.log("syncToUrl parameter "+index+" is "+loadParameters[index]);
            if ( index == "showImage" )
             {
                 imageToShow = unescape(loadParameters[index]);
@@ -163,12 +171,20 @@ function syncToUrl()
                     usingLightbox = true;
                 else
                     usingLightbox = false;
+                    
+                buildMenu();
+            }
+            else
+            {
+                //alert("ERROR: Unknown load parameter: "+index+" value "+loadParameters[index]);
+                console.log("ERROR: Unknown load parameter: "+index+" value "+loadParameters[index]);
             }
         }
     }
     
     if ( imageToShow != null )
     {
+    console.log("Got an image to show");
         if ( catValToShow == null )
             toSingleImageView(imageToShow);
         else
@@ -178,34 +194,41 @@ function syncToUrl()
     }
     else if ( catValToShow != null )
     {
+    console.log("Got a catVal to show");
         toImageView(catValToShow);
         return;
     }
     
+    console.log("Sync to url is going to welcome view...");
     toWelcomeView();    
 }
 
 function getParams()
 {
-    var idx = document.URL.indexOf('?');
-    if ( idx == -1 )
+    var theParamString = parent.location.hash;
+    var idx = theParamString.indexOf('#');
+    
+    if ( theParamString == "" && idx == -1 )
     {
-        idx = document.URL.indexOf('#');
+        theParamString = document.URL;
+        idx = theParamString.indexOf('?');
         if ( idx == -1 )
             return null;
-            
-        var remainder = document.URL.substring(idx+1);
-        if ( remainder == "" )
-            return null;
     }
-    
+                
     var tempParams = new Object();
-    var pairs = document.URL.substring(idx+1,document.URL.length).split('&');
+    var pairs = theParamString.substring(idx+1,document.URL.length).split('&');
+    var numItems = 0;
     for (var i=0; i<pairs.length; i++)
     {
         nameVal = pairs[i].split('=');
         tempParams[nameVal[0]] = nameVal[1];
+        numItems++;
     }
+    
+    if ( numItems == 0 )
+        return null;
+        
     return tempParams;
 }
 
@@ -368,6 +391,7 @@ function toWelcomeView()
 {
     if ( currentView == "welcome" )
     {
+    console.log("Already in welcome view...");
         setCurrentHash("showCat="+currentCategorization);
         return;
     }
@@ -398,6 +422,7 @@ function toWelcomeView()
     showRandomWelcomeImage(true);
     currentView = "welcome";
     
+    console.log("Went to welcome view...");
     setCurrentHash("showCat="+currentCategorization);
 }
 
@@ -1016,6 +1041,7 @@ function imageLoaded( theImage, index )
     else
         theHash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
         
+    console.log("Setting hash...");
     setCurrentHash(theHash);
 }
 
