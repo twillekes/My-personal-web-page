@@ -42,7 +42,7 @@ var currentHash = null;
 
 var supportPivot = true;
 var supportLightbox = true;
-var supportUrlHash = false;
+var supportUrlHash = true;
 
 var categorizationText = "View images by...";
 var origViewText = "View as original";
@@ -110,21 +110,15 @@ function initializePage()
 
 function setCurrentHash(theHash)
 {
-//    if ( parent.location.hash == '#'+currentHash )
-//        return;
-        
-console.log("Changing hash to "+theHash+" from "+parent.location.hash);
     currentHash = theHash;
     parent.location.hash = currentHash;
 }
 
 function syncToUrl()
 {
-console.log("Syncing to URL "+document.URL+" hash is "+parent.location.hash);
     if ( (parent.location.hash == "" && currentHash == "") ||
           parent.location.hash == "#"+currentHash )
     {
-    console.log("Already syncd to URL "+currentHash+", returning");
         return;
     }
 
@@ -138,7 +132,6 @@ console.log("Syncing to URL "+document.URL+" hash is "+parent.location.hash);
     {
         for ( index in loadParameters )
         {
-        console.log("syncToUrl parameter "+index+" is "+loadParameters[index]);
            if ( index == "showImage" )
             {
                 imageToShow = unescape(loadParameters[index]);
@@ -177,14 +170,13 @@ console.log("Syncing to URL "+document.URL+" hash is "+parent.location.hash);
             else
             {
                 //alert("ERROR: Unknown load parameter: "+index+" value "+loadParameters[index]);
-                console.log("ERROR: Unknown load parameter: "+index+" value "+loadParameters[index]);
+                //console.log("ERROR: Unknown load parameter: "+index+" value "+loadParameters[index]);
             }
         }
     }
     
     if ( imageToShow != null )
     {
-    console.log("Got an image to show");
         if ( catValToShow == null )
             toSingleImageView(imageToShow);
         else
@@ -194,12 +186,10 @@ console.log("Syncing to URL "+document.URL+" hash is "+parent.location.hash);
     }
     else if ( catValToShow != null )
     {
-    console.log("Got a catVal to show");
         toImageView(catValToShow);
         return;
     }
     
-    console.log("Sync to url is going to welcome view...");
     toWelcomeView();    
 }
 
@@ -391,7 +381,6 @@ function toWelcomeView()
 {
     if ( currentView == "welcome" )
     {
-    console.log("Already in welcome view...");
         setCurrentHash("showCat="+currentCategorization);
         return;
     }
@@ -422,7 +411,6 @@ function toWelcomeView()
     showRandomWelcomeImage(true);
     currentView = "welcome";
     
-    console.log("Went to welcome view...");
     setCurrentHash("showCat="+currentCategorization);
 }
 
@@ -485,7 +473,7 @@ function findCategoryIndex(categoryValue)
             return index;
     }
     
-    console.log("ERROR: Could not find category value "+categoryValue);
+    //console.log("ERROR: Could not find category value "+categoryValue);
     //alert("ERROR: Could not find category value "+categoryValue);
     return null;
 }
@@ -672,7 +660,7 @@ function toWordView()
         },
         error: function(request, status, error) {
             //alert("ERROR: Fetch of articleHeader.htm failed with status "+status+" and error "+error);
-            console.log("ERROR: Fetch of articleHeader.htm failed with status "+status+" and error "+error);
+            //console.log("ERROR: Fetch of articleHeader.htm failed with status "+status+" and error "+error);
         }
         });
         
@@ -707,7 +695,7 @@ function showArticleAt( articleFilePath )
         },
         error: function(request, status, error) {
             //alert("ERROR: Fetch of "+articleFilePath+" failed with status "+status+" and error "+error);
-            console.log("ERROR: Fetch of "+articleFilePath+" failed with status "+status+" and error "+error);
+            //console.log("ERROR: Fetch of "+articleFilePath+" failed with status "+status+" and error "+error);
         }
         });
     
@@ -786,7 +774,7 @@ function loadMetadata(metadataItem)
         },
         error: function(request, status, error) {
             //alert("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
-            console.log("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
+            //console.log("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
         }
     });
 }
@@ -984,7 +972,7 @@ function showImage( index )
     if ( null == theElement )
     {
         //alert("ERROR: No imagetitlediv in showImage");
-        console.log("ERROR: No imagetitlediv in showImage");
+        //console.log("ERROR: No imagetitlediv in showImage");
         return;
     }
         
@@ -994,10 +982,10 @@ function showImage( index )
     if ( null == theElement )
     {
         //alert("ERROR: No imagedisplaydiv in showImage");
-        console.log("ERROR: No imagedisplaydiv in showImage");
+        //console.log("ERROR: No imagedisplaydiv in showImage");
         return;
     }
-
+    
     var theImage = new Image();
     theImage.onload = function() { imageLoaded(theImage,index); }
     theImage.src = imageList[index].filePath;
@@ -1034,14 +1022,13 @@ function imageLoaded( theImage, index )
     if ( showingMetadata )
         $('#metadatadiv').slideDown(1000);
     
-    if ( currentCategoryIndex != null )
+    if ( currentCategoryIndex != null && currentlySelectedImage != null)
         theHash = "showCat=" + escape(currentCategorization) +
                   "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
                   "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
     else
         theHash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
         
-    console.log("Setting hash...");
     setCurrentHash(theHash);
 }
 
@@ -1148,7 +1135,7 @@ function addPrevNextButtons()
     if ( null == theElement )
     {
         //alert("ERROR: No prevnextbuttondiv in addPrevNextButtons");
-        console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
+        //console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
         return;
     }
         
@@ -1163,7 +1150,7 @@ function addPrevNextButtons()
 
     var prevIndex = -1;
     var nextIndex = -1;
-    if ( currentCategoryIndex != null )
+    if ( currentCategoryIndex != null && currentlySelectedImage != null )
     {
         for ( catIndex in categoryList[currentCategoryIndex].imageIndexes )
         {
@@ -1367,7 +1354,7 @@ this.initializeTooltips = function(changeBackground, tagName)
         if ( this.title == "" )
         {
             //alert("ERROR: No title for "+this.innerHTML);
-            console.log("ERROR: No title for "+this.innerHTML);
+            //console.log("ERROR: No title for "+this.innerHTML);
             return;
         }
             
