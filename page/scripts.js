@@ -35,6 +35,7 @@ var currentView = null;
 var usingLightbox = false;
 var showingMetadata = false;
 var $currentlySelectedButton = null;
+var $viewMenu = null;
 var $pivotMenu = null;
 
 // URL monitoring
@@ -44,9 +45,8 @@ var supportPivot = true;
 var supportLightbox = true;
 var supportUrlHash = true;
 
+var viewText = "View images as...";
 var categorizationText = "View images by...";
-var origViewText = "View as original";
-var lbViewText = "View as lightbox";
 
 /*
 
@@ -127,6 +127,7 @@ function syncToUrl()
     var imageToShow = null;
     var catValToShow = null;
     usingLightbox = false;
+    currentlySelectedImage = null;
     
     if ( loadParameters != null )
     {
@@ -273,18 +274,27 @@ function buildMenu()
     
     if ( supportLightbox )
     {
-        var lightboxHelpText = "Change the way image categories are viewed";
-        
-        var modeText = lbViewText;
+        $viewMenu = $('<div id=\"viewMenu\"></div>');
+    
+        var theClass = 'buttonColors';
+        if ( !usingLightbox )
+            theClass = 'buttonSelectedColors';
+        $viewMenu.append( $('<a class=\"popupMenuButton ' + theClass + '\">original</a>') );
+    
+        var theClass = 'buttonColors';
         if ( usingLightbox )
-            modeText = origViewText;
-            
+            theClass = 'buttonSelectedColors';
+        $viewMenu.append( $('<a class=\"popupMenuButton ' + theClass + '\">lightbox</a>') );
+    
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a href=\"javascript:toggleThumbView();\" class=\"tooltip buttonColors\" id=\"toggleThumbView\" title=\""
-                         + lightboxHelpText + "\">" + modeText + "</a>\n";
+        adiv.innerHTML = "<a id=\"viewMenuButton\" class=\"popupMenu buttonColors\">" + viewText + "</a>\n";
         
         $("#viewitems").append(adiv);
+        
+        setupPopupMenu('viewMenuButton', $viewMenu, function(theHTML){
+            toggleThumbView();
+        } );
     }
     
     if ( $pivotMenu != null )
@@ -350,16 +360,8 @@ function findImage(filePath)
 
 function toggleThumbView()
 {        
-    if ( usingLightbox )
-    {
-        $("#toggleThumbView").html(lbViewText);
-        usingLightbox = false;
-    }
-    else
-    {
-        $("#toggleThumbView").html(origViewText);
-        usingLightbox = true;
-    }
+    usingLightbox = !usingLightbox;
+    buildMenu();
     
     if ( currentCategoryIndex != null )
         toImageView(categoryList[currentCategoryIndex].categoryValue);
