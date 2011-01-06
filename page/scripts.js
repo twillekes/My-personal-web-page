@@ -165,7 +165,10 @@ function syncToUrl()
             else if ( index == "showArticle" )
             {
                 if ( showArticle(unescape(loadParameters[index])) )
+                {
+                    buildMenu();
                     return;
+                }
             }
             else if ( index == "showMode" )
             {
@@ -267,6 +270,17 @@ function buildMenu()
         $("#menuitems").append(adiv);
     }
     
+    // "About" button
+    adiv = document.createElement('div');
+    adiv.setAttribute('class', 'buttondiv');
+    adiv.setAttribute('id','about');
+    if ( currentView == "about" )
+    adiv.innerHTML = "<a class=\"tooltip selectedButtonColors withDropShadow\" title=\"About the photographer and photographs\">About</a>\n";
+    else
+    adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow\" title=\"About the photographer and photographs\">About</a>\n";
+    adiv.firstChild.onclick = showAboutView;
+    $("#otheritems").append(adiv);
+    
     if ( totalNumArticles > 0 )
     {
         var textToShow = totalNumArticles;
@@ -351,6 +365,14 @@ function toggleThumbView()
     
     if ( currentCategoryIndex != null )
         toImageView(categoryList[currentCategoryIndex].categoryValue);
+}
+
+function showAboutView()
+{
+    showArticleAt("words/about.htm");
+    this.origClass = 'buttonSelectedColors';
+    updateSelectedButton("about");
+    currentView = "about";
 }
 
 function toSingleImageView(filePath)
@@ -1303,9 +1325,10 @@ function loadMetadata(metadataItem)
                     {
                         if ( item.isNotReady == null || !item.isNotReady )
                         {
-                            var art = new article( item.title );
+                            var art = new article( item.title, item.doNotShow );
                             articleList[metadataFilePath+"/"+item.filename] = art;
-                            totalNumArticles++; // ".length" doesn't work for associative arrays
+                            if ( !item.doNotShow )
+                                totalNumArticles++; // ".length" doesn't work for associative arrays
                         }
 
                     }
@@ -1371,9 +1394,10 @@ function categoryRecord(categoryValue)
     this.categoryValue = categoryValue;
 }
 
-function article( title )
+function article( title, doNotShow )
 {
     this.title = title;
+    this.doNotShow = doNotShow;
 }
 
 function currentlySelectedImageRecord( filePath )

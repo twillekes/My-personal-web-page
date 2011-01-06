@@ -1,19 +1,9 @@
 {
-    "_comment" : "Use isNotReady=1 to avoid loading articles",
+    "_comment" : "Use doNotShow=1 to avoid articles showing up on the page",
     "type" : "words",
     "items":
     [
-        { "filename" : "aboot.htm", "title" : "Aboot" },
-        { "filename" : "seasons.htm", "title" : "Seasons" },
-        { "filename" : "dynamicRange.htm", "title" : "Taming Dynamic Range", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Epson V750 Scanner Usage", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Metering Techniques", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Light Chasing 101", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "The Hasselblad V-System", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Large Format Photography", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Blending Image Scans", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Focusing 101", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Focusing 101", "isNotReady" : 1 },
-        { "filename" : "none.htm", "title" : "Focusing 101", "isNotReady" : 1 }
+        { "filename" : "about.htm", "title" : "About", "doNotShow" : 1 },
+        { "filename" : "seasons.htm", "title" : "Seasons", "doNotShow" : 1 },
     ]
 }
