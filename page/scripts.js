@@ -18,11 +18,12 @@ var articleList = new Array();
 var totalNumArticles = 0;
 
 // Category management
+// "Categorization" means the way the images are sliced and diced (e.g. by subject, by season, by camera)
+// "Category Value" is a particular instance of category (e.g. mountains, summer, Hasseblad)
 var currentCategorization = "subject";
 var categoryList; // This is filled with the categoryValues, e.g. "houses", "new", etc.
 var currentCategoryIndex = 0; // E.g. "New" or "Houses" or ...
 var currentlySelectedImage = null;
-
 var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
                             "format", "year", "month", "direction", "rating" );
 
@@ -41,6 +42,7 @@ var $pivotMenu = null;
 // URL monitoring
 var currentHash = null;
 
+// Used to develop features without making them live until done
 var supportPivot = true;
 var supportLightbox = true;
 var supportUrlHash = true;
@@ -49,6 +51,8 @@ var viewText = "View images as...";
 var categorizationText = "View images by...";
 
 /*
+
+Image Metadata Summary
 
 Image categories:
 - Subject
@@ -72,9 +76,11 @@ Image information:
 - Filters
 - Discarded (yes/no)
 
-"Season" : "SEASON", "Camera" : "CAMERA", "filters" : "FILTERS", "Lens" : "Unknown", "Film" : "FILM", "Chrome" : "Polychrome", "Format" : "FORMAT", "Year" : "YEAR", "Date" : "DATE", "Direction" : "DIRECTION", "Rating" : "RATING", "Caption" : "None", "isDiscarded" : 0
-
 */
+
+// ******************************************************************
+// Window events
+// ******************************************************************
 
 function lostFocus()
 {
@@ -89,7 +95,9 @@ function gainedFocus()
     }
 }
 
-//window.onload = initializePage(); Doesn't work in Firefox
+// ******************************************************************
+// Page initialization and URL management/sychronization
+// ******************************************************************
 
 function initializePage()
 {
@@ -223,6 +231,10 @@ function getParams()
     return tempParams;
 }
 
+// ******************************************************************
+// Page view modes and management
+// ******************************************************************
+
 function switchTo()
 {
     toImageView(this.innerHTML);
@@ -247,7 +259,7 @@ function buildMenu()
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id', encodeValue(categoryList[index].categoryValue));
-        adiv.innerHTML = "<a class=\"tooltip buttonColors\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
+        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
                          "\">" +
                          categoryList[index].categoryValue + "</a>\n";
         adiv.firstChild.onclick = switchTo;
@@ -266,7 +278,7 @@ function buildMenu()
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id','words');
-        adiv.innerHTML = "<a class=\"tooltip buttonColors\" title=\"" + textToShow + "\">Words</a>\n";
+        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow\" title=\"" + textToShow + "\">Words</a>\n";
         adiv.firstChild.onclick = toWordView;
         
         $("#otheritems").append(adiv);
@@ -288,7 +300,7 @@ function buildMenu()
     
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a id=\"viewMenuButton\" class=\"popupMenu buttonColors\">" + viewText + "</a>\n";
+        adiv.innerHTML = "<a id=\"viewMenuButton\" class=\"popupMenu buttonColors withDropShadow\">" + viewText + "</a>\n";
         
         $("#viewitems").append(adiv);
         
@@ -300,7 +312,7 @@ function buildMenu()
     if ( $pivotMenu != null )
     {
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu buttonColors\">" + categorizationText + "</a>\n";
+        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu buttonColors withDropShadow\">" + categorizationText + "</a>\n";
         
         $("#viewitems").append(adiv);
         
@@ -330,32 +342,6 @@ function buildPivotMenu()
         $pivotMenu.append( $('<a theIndex=\"' + index +
                              '\" class=\"popupMenuButton ' + theClass + '\">' + categories[index] + '</a>') );
     }
-}
-
-function findImage(filePath)
-{
-    var imageTitle = null;
-    var newFilePath = filePath;
-    var foundIndex = null;
-    for ( index in imageList )
-    {
-        var idx = imageList[index].filePath.indexOf(filePath);
-        if ( idx != -1 )
-        {
-            newFilePath = imageList[index].filePath;
-            imageTitle = imageList[index].metadata.title;
-            foundIndex = index;
-            break;
-        }
-    }
-    
-    if ( imageTitle == null )
-    {
-        newFilePath = imageList[0].filePath;
-        imageTitle = imageList[0].metadata.title;
-    }
-
-    return { imageTitle : imageTitle, filePath : newFilePath, index : foundIndex };
 }
 
 function toggleThumbView()
@@ -583,10 +569,7 @@ function toImageView_original(categoryValue, imageToShow)
         
         thediv.innerHTML = '<img src=\"' + thumbFilePath +
                            '\" onclick=\"showImage('  + index + 
-                           ');\" class=\"thumbnailImage\" style=\"outline: 0;\
-                           -moz-box-shadow: 8px 8px 6px #808080;\
-                           -webkit-box-shadow: 8px 8px 6px #808080;\
-                           box-shadow: 8px 8px 6px #808080;\"/>\n';
+                           ');\" class=\"thumbnailImage noOutline withDropShadow\"/>\n';
         
         theElement.appendChild(thediv);
         
@@ -702,6 +685,576 @@ function showArticleAt( articleFilePath )
         });
     
     setCurrentHash("showArticle=" + escape(articleList[articleFilePath].title));
+}
+
+// ******************************************************************
+// Tooltip and popup menu support
+// ******************************************************************
+
+this.initializeTooltips = function(changeBackground, tagName)
+{
+    if (isIE6()) // Lots of weirdness with this function in IE6
+        return;
+        
+    if (tagName == null)
+        tagName = "a";
+
+    $(tagName + ".tooltip").hover(function(e) {
+        $("#tooltip").remove();
+        
+        if ( this.title == "" )
+        {
+            //alert("ERROR: No title for "+this.innerHTML);
+            //console.log("ERROR: No title for "+this.innerHTML);
+            return;
+        }
+            
+        this.t = this.title;
+        this.title = "";
+        $("body").append("<p id='tooltip'>" + unescape(this.t) + "</p>");
+
+        var loc = getTipLocation(e);
+
+        $("#tooltip")
+            .css("top", loc.top + "px")
+            .css("left", loc.left + "px")
+            .fadeIn("fast");
+        
+        if ( changeBackground )
+        {
+            this.origClass = this.className;
+            this.className = 'tooltip buttonHoveredColors';
+        }
+    },
+	function() {
+        if ( this.t != "" )
+            this.title = this.t;
+        
+	    this.t = "";
+	    $("#tooltip").remove();
+        
+        if ( changeBackground )
+            this.className = this.origClass;
+	});
+    $(tagName + ".tooltip").mousemove(function(e) {
+        var loc = getTipLocation(e);
+
+        $("#tooltip")
+            .css("top", loc.top + "px")
+            .css("left", loc.left + "px");
+    });
+};
+
+function getTipLocation(e)
+{
+    yOffset = 0;
+    xOffset = 10;
+    
+    var leftValue = e.pageX + xOffset;
+    var tipWidth = $("#tooltip").width();
+    var rightExtent = leftValue + tipWidth + 15;
+    if (rightExtent > $(window).width())
+        leftValue -= (rightExtent - $(window).width());
+
+    var topValue = e.pageY - yOffset;
+    var tipHeight = $("#tooltip").height();
+    var topExtent = topValue + tipHeight + 15;
+    if (topExtent > $(window).height())
+        topValue -= (topExtent - $(window).height());
+        
+    return { top: topValue, left: leftValue };
+}
+
+function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
+{
+    $('#'+ buttonDivName + '.popupMenu').hover(function(e) {
+        if ( this.$popupMenu == null )
+        {
+            this.$popupMenu = $("<div id='popupMenu' class=\"withDropShadow\" style=\"width: 100px;\"></div>");
+            this.$popupMenu.append($theMenuDiv);
+        
+            $("body").append(this.$popupMenu);
+        }
+        this.$popupMenu.show();
+        
+        this.loc = getPopupLocation(buttonDivName, $theMenuDiv);
+        this.$popupMenu.offset({left:this.loc.left,top:this.loc.top}).fadeIn("slow");
+        
+        initializePopupMenuItems($theMenuDiv, this.loc, this.$popupMenu);
+        
+        this.origClass = this.className;
+        this.className = 'withDropShadow buttonHoveredColors';
+    },
+	function(e) {
+        if ( !isInRect( { left: e.pageX, top: e.pageY }, this.loc ) )
+            this.$popupMenu.hide();
+
+        this.className = this.origClass;
+	});
+    
+    $theMenuDiv.children().click(function() {
+        $("#popupMenu").remove();
+        $theMenuDiv.children().removeClass('buttonSelectedColors').addClass('buttonColors');
+        this.origClass = null;
+        this.className = 'withDropShadow popupMenuButton buttonSelectedColors';
+        if ( clickHandler != null )
+            clickHandler(this.innerHTML);
+    });
+}
+
+function initializePopupMenuItems($theMenuDiv, rect, $popupMenu)
+{
+    $popupMenu.hover(function(e){
+    },
+    function(e){
+        $popupMenu.hide();
+    });
+    
+    $theMenuDiv.children().hover(function(e) {
+        if ( this.origClass != null )
+            return;
+            
+        this.origClass = this.className;
+        this.className = 'popupMenuButton buttonHoveredColors';
+    },
+    function(e) {
+        if ( this.origClass == null )
+            return;
+            
+        this.className = this.origClass;
+        this.origClass = null;
+    });
+}
+
+function getPopupLocation(buttonDivName, $theMenuDiv)
+{
+    var buttonX = $('#'+buttonDivName).offset().left+$('#'+buttonDivName).width();
+    var rightExtent = buttonX + $theMenuDiv.width();
+    if ( rightExtent > $(window).width() )
+        buttonX -= (rightExtent - $(window).width());
+        
+    var buttonY = $('#'+buttonDivName).offset().top + 10;
+    var topExtent = buttonY + $theMenuDiv.height();
+    if ( topExtent > $(window).height() )
+        buttonY -= (topExtent - $(window).height());
+        
+    return { top: buttonY, left: buttonX, height: $theMenuDiv.height(), width: $theMenuDiv.width() };
+}
+
+function isInRect(point,rect)
+{
+    if ( point.left < rect.left || point.left > (rect.left+rect.width) )
+        return false;
+        
+    if ( point.top < rect.top || point.top > (rect.top+rect.height) )
+        return false;
+        
+    return true;
+}
+
+// ******************************************************************
+// Image presentation
+// ******************************************************************
+
+function hideImage()
+{
+    if ( currentlySelectedImage )
+    {
+        var theElement = document.getElementById(currentlySelectedImage.filePath);
+        if ( theElement == null )
+            return;
+        
+        if ( isIE7OrLower() )
+            theElement.childNodes[0].setAttribute( 'class', 'thumbnailImage noBorder' );
+        else
+            theElement.childNodes[0].setAttribute('class', 'thumbnailImage noOutline withDropShadow' );
+
+        currentlySelectedImage = null;
+    }
+}
+
+function showImage( index )
+{
+    stopTimerEvents();
+
+    hideImage();
+    
+    var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageList[index].metadata.title) + "</h3>";
+    var theElement = document.getElementById("imagetitlediv");
+    if ( null == theElement )
+    {
+        //alert("ERROR: No imagetitlediv in showImage");
+        //console.log("ERROR: No imagetitlediv in showImage");
+        return;
+    }
+        
+    theElement.innerHTML = titleHTML;
+    
+    theElement = document.getElementById("imagedisplaydiv");
+    if ( null == theElement )
+    {
+        //alert("ERROR: No imagedisplaydiv in showImage");
+        //console.log("ERROR: No imagedisplaydiv in showImage");
+        return;
+    }
+    
+    var theImage = new Image();
+    theImage.onload = function() { imageLoaded(theImage,index); }
+    theImage.src = imageList[index].filePath;
+}
+
+function imageLoaded( theImage, index )
+{
+    var filePath = imageList[index].filePath;
+    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
+                  theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"withDropShadow\"/>";
+                  
+    $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
+    adjustCurrentImageSize();
+    
+    theElement = document.getElementById(filePath);
+    if ( theElement != null )
+    {
+        if ( isIE7OrLower() )
+            theElement.childNodes[0].setAttribute('class', 'thumbnailImage withBorder' );
+        else
+            theElement.childNodes[0].setAttribute('class', 'thumbnailImage withOutline noDropShadow' );
+            
+        currentlySelectedImage = new currentlySelectedImageRecord( filePath );
+    }
+    
+    addPrevNextButtons();
+    
+    $('#metadatadiv').children().remove();
+    $('#metadatadiv').hide().append(getMetadataDiv(index));
+    if ( showingMetadata )
+        $('#metadatadiv').slideDown(1000);
+    
+    if ( currentCategoryIndex != null && currentlySelectedImage != null)
+        theHash = "showCat=" + escape(currentCategorization) +
+                  "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
+                  "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+    else
+        theHash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
+        
+    setCurrentHash(theHash);
+}
+
+function getMetadataDiv(index)
+{
+    var md = imageList[index].metadata;
+    
+    var theTable = $('<table id=\"metadatatable\"></table>');
+    
+    var theFilters = "";
+    if ( md.filters != null )
+        theFilters = md.filters;
+        
+    var theNotes = "";
+    if ( md.caption != null && md.caption != "None" )
+        theNotes = md.caption;
+        
+    var theLens = "";
+    if ( md.lens != null && md.lens != "Unknown" )
+        theLens = md.lens;
+    
+    // Row 1
+    var theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:10%\"><b><i>Taken:</b></i></td>') );
+    theRow.append( $('<td>'+md.date+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Season:</b></i></td>') );
+    theRow.append( $('<td>'+md.season+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Direction:</b></i></td>') );
+    theRow.append( $('<td>'+md.direction+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 2
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:10%\"><b><i>Camera:</b></i></td>') );
+    theRow.append( $('<td>'+md.camera+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Lens:</b></i></td>') );
+    theRow.append( $('<td>'+theLens+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Filters:</b></i></td>') );
+    theRow.append( $('<td>'+theFilters+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 3
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:10%\"><b><i>Film:</b></i></td>') );
+    theRow.append( $('<td>'+md.film+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Format:</b></i></td>') );
+    theRow.append( $('<td>'+md.format+'</td>') );
+    theRow.append( $('<td style=\"width:10%\"><b><i>Score (/10):</b></i></td>') );
+    theRow.append( $('<td>'+md.rating+'</td>') );
+    theTable.append(theRow);
+    
+    // Row 4
+    theRow = $('<tr></tr>');
+    theRow.append( $('<td style=\"width:33%\"><b><i>Notes:</b></i></td>') );
+    theRow.append( $('<td colspan="5">'+theNotes+'</td>') );
+    theTable.append(theRow);
+    
+    return theTable;
+}
+
+function toggleMetadata()
+{
+    if ( !showingMetadata )
+    {
+        $('#metadatadiv').slideDown(1000);
+        $('#infobuttondiv').html('Hide Info');
+        showingMetadata = true;
+    }
+    else
+    {
+        $('#metadatadiv').slideUp(1000);
+        $('#infobuttondiv').html('Show Info');
+        showingMetadata = false;
+    }
+}
+
+function adjustCurrentImageSize()
+{
+    var $div = $("#displayedimage");
+    
+    var winHeight = $(window).height() * 0.75;
+    var imgHeight = $div.attr("origHeight");
+    var heightDiff = imgHeight/winHeight;
+    
+    var winWidth = $(window).width() * 0.58;
+    var imgWidth = $div.attr("origWidth");
+    var widthDiff = imgWidth/winWidth;
+    
+    $div.height("");
+    $div.width("");
+    
+    if ( heightDiff <= 1.0 && widthDiff <= 1.0 )
+        return;
+    
+    if ( heightDiff > widthDiff )
+        $div.height(winHeight+'px');
+    else
+        $div.width(winWidth+'px');
+}
+
+function addPrevNextButtons()
+{
+    var theElement = document.getElementById("prevnextbuttondiv");
+    if ( null == theElement )
+    {
+        //alert("ERROR: No prevnextbuttondiv in addPrevNextButtons");
+        //console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
+        return;
+    }
+        
+    theElement.innerHTML =
+                       "<table style=\"margin-left: auto; margin-right: auto;\">\n\
+                            <tr>\n\
+                                <td><div id=\"prevbuttondiv\" class=\"buttonColors withDropShadow\">Previous</div></td>\n\
+                                <td><div id=\"infobuttondiv\" class=\"buttonColors withDropShadow\">Show Info</div></td>\n\
+                                <td><div id=\"nextbuttondiv\" class=\"buttonColors withDropShadow\">Next</div></td>\n\
+                            </tr>\n\
+                        </table>\n";
+
+    var prevIndex = -1;
+    var nextIndex = -1;
+    if ( currentCategoryIndex != null && currentlySelectedImage != null )
+    {
+        for ( catIndex in categoryList[currentCategoryIndex].imageIndexes )
+        {
+            if ( imageList[categoryList[currentCategoryIndex].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
+            {
+                if ( catIndex > 0 )
+                {
+                    prevIndex = catIndex - 1;
+                }
+                
+                if ( catIndex < (categoryList[currentCategoryIndex].imageIndexes.length-1) )
+                {
+                    nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
+                    nextIndex++;
+                }
+                break;
+            }
+        }
+    }
+    
+    // For some reason, using an HTML anchor tag for the prev/next buttons results in the
+    // showImage call failing when the title has an apostrophe (even though it's escaped). WTF?
+    
+    setupButton("prevbuttondiv", prevIndex);
+    setupButton("infobuttondiv");
+    setupButton("nextbuttondiv", nextIndex);
+}
+
+function setupButton(theDivName, imageIndex)
+{
+    var divName = "#" + theDivName;
+    $div = $(divName);
+
+    if (imageIndex == -1)
+    {
+        $div.remove();
+        return;
+    }
+    
+    if ( imageIndex != null )
+    {
+        $div.click(function() { showImage(categoryList[currentCategoryIndex].imageIndexes[imageIndex]); });
+    }
+    else
+    {
+        if ( !showingMetadata )
+            $div.html("Show Info");
+        else
+            $div.html("Hide Info");
+            
+        $div.click(function() { toggleMetadata(); });
+    }
+        
+    $div.hover(function() {
+        $(divName).removeClass('buttonColors').addClass('buttonHoveredColors').css('cursor','pointer');
+    },
+    function() {
+        $(divName).removeClass('buttonHoveredColors').addClass('buttonColors').css('cursor','auto');
+    });
+}
+
+function showRandomWelcomeImage( shouldStopFirst )
+{
+    if ( shouldStopFirst )
+        stopTimerEvents();
+    
+    var index = Math.floor( Math.random() * totalNumImages );
+    
+    var theImage = new Image();
+    theImage.onload = function () {
+        var theHTML = "<img src=\"" + this.src +
+            "\" id=\"displayedwelcomeimage\" class=\"withDropShadow\" style=\"height: 0; position: relative;\" origWidth=\""
+            + this.width + "\" origHeight=\"" + this.height + "\"/>";
+            
+        $("#welcomeimagedisplaydiv").html(theHTML);
+        
+        var winHeight = $(window).height() * 0.75;
+        var imgHeight = this.height;
+        var heightDiff = imgHeight/winHeight;
+        
+        var winWidth = $(window).width() * 0.58;
+        var imgWidth = this.width;
+        var widthDiff = imgWidth/winWidth;
+        
+        var theHeight = this.height;
+        if ( heightDiff > 1.0 || widthDiff > 1.0 )
+        {        
+            if ( heightDiff > widthDiff )
+            {
+                theHeight = winHeight;
+            }
+            else
+            {
+                theHeight = ( winWidth / imgWidth ) * imgHeight;
+            }
+        }
+        
+        var $imageDiv = $("#displayedwelcomeimage");
+        $imageDiv.offset( { top: theHeight/2+$("#welcome").offset().top+25 } ); // ... fudge
+        $imageDiv.animate( { height: theHeight, top: "-="+(theHeight/2) }, { duration: 2000 , complete: function ()
+        {
+            timerId = setTimeout(
+                        function ()
+                        {
+                            var $div = $("#displayedwelcomeimage");
+                            var theHeight = $div.height();
+                            $div.animate( { height : 0, width: 0, top : "+=" + (theHeight/2) }, { duration: 2000, complete: function ()
+                                {
+                                    $("#displayedwelcomeimage").hide();
+                                    timerId = null;
+                                    showRandomWelcomeImage(false);
+                                } } );
+                            
+                        }, welcomeImageChangeTimeout );
+        } } );
+    }
+    theImage.src = imageList[index].filePath;
+
+}
+
+function showRandomImage( categoryValue )
+{
+    var numImages = 0;
+    if ( categoryValue == "New" )
+    {
+        numImages = categoryList[findCategoryIndex("New")].imageIndexes.length;
+    }
+    else if ( categoryValue == "Favorites" )
+    {
+        numImages = categoryList[findCategoryIndex("Favorites")].imageIndexes.length;
+    }
+    else
+    {
+        for ( catRecordIndex in categoryList )
+        {
+            if ( categoryValue == categoryList[catRecordIndex].categoryValue )
+            {
+                numImages = categoryList[catRecordIndex].imageIndexes.length;
+            }
+        }
+    }
+    
+    var index = Math.floor( Math.random() * numImages );
+    var foundIndex = 0;
+    for ( imageIndex in imageList )
+    {
+        if ( 
+                ( imageList[imageIndex].metadata.getCategoryValue() == categoryValue ) ||
+                ( imageList[imageIndex].metadata.isNew && categoryValue == "New" ) ||
+                ( imageList[imageIndex].metadata.isFavorite && categoryValue == "Favorites" )
+            )
+        {
+            if ( foundIndex == index )
+            {
+                showImage(imageIndex);
+                break;
+            }
+            else
+            {
+                foundIndex++;
+            }
+        }
+    }
+   
+    // This would probably be disconcerting to users 
+//    timerId = setTimeout( function () { showRandomImage( categoryValue ) }, welcomeImageChangeTimeout );
+}
+
+// ******************************************************************
+// Image and metadata management
+// ******************************************************************
+
+function findImage(filePath)
+{
+    var imageTitle = null;
+    var newFilePath = filePath;
+    var foundIndex = null;
+    for ( index in imageList )
+    {
+        var idx = imageList[index].filePath.indexOf(filePath);
+        if ( idx != -1 )
+        {
+            newFilePath = imageList[index].filePath;
+            imageTitle = imageList[index].metadata.title;
+            foundIndex = index;
+            break;
+        }
+    }
+    
+    if ( imageTitle == null )
+    {
+        newFilePath = imageList[0].filePath;
+        imageTitle = imageList[0].metadata.title;
+    }
+
+    return { imageTitle : imageTitle, filePath : newFilePath, index : foundIndex };
 }
 
 function loadImages(isLocal)
@@ -942,384 +1495,6 @@ function findCategories()
 //    }
 }
 
-function hideImage()
-{
-    if ( currentlySelectedImage )
-    {
-        var theElement = document.getElementById(currentlySelectedImage.filePath);
-        if ( theElement == null )
-            return;
-        
-        if ( isIE7OrLower() )
-            theElement.childNodes[0].style.border = '0';
-        else
-            theElement.childNodes[0].setAttribute('style',
-                'outline: 0;\
-                -moz-box-shadow: 8px 8px 6px #808080;\
-                -webkit-box-shadow: 8px 8px 6px #808080;\
-                box-shadow: 8px 8px 6px #808080;');
-
-        currentlySelectedImage = null;
-    }
-}
-
-function showImage( index )
-{
-    stopTimerEvents();
-
-    hideImage();
-    
-    var titleHTML = "<h3 id=\"imagetitlearea\">" + unescape(imageList[index].metadata.title) + "</h3>";
-    var theElement = document.getElementById("imagetitlediv");
-    if ( null == theElement )
-    {
-        //alert("ERROR: No imagetitlediv in showImage");
-        //console.log("ERROR: No imagetitlediv in showImage");
-        return;
-    }
-        
-    theElement.innerHTML = titleHTML;
-    
-    theElement = document.getElementById("imagedisplaydiv");
-    if ( null == theElement )
-    {
-        //alert("ERROR: No imagedisplaydiv in showImage");
-        //console.log("ERROR: No imagedisplaydiv in showImage");
-        return;
-    }
-    
-    var theImage = new Image();
-    theImage.onload = function() { imageLoaded(theImage,index); }
-    theImage.src = imageList[index].filePath;
-}
-
-function imageLoaded( theImage, index )
-{
-    var filePath = imageList[index].filePath;
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
-                  theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"shadowKnows\"/>";
-                  
-    $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
-    adjustCurrentImageSize();
-    
-    theElement = document.getElementById(filePath);
-    if ( theElement != null )
-    {
-        if ( isIE7OrLower() )
-            theElement.childNodes[0].style.border = '7px solid #606060';
-        else
-            theElement.childNodes[0].setAttribute('style',
-                'outline: 7px solid #606060;\
-                -moz-box-shadow: 0px 0px 0px #808080;\
-                -webkit-box-shadow: 0px 0px 0px #808080;\
-                box-shadow: 0px 0px 0px #808080;');
-            
-        currentlySelectedImage = new currentlySelectedImageRecord( filePath );
-    }
-    
-    addPrevNextButtons();
-    
-    $('#metadatadiv').children().remove();
-    $('#metadatadiv').hide().append(getMetadataDiv(index));
-    if ( showingMetadata )
-        $('#metadatadiv').slideDown(1000);
-    
-    if ( currentCategoryIndex != null && currentlySelectedImage != null)
-        theHash = "showCat=" + escape(currentCategorization) +
-                  "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
-                  "&showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
-    else
-        theHash = "showImage=" + escape(filePath.substring(filePath.lastIndexOf('/')+1));
-        
-    setCurrentHash(theHash);
-}
-
-function getMetadataDiv(index)
-{
-    var md = imageList[index].metadata;
-    
-    var theTable = $('<table id=\"metadatatable\"></table>');
-    
-    var theFilters = "";
-    if ( md.filters != null )
-        theFilters = md.filters;
-        
-    var theNotes = "";
-    if ( md.caption != null && md.caption != "None" )
-        theNotes = md.caption;
-        
-    var theLens = "";
-    if ( md.lens != null && md.lens != "Unknown" )
-        theLens = md.lens;
-    
-    // Row 1
-    var theRow = $('<tr></tr>');
-    theRow.append( $('<td style=\"width:10%\"><b><i>Taken:</b></i></td>') );
-    theRow.append( $('<td>'+md.date+'</td>') );
-    theRow.append( $('<td style=\"width:10%\"><b><i>Season:</b></i></td>') );
-    theRow.append( $('<td>'+md.season+'</td>') );
-    theRow.append( $('<td style=\"width:10%\"><b><i>Direction:</b></i></td>') );
-    theRow.append( $('<td>'+md.direction+'</td>') );
-    theTable.append(theRow);
-    
-    // Row 2
-    theRow = $('<tr></tr>');
-    theRow.append( $('<td style=\"width:10%\"><b><i>Camera:</b></i></td>') );
-    theRow.append( $('<td>'+md.camera+'</td>') );
-    theRow.append( $('<td style=\"width:10%\"><b><i>Lens:</b></i></td>') );
-    theRow.append( $('<td>'+theLens+'</td>') );
-    theRow.append( $('<td style=\"width:10%\"><b><i>Filters:</b></i></td>') );
-    theRow.append( $('<td>'+theFilters+'</td>') );
-    theTable.append(theRow);
-    
-    // Row 3
-    theRow = $('<tr></tr>');
-    theRow.append( $('<td style=\"width:10%\"><b><i>Film:</b></i></td>') );
-    theRow.append( $('<td>'+md.film+'</td>') );
-    theRow.append( $('<td style=\"width:10%\"><b><i>Format:</b></i></td>') );
-    theRow.append( $('<td>'+md.format+'</td>') );
-    theRow.append( $('<td style=\"width:10%\"><b><i>Score (/10):</b></i></td>') );
-    theRow.append( $('<td>'+md.rating+'</td>') );
-    theTable.append(theRow);
-    
-    // Row 4
-    theRow = $('<tr></tr>');
-    theRow.append( $('<td style=\"width:33%\"><b><i>Notes:</b></i></td>') );
-    theRow.append( $('<td colspan="5">'+theNotes+'</td>') );
-    theTable.append(theRow);
-    
-    return theTable;
-}
-
-function toggleMetadata()
-{
-    if ( !showingMetadata )
-    {
-        $('#metadatadiv').slideDown(1000);
-        $('#infobuttondiv').html('Hide Info');
-        showingMetadata = true;
-    }
-    else
-    {
-        $('#metadatadiv').slideUp(1000);
-        $('#infobuttondiv').html('Show Info');
-        showingMetadata = false;
-    }
-}
-
-function adjustCurrentImageSize()
-{
-    var $div = $("#displayedimage");
-    
-    var winHeight = $(window).height() * 0.75;
-    var imgHeight = $div.attr("origHeight");
-    var heightDiff = imgHeight/winHeight;
-    
-    var winWidth = $(window).width() * 0.58;
-    var imgWidth = $div.attr("origWidth");
-    var widthDiff = imgWidth/winWidth;
-    
-    $div.height("");
-    $div.width("");
-    
-    if ( heightDiff <= 1.0 && widthDiff <= 1.0 )
-        return;
-    
-    if ( heightDiff > widthDiff )
-        $div.height(winHeight+'px');
-    else
-        $div.width(winWidth+'px');
-}
-
-function addPrevNextButtons()
-{
-    var theElement = document.getElementById("prevnextbuttondiv");
-    if ( null == theElement )
-    {
-        //alert("ERROR: No prevnextbuttondiv in addPrevNextButtons");
-        //console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
-        return;
-    }
-        
-    theElement.innerHTML =
-                       "<table style=\"margin-left: auto; margin-right: auto;\">\n\
-                            <tr>\n\
-                                <td><div id=\"prevbuttondiv\" class=\"buttonColors\">Previous</div></td>\n\
-                                <td><div id=\"infobuttondiv\" class=\"buttonColors\">Show Info</div></td>\n\
-                                <td><div id=\"nextbuttondiv\" class=\"buttonColors\">Next</div></td>\n\
-                            </tr>\n\
-                        </table>\n";
-
-    var prevIndex = -1;
-    var nextIndex = -1;
-    if ( currentCategoryIndex != null && currentlySelectedImage != null )
-    {
-        for ( catIndex in categoryList[currentCategoryIndex].imageIndexes )
-        {
-            if ( imageList[categoryList[currentCategoryIndex].imageIndexes[catIndex]].filePath == currentlySelectedImage.filePath )
-            {
-                if ( catIndex > 0 )
-                {
-                    prevIndex = catIndex - 1;
-                }
-                
-                if ( catIndex < (categoryList[currentCategoryIndex].imageIndexes.length-1) )
-                {
-                    nextIndex = catIndex; // If I go catIndex+1 here, nextIndex becomes a string type. WTF?
-                    nextIndex++;
-                }
-                break;
-            }
-        }
-    }
-    
-    // For some reason, using an HTML anchor tag for the prev/next buttons results in the
-    // showImage call failing when the title has an apostrophe (even though it's escaped). WTF?
-    
-    setupButton("prevbuttondiv", prevIndex);
-    setupButton("infobuttondiv");
-    setupButton("nextbuttondiv", nextIndex);
-}
-
-function setupButton(theDivName, imageIndex)
-{
-    var divName = "#" + theDivName;
-    $div = $(divName);
-
-    if (imageIndex == -1)
-    {
-        $div.remove();
-        return;
-    }
-    
-    if ( imageIndex != null )
-    {
-        $div.click(function() { showImage(categoryList[currentCategoryIndex].imageIndexes[imageIndex]); });
-    }
-    else
-    {
-        if ( !showingMetadata )
-            $div.html("Show Info");
-        else
-            $div.html("Hide Info");
-            
-        $div.click(function() { toggleMetadata(); });
-    }
-        
-    $div.hover(function() {
-        $(divName).removeClass('buttonColors').addClass('buttonHoveredColors').css('cursor','pointer');
-    },
-    function() {
-        $(divName).removeClass('buttonHoveredColors').addClass('buttonColors').css('cursor','auto');
-    });
-}
-
-function showRandomWelcomeImage( shouldStopFirst )
-{
-    if ( shouldStopFirst )
-        stopTimerEvents();
-    
-    var index = Math.floor( Math.random() * totalNumImages );
-    
-    var theImage = new Image();
-    theImage.onload = function () {
-        var theHTML = "<img src=\"" + this.src +
-            "\" id=\"displayedwelcomeimage\" class=\"shadowKnows\" style=\"height: 0; position: relative;\" origWidth=\""
-            + this.width + "\" origHeight=\"" + this.height + "\"/>";
-            
-        $("#welcomeimagedisplaydiv").html(theHTML);
-        
-        var winHeight = $(window).height() * 0.75;
-        var imgHeight = this.height;
-        var heightDiff = imgHeight/winHeight;
-        
-        var winWidth = $(window).width() * 0.58;
-        var imgWidth = this.width;
-        var widthDiff = imgWidth/winWidth;
-        
-        var theHeight = this.height;
-        if ( heightDiff > 1.0 || widthDiff > 1.0 )
-        {        
-            if ( heightDiff > widthDiff )
-            {
-                theHeight = winHeight;
-            }
-            else
-            {
-                theHeight = ( winWidth / imgWidth ) * imgHeight;
-            }
-        }
-        
-        var $imageDiv = $("#displayedwelcomeimage");
-        $imageDiv.offset( { top: theHeight/2+$("#welcome").offset().top+25 } ); // ... fudge
-        $imageDiv.animate( { height: theHeight, top: "-="+(theHeight/2) }, { duration: 2000 , complete: function ()
-        {
-            timerId = setTimeout(
-                        function ()
-                        {
-                            var $div = $("#displayedwelcomeimage");
-                            var theHeight = $div.height();
-                            $div.animate( { height : 0, width: 0, top : "+=" + (theHeight/2) }, { duration: 2000, complete: function ()
-                                {
-                                    $("#displayedwelcomeimage").hide();
-                                    timerId = null;
-                                    showRandomWelcomeImage(false);
-                                } } );
-                            
-                        }, welcomeImageChangeTimeout );
-        } } );
-    }
-    theImage.src = imageList[index].filePath;
-
-}
-
-function showRandomImage( categoryValue )
-{
-    var numImages = 0;
-    if ( categoryValue == "New" )
-    {
-        numImages = categoryList[findCategoryIndex("New")].imageIndexes.length;
-    }
-    else if ( categoryValue == "Favorites" )
-    {
-        numImages = categoryList[findCategoryIndex("Favorites")].imageIndexes.length;
-    }
-    else
-    {
-        for ( catRecordIndex in categoryList )
-        {
-            if ( categoryValue == categoryList[catRecordIndex].categoryValue )
-            {
-                numImages = categoryList[catRecordIndex].imageIndexes.length;
-            }
-        }
-    }
-    
-    var index = Math.floor( Math.random() * numImages );
-    var foundIndex = 0;
-    for ( imageIndex in imageList )
-    {
-        if ( 
-                ( imageList[imageIndex].metadata.getCategoryValue() == categoryValue ) ||
-                ( imageList[imageIndex].metadata.isNew && categoryValue == "New" ) ||
-                ( imageList[imageIndex].metadata.isFavorite && categoryValue == "Favorites" )
-            )
-        {
-            if ( foundIndex == index )
-            {
-                showImage(imageIndex);
-                break;
-            }
-            else
-            {
-                foundIndex++;
-            }
-        }
-    }
-   
-    // This would probably be disconcerting to users 
-//    timerId = setTimeout( function () { showRandomImage( categoryValue ) }, welcomeImageChangeTimeout );
-}
 
 function isMobilePlatform()
 {
@@ -1340,167 +1515,6 @@ function stopTimerEvents()
     
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
     $("#tooltip").remove();
-}
-
-this.initializeTooltips = function(changeBackground, tagName)
-{
-    if (isIE6()) // Lots of weirdness with this function in IE6
-        return;
-        
-    if (tagName == null)
-        tagName = "a";
-
-    $(tagName + ".tooltip").hover(function(e) {
-        $("#tooltip").remove();
-        
-        if ( this.title == "" )
-        {
-            //alert("ERROR: No title for "+this.innerHTML);
-            //console.log("ERROR: No title for "+this.innerHTML);
-            return;
-        }
-            
-        this.t = this.title;
-        this.title = "";
-        $("body").append("<p id='tooltip'>" + unescape(this.t) + "</p>");
-
-        var loc = getTipLocation(e);
-
-        $("#tooltip")
-            .css("top", loc.top + "px")
-            .css("left", loc.left + "px")
-            .fadeIn("fast");
-        
-        if ( changeBackground )
-        {
-            this.origClass = this.className;
-            this.className = 'tooltip buttonHoveredColors';
-        }
-    },
-	function() {
-        if ( this.t != "" )
-            this.title = this.t;
-        
-	    this.t = "";
-	    $("#tooltip").remove();
-        
-        if ( changeBackground )
-            this.className = this.origClass;
-	});
-    $(tagName + ".tooltip").mousemove(function(e) {
-        var loc = getTipLocation(e);
-
-        $("#tooltip")
-            .css("top", loc.top + "px")
-            .css("left", loc.left + "px");
-    });
-};
-
-function getTipLocation(e)
-{
-    yOffset = 0;
-    xOffset = 10;
-    
-    var leftValue = e.pageX + xOffset;
-    var tipWidth = $("#tooltip").width();
-    var rightExtent = leftValue + tipWidth + 15;
-    if (rightExtent > $(window).width())
-        leftValue -= (rightExtent - $(window).width());
-
-    var topValue = e.pageY - yOffset;
-    var tipHeight = $("#tooltip").height();
-    var topExtent = topValue + tipHeight + 15;
-    if (topExtent > $(window).height())
-        topValue -= (topExtent - $(window).height());
-        
-    return { top: topValue, left: leftValue };
-}
-
-function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
-{
-    $('#'+ buttonDivName + '.popupMenu').hover(function(e) {
-        if ( this.$popupMenu == null )
-        {
-            this.$popupMenu = $("<div id='popupMenu' style=\"width: 100px;\"></div>");
-            this.$popupMenu.append($theMenuDiv);
-        
-            $("body").append(this.$popupMenu);
-        }
-        this.$popupMenu.show();
-        
-        this.loc = getPopupLocation(buttonDivName, $theMenuDiv);
-        this.$popupMenu.offset({left:this.loc.left,top:this.loc.top}).fadeIn("slow");
-        
-        initializePopupMenuItems($theMenuDiv, this.loc, this.$popupMenu);
-        
-        this.origClass = this.className;
-        this.className = 'buttonHoveredColors';
-    },
-	function(e) {
-        if ( !isInRect( { left: e.pageX, top: e.pageY }, this.loc ) )
-            this.$popupMenu.hide();
-
-        this.className = this.origClass;
-	});
-    
-    $theMenuDiv.children().click(function() {
-        $("#popupMenu").remove();
-        $theMenuDiv.children().removeClass('buttonSelectedColors').addClass('buttonColors');
-        this.origClass = null;
-        this.className = 'popupMenuButton buttonSelectedColors';
-        if ( clickHandler != null )
-            clickHandler(this.innerHTML);
-    });
-}
-
-function initializePopupMenuItems($theMenuDiv, rect, $popupMenu)
-{
-    $popupMenu.hover(function(e){
-    },
-    function(e){
-        $popupMenu.hide();
-    });
-    
-    $theMenuDiv.children().hover(function(e) {
-        if ( this.origClass != null )
-            return;
-            
-        this.origClass = this.className;
-        this.className = 'popupMenuButton buttonHoveredColors';
-    },
-    function(e) {
-        if ( this.origClass == null )
-            return;
-            
-        this.className = this.origClass;
-        this.origClass = null;
-    });
-}
-
-function getPopupLocation(buttonDivName, $theMenuDiv)
-{
-    var buttonX = $('#'+buttonDivName).offset().left+$('#'+buttonDivName).width();
-    var rightExtent = buttonX + $theMenuDiv.width();
-    if ( rightExtent > $(window).width() )
-        buttonX -= (rightExtent - $(window).width());
-        
-    var buttonY = $('#'+buttonDivName).offset().top + 10;
-    var topExtent = buttonY + $theMenuDiv.height();
-    if ( topExtent > $(window).height() )
-        buttonY -= (topExtent - $(window).height());
-        
-    return { top: buttonY, left: buttonX, height: $theMenuDiv.height(), width: $theMenuDiv.width() };
-}
-
-function isInRect(point,rect)
-{
-    if ( point.left < rect.left || point.left > (rect.left+rect.width) )
-        return false;
-        
-    if ( point.top < rect.top || point.top > (rect.top+rect.height) )
-        return false;
-        
-    return true;
 }
 
 function isIE6() // Has issues with hover for tooltips
