@@ -274,9 +274,6 @@ function buildMenu()
     adiv = document.createElement('div');
     adiv.setAttribute('class', 'buttondiv');
     adiv.setAttribute('id','about');
-    if ( currentView == "about" )
-    adiv.innerHTML = "<a class=\"tooltip selectedButtonColors withDropShadow\" title=\"About the photographer and photographs\">About</a>\n";
-    else
     adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow\" title=\"About the photographer and photographs\">About</a>\n";
     adiv.firstChild.onclick = showAboutView;
     $("#otheritems").append(adiv);
@@ -370,7 +367,7 @@ function toggleThumbView()
 function showAboutView()
 {
     showArticleAt("words/about.htm");
-    this.origClass = 'buttonSelectedColors';
+    this.origClass = 'tooltip buttonSelectedColors withDropShadow';
     updateSelectedButton("about");
     currentView = "about";
 }
@@ -745,7 +742,7 @@ this.initializeTooltips = function(changeBackground, tagName)
         if ( changeBackground )
         {
             this.origClass = this.className;
-            this.className = 'tooltip buttonHoveredColors';
+            this.className = 'tooltip buttonHoveredColors withDropShadow';
         }
     },
 	function() {
