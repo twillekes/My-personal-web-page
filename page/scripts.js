@@ -162,6 +162,11 @@ function syncToUrl()
                 toWordView();
                 return;
             }
+            else if ( index == "showAbout" )
+            {
+                showAboutView();
+                return;
+            }
             else if ( index == "showArticle" )
             {
                 if ( showArticle(unescape(loadParameters[index])) )
@@ -366,10 +371,11 @@ function toggleThumbView()
 
 function showAboutView()
 {
-    showArticleAt("words/about.htm");
+    showArticleAt('words/about.htm');
     this.origClass = 'tooltip buttonSelectedColors withDropShadow';
-    updateSelectedButton("about");
-    currentView = "about";
+    updateSelectedButton('about');
+    currentView = 'about';
+    setCurrentHash('showAbout');
 }
 
 function toSingleImageView(filePath)
