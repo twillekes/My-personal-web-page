@@ -967,7 +967,13 @@ function imageLoaded( theImage, index )
     $('#metadatadiv').children().remove();
     $('#metadatadiv').hide().append(getMetadataDiv(index));
     if ( showingMetadata )
-        $('#metadatadiv').slideDown(1000);
+    {
+        //$('#metadatadiv').slideDown(1000); // This was jerky in Safari, hence the hand-waving with height
+        $('#metadatadiv').show();
+        var theHeight = $('#metadatadiv').height();
+        $('#metadatadiv').css( { height: 0 } );
+        $('#metadatadiv').animate( { height: theHeight }, { duration: 1000 } );
+    }
     
     if ( currentCategoryIndex != null && currentlySelectedImage != null)
         theHash = "showCat=" + escape(currentCategorization) +
@@ -1040,7 +1046,12 @@ function toggleMetadata()
 {
     if ( !showingMetadata )
     {
-        $('#metadatadiv').slideDown(1000);
+        //$('#metadatadiv').slideDown(1000); // This was jerky in Safari, hence the hand-waving with height
+        $('#metadatadiv').show();
+        var theHeight = $('#metadatadiv').height();
+        $('#metadatadiv').css( { height: 0 } );
+        $('#metadatadiv').animate( { height: theHeight }, { duration: 1000 } );
+
         $('#infobuttondiv').html('Hide Info');
         showingMetadata = true;
     }
