@@ -243,12 +243,6 @@ function getParams()
 // Page view modes and management
 // ******************************************************************
 
-function switchTo()
-{
-    toImageView(this.innerHTML);
-    this.origClass = 'buttonSelectedColors';
-}
-
 function buildMenu()
 {
     $("#menuitems").children().remove();
@@ -267,7 +261,7 @@ function buildMenu()
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id', encodeValue(categoryList[index].categoryValue));
-        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
+        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedButton\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
                          "\">" +
                          categoryList[index].categoryValue + "</a>\n";
         adiv.firstChild.onclick = switchTo;
@@ -276,10 +270,14 @@ function buildMenu()
     }
     
     // "About" button
+    var theClass = 'buttonColors';
+    if ( currentView == "about" )
+        theClass = 'buttonSelectedColors'
+        
     adiv = document.createElement('div');
     adiv.setAttribute('class', 'buttondiv');
     adiv.setAttribute('id','about');
-    adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow\" title=\"About the photographer and photographs\">About</a>\n";
+    adiv.innerHTML = "<a class=\"tooltip " + theClass + " withDropShadow roundedButton\" title=\"About the photographer and photographs\">About</a>\n";
     adiv.firstChild.onclick = showAboutView;
     $("#otheritems").append(adiv);
     
@@ -294,7 +292,7 @@ function buildMenu()
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id','words');
-        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow\" title=\"" + textToShow + "\">Words</a>\n";
+        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedButton\" title=\"" + textToShow + "\">Words</a>\n";
         adiv.firstChild.onclick = toWordView;
         
         $("#otheritems").append(adiv);
@@ -302,21 +300,21 @@ function buildMenu()
     
     if ( supportLightbox )
     {
-        $viewMenu = $('<div id=\"viewMenu\"></div>');
+        $viewMenu = $('<div id=\"viewMenu\" class=\"roundedButton\"></div>');
     
         var theClass = 'buttonColors';
         if ( !usingLightbox )
             theClass = 'buttonSelectedColors';
-        $viewMenu.append( $('<a class=\"popupMenuButton ' + theClass + '\">original</a>') );
+        $viewMenu.append( $('<a class=\"popupMenuButton roundedTop ' + theClass + '\">original</a>') );
     
         var theClass = 'buttonColors';
         if ( usingLightbox )
             theClass = 'buttonSelectedColors';
-        $viewMenu.append( $('<a class=\"popupMenuButton ' + theClass + '\">lightbox</a>') );
+        $viewMenu.append( $('<a class=\"popupMenuButton roundedBottom ' + theClass + '\">lightbox</a>') );
     
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a id=\"viewMenuButton\" class=\"popupMenu buttonColors withDropShadow\">" + viewText + "</a>\n";
+        adiv.innerHTML = "<a id=\"viewMenuButton\" class=\"popupMenuSource buttonColors withDropShadow roundedButton\">" + viewText + "</a>\n";
         
         $("#viewitems").append(adiv);
         
@@ -328,7 +326,7 @@ function buildMenu()
     if ( $pivotMenu != null )
     {
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenu buttonColors withDropShadow\">" + categorizationText + "</a>\n";
+        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenuSource buttonColors withDropShadow roundedButton\">" + categorizationText + "</a>\n";
         
         $("#viewitems").append(adiv);
         
@@ -355,9 +353,22 @@ function buildPivotMenu()
         if ( currentCategorization != null && currentCategorization == categories[index] )
             theClass = 'buttonSelectedColors';
             
+        if ( index == 0 )
+            theClass += ' roundedTop';
+            
+        if ( index == categories.length - 1 )
+            theClass += ' roundedBottom';
+            
         $pivotMenu.append( $('<a theIndex=\"' + index +
                              '\" class=\"popupMenuButton ' + theClass + '\">' + categories[index] + '</a>') );
     }
+}
+
+function switchTo()
+{
+    toImageView(this.innerHTML);
+    $(this).removeClass('buttonColors').addClass('buttonSelectedColors');
+    this.wasClicked = true;
 }
 
 function toggleThumbView()
@@ -365,14 +376,14 @@ function toggleThumbView()
     usingLightbox = !usingLightbox;
     buildMenu();
     
-    if ( currentCategoryIndex != null )
+    if ( currentCategoryIndex != null && currentView == "image" )
         toImageView(categoryList[currentCategoryIndex].categoryValue);
 }
 
 function showAboutView()
 {
     showArticleAt('words/about.htm');
-    this.origClass = 'tooltip buttonSelectedColors withDropShadow';
+    this.wasClicked = true;
     updateSelectedButton('about');
     currentView = 'about';
     setCurrentHash('showAbout');
@@ -676,7 +687,7 @@ function toWordView()
         
     setCurrentHash("showArticles");
     currentView = "words";
-    this.origClass = 'buttonSelectedColors';
+    this.wasClicked = true;
     updateSelectedButton("words");
 }
 
@@ -725,6 +736,8 @@ this.initializeTooltips = function(changeBackground, tagName)
         tagName = "a";
 
     $(tagName + ".tooltip").hover(function(e) {
+        this.wasClicked = false; // Initialize
+        
         $("#tooltip").remove();
         
         if ( this.title == "" )
@@ -747,8 +760,7 @@ this.initializeTooltips = function(changeBackground, tagName)
         
         if ( changeBackground )
         {
-            this.origClass = this.className;
-            this.className = 'tooltip buttonHoveredColors withDropShadow';
+            $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
         }
     },
 	function() {
@@ -759,7 +771,11 @@ this.initializeTooltips = function(changeBackground, tagName)
 	    $("#tooltip").remove();
         
         if ( changeBackground )
-            this.className = this.origClass;
+        {
+            $(this).removeClass('buttonHoveredColors')
+            if ( !this.wasClicked )
+                $(this).addClass('buttonColors');
+        }
 	});
     $(tagName + ".tooltip").mousemove(function(e) {
         var loc = getTipLocation(e);
@@ -792,10 +808,10 @@ function getTipLocation(e)
 
 function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
 {
-    $('#'+ buttonDivName + '.popupMenu').hover(function(e) {
+    $('#'+ buttonDivName + '.popupMenuSource').hover(function(e) {
         if ( this.$popupMenu == null )
         {
-            this.$popupMenu = $("<div id='popupMenu' class=\"withDropShadow\" style=\"width: 100px;\"></div>");
+            this.$popupMenu = $("<div id='popupMenu_" + buttonDivName + "' class=\"popupMenu withDropShadow roundedButton\" style=\"width: 100px;\"></div>");
             this.$popupMenu.append($theMenuDiv);
         
             $("body").append(this.$popupMenu);
@@ -803,25 +819,23 @@ function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
         this.$popupMenu.show();
         
         this.loc = getPopupLocation(buttonDivName, $theMenuDiv);
-        this.$popupMenu.offset({left:this.loc.left,top:this.loc.top}).fadeIn("slow");
+        this.$popupMenu.offset({left:this.loc.left,top:this.loc.top});
         
         initializePopupMenuItems($theMenuDiv, this.loc, this.$popupMenu);
         
-        this.origClass = this.className;
-        this.className = 'withDropShadow buttonHoveredColors';
+        $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
     },
 	function(e) {
         if ( !isInRect( { left: e.pageX, top: e.pageY }, this.loc ) )
             this.$popupMenu.hide();
 
-        this.className = this.origClass;
+        $(this).removeClass('buttonHoveredColors').addClass('buttonColors');
 	});
     
     $theMenuDiv.children().click(function() {
-        $("#popupMenu").remove();
+        $("#popupMenu_"+buttonDivName).remove();
         $theMenuDiv.children().removeClass('buttonSelectedColors').addClass('buttonColors');
-        this.origClass = null;
-        this.className = 'withDropShadow popupMenuButton buttonSelectedColors';
+        $(this).addClass('buttonSelectedColors');
         if ( clickHandler != null )
             clickHandler(this.innerHTML);
     });
@@ -836,18 +850,18 @@ function initializePopupMenuItems($theMenuDiv, rect, $popupMenu)
     });
     
     $theMenuDiv.children().hover(function(e) {
-        if ( this.origClass != null )
+        if ( this.hovering )
             return;
             
-        this.origClass = this.className;
-        this.className = 'popupMenuButton buttonHoveredColors';
+        this.hovering = true;
+        $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
     },
     function(e) {
-        if ( this.origClass == null )
+        if ( !this.hovering )
             return;
             
-        this.className = this.origClass;
-        this.origClass = null;
+        $(this).removeClass('buttonOveredColors').addClass('buttonColors');
+        this.hovering = false;
     });
 }
 
@@ -1075,9 +1089,9 @@ function addPrevNextButtons()
     theElement.innerHTML =
                        "<table style=\"margin-left: auto; margin-right: auto;\">\n\
                             <tr>\n\
-                                <td><div id=\"prevbuttondiv\" class=\"buttonColors withDropShadow\">Previous</div></td>\n\
-                                <td><div id=\"infobuttondiv\" class=\"buttonColors withDropShadow\">Show Info</div></td>\n\
-                                <td><div id=\"nextbuttondiv\" class=\"buttonColors withDropShadow\">Next</div></td>\n\
+                                <td><div id=\"prevbuttondiv\" class=\"buttonColors withDropShadow roundedButton\">Previous</div></td>\n\
+                                <td><div id=\"infobuttondiv\" class=\"buttonColors withDropShadow roundedButton\">Show Info</div></td>\n\
+                                <td><div id=\"nextbuttondiv\" class=\"buttonColors withDropShadow roundedButton\">Next</div></td>\n\
                             </tr>\n\
                         </table>\n";
 

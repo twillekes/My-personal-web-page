@@ -215,7 +215,7 @@ html>body #prevnextbuttondiv div
     word-wrap: break-word;
 }
 
-#popupMenu a
+.popupMenu a
     {
     cursor: pointer;
     border: 1px solid black; /* was below */
@@ -405,6 +405,27 @@ ol
 {
     background-color: #B0B0B0;
     color: black;
+}
+
+.roundedButton
+{
+    border-radius: 6px 6px 6px 6px;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+}
+
+.roundedBottom
+{
+    border-radius: 0px 0px 4px 4px;
+    -moz-border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius: 0px 0px 4px 4px;
+}
+
+.roundedTop
+{
+    border-radius: 4px 4px 0px 0px;
+    -moz-border-radius: 4px 4px 0px 0px;
+    -webkit-border-radius: 4px 4px 0px 0px;
 }
 
 .buttondiv
