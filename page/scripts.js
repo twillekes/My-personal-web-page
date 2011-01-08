@@ -536,7 +536,8 @@ function toImageView_lightbox(categoryValue, imageToShow)
                 ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
                 ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
                 ) ||
-                ( imageList[index].metadata.isNew && categoryValue != "New" )
+                ( imageList[index].metadata.isNew && categoryValue != "New" ) ||
+                ( imageList[index].metadata.isDiscarded )
             )
             continue;
             
@@ -597,7 +598,8 @@ function toImageView_original(categoryValue, imageToShow)
                 ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
                 ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
                 ) ||
-                ( imageList[index].metadata.isNew && categoryValue != "New" )
+                ( imageList[index].metadata.isNew && categoryValue != "New" ) ||
+                ( imageList[index].metadata.isDiscarded )
             )
             continue;
             
