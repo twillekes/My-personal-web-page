@@ -372,6 +372,7 @@ function switchTo()
     this.wasClicked = true;
 }
 
+
 function setThumbView(theHTML)
 {
     usingLightbox = false;
@@ -970,21 +971,22 @@ function imageLoaded( theImage, index )
     }
     
     addPrevNextButtons();
-    
-    $('#metadatadiv').children().remove();
-    $('#metadatadiv').hide().append(getMetadataDiv(index));
+
+    $div = $('#metadatadiv');
+    $div.children().remove();
+    $div.hide().append(getMetadataDiv(index));
     if ( showingMetadata )
     {
         if ( !isSafari() )
         {
-            $('#metadatadiv').slideDown(1000); // This was jerky in Safari, hence the hand-waving with height
+            $div.slideDown(1000); // This was jerky in Safari, hence the hand-waving with height
         }
         else
         {
-            $('#metadatadiv').show();
-            var theHeight = $('#metadatadiv').height();
-            $('#metadatadiv').css( { height: 0 } );
-            $('#metadatadiv').animate( { height: theHeight }, { duration: 1000 } );
+            $div.show();
+            var theHeight = $div.height();
+            $div.css( { height: 0 } );
+            $div.animate( { height: theHeight }, { duration: 1000 } );
         }
     }
     
@@ -1057,18 +1059,19 @@ function getMetadataDiv(index)
 
 function toggleMetadata()
 {
+    var $div = $('#metadatadiv');
     if ( !showingMetadata )
     {
         if ( !isSafari() )
         {
-            $('#metadatadiv').slideDown(1000); // This is jerky in Safari
+            $div.slideDown(1000); // This is jerky in Safari
         }
         else
         {
-            $('#metadatadiv').show();
-            var theHeight = $('#metadatadiv').height();
-            $('#metadatadiv').css( { height: 0 } );
-            $('#metadatadiv').animate( { height: theHeight }, { duration: 1000 } );
+            $div.show();
+            var theHeight = $div.height();
+            $div.css( { height: 0 } );
+            $div.animate( { height: theHeight }, { duration: 1000 } );
         }
 
         $('#infobuttondiv').html('Hide Info');
@@ -1076,7 +1079,7 @@ function toggleMetadata()
     }
     else
     {
-        $('#metadatadiv').slideUp(1000);
+        $div.slideUp(1000);
         $('#infobuttondiv').html('Show Info');
         showingMetadata = false;
     }
@@ -1108,22 +1111,14 @@ function adjustCurrentImageSize()
 
 function addPrevNextButtons()
 {
-    var theElement = document.getElementById("prevnextbuttondiv");
-    if ( null == theElement )
-    {
-        //alert("ERROR: No prevnextbuttondiv in addPrevNextButtons");
-        //console.log("ERROR: No prevnextbuttondiv in addPrevNextButtons");
-        return;
-    }
-        
-    theElement.innerHTML =
+    $('#prevnextbuttondiv').html(
                        "<table style=\"margin-left: auto; margin-right: auto;\">\n\
                             <tr>\n\
                                 <td><div id=\"prevbuttondiv\" class=\"buttonColors withDropShadow roundedButton\">Previous</div></td>\n\
                                 <td><div id=\"infobuttondiv\" class=\"buttonColors withDropShadow roundedButton\">Show Info</div></td>\n\
                                 <td><div id=\"nextbuttondiv\" class=\"buttonColors withDropShadow roundedButton\">Next</div></td>\n\
                             </tr>\n\
-                        </table>\n";
+                        </table>\n");
 
     var prevIndex = -1;
     var nextIndex = -1;
@@ -1455,20 +1450,15 @@ function currentlySelectedImageRecord( filePath )
 
 function getCategoryValue()
 {
-    var theCategoryValue = 'Unknown';
+    if ( currentCategorization == null )
+    {
+        //alert("ERROR: No categorization in getCategoryValue");
+        //console.log("ERROR: No categorization in getCategoryValue");
+        return "Unknown";
+    }
     
-    if ( "subject" == currentCategorization ) theCategoryValue = this.subject;
-    else if ( "season" == currentCategorization ) theCategoryValue = this.season;
-    else if ( "camera" == currentCategorization ) theCategoryValue = this.camera;
-    else if ( "lens" == currentCategorization ) theCategoryValue = this.lens;
-    else if ( "film" == currentCategorization ) theCategoryValue = this.film;
-    else if ( "chrome" == currentCategorization ) theCategoryValue = this.chrome;
-    else if ( "format" == currentCategorization ) theCategoryValue = this.format;
-    else if ( "year" == currentCategorization ) theCategoryValue = this.year;
-    else if ( "month" == currentCategorization ) theCategoryValue = this.month;
-    else if ( "direction" == currentCategorization ) theCategoryValue = this.direction;
-    else if ( "rating" == currentCategorization ) theCategoryValue = this.rating;
-    else if ( "orientation" == currentCategorization ) theCategoryValue = this.orientation;
+    var memberName = "this." + currentCategorization; // This evaluates it into this.subject, this.season, this.camera etc...
+    var theCategoryValue = eval(memberName); // This gets the actual value of the member variable, i.e. houses, winter, nikon, etc...
     
     if ( theCategoryValue == null )
         theCategoryValue = "Unknown";
@@ -1534,18 +1524,8 @@ function findCategories()
     
 //    for ( index in categoryList )
 //    {
-//        console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
+//        //console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
 //    }
-}
-
-
-function isMobilePlatform()
-{
-    var uagent = navigator.userAgent.toLowerCase();
-    if ( uagent.search("iphone") > -1 || uagent.search("ipod") > -1 )
-        return 1;
-
-    return 0;
 }
 
 function stopTimerEvents()
@@ -1558,6 +1538,15 @@ function stopTimerEvents()
     
     $("#displayedimage").stop(true,false); // Stop any outstanding animations
     $("#tooltip").remove();
+}
+
+function isMobilePlatform()
+{
+    var uagent = navigator.userAgent.toLowerCase();
+    if ( uagent.search("iphone") > -1 || uagent.search("ipod") > -1 )
+        return 1;
+
+    return 0;
 }
 
 function isIE6() // Has issues with hover for tooltips
