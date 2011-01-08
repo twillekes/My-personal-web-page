@@ -24,7 +24,7 @@ var currentCategorization = "subject";
 var categoryList; // This is filled with the categoryValues, e.g. "houses", "new", etc.
 var currentCategoryIndex = 0; // E.g. "New" or "Houses" or ...
 var currentlySelectedImage = null;
-var categories = new Array( "subject", "season", "camera", "lens", "film", "chrome",
+var categories = new Array( "subject", "orientation", "season", "camera", "lens", "film", "chrome",
                             "format", "year", "month", "direction", "rating" );
 
 // Welcome page image timer
@@ -47,8 +47,8 @@ var supportPivot = true;
 var supportLightbox = true;
 var supportUrlHash = true;
 
-var viewText = "View images as...";
-var categorizationText = "View images by...";
+var viewText = "View as...";
+var categorizationText = "View by...";
 
 /*
 
@@ -64,6 +64,7 @@ Image categories:
 - Format (35mm, 6x4.5, 6x6, 6x7, 6x9, 6x12, 4x5)
 - Year captured (2003 through 2010)
 - Direction from Calgary (N, S, E, W, NW, SE, SW, NE)
+- Orientation (vertical, horizontal, square)
 
 Image information:
 - File name
@@ -319,7 +320,7 @@ function buildMenu()
         $("#viewitems").append(adiv);
         
         setupPopupMenu('viewMenuButton', $viewMenu, function(theHTML){
-            toggleThumbView();
+            setThumbView(theHTML);
         } );
     }
     
@@ -371,9 +372,12 @@ function switchTo()
     this.wasClicked = true;
 }
 
-function toggleThumbView()
-{        
-    usingLightbox = !usingLightbox;
+function setThumbView(theHTML)
+{
+    usingLightbox = false;
+    if ( theHTML == "lightbox" )
+        usingLightbox = true;
+        
     buildMenu();
     
     if ( currentCategoryIndex != null && currentView == "image" )
@@ -456,6 +460,9 @@ function getImageDisplayHTML()
 
 function encodeValue(value)
 {
+    if ( value == null )
+        return 'Unknown';
+        
     return value.split(' ').join('_BLANK_').split('.').join('_DOT_').split('/').join('_SLASH_');
 }
 
@@ -1357,7 +1364,7 @@ function loadMetadata(metadataItem)
                         var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite, item.isDiscarded,
                                                item.season, item.camera, item.lens, item.filters, item.film,
                                                item.chrome, item.format, item.year, item.month, item.date,
-                                               item.direction, item.rating, item.caption );
+                                               item.direction, item.rating, item.caption, item.orientation );
                         var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
                         imageList[totalNumImages++] = ir;
                     }
@@ -1398,7 +1405,7 @@ function loadMetadata(metadataItem)
 }
 
 function metadata( title, subject, isNew, isFavorite, isDiscarded, season, camera, lens, filters,
-                   film, chrome, format, year, month, date, direction, rating, caption )
+                   film, chrome, format, year, month, date, direction, rating, caption, orientation )
 {
     this.title = title;
     this.subject = subject;
@@ -1418,6 +1425,7 @@ function metadata( title, subject, isNew, isFavorite, isDiscarded, season, camer
     this.direction = direction;
     this.rating = rating;
     this.caption = caption;
+    this.orientation = orientation;
     
     this.getCategoryValue = getCategoryValue;
 }
@@ -1447,54 +1455,25 @@ function currentlySelectedImageRecord( filePath )
 
 function getCategoryValue()
 {
-    if ( "subject" == currentCategorization )
-    {
-        return this.subject;
-    }
-    else if ( "season" == currentCategorization )
-    {
-        return this.season;
-    }
-    else if ( "camera" == currentCategorization )
-    {
-        return this.camera;
-    }
-    else if ( "lens" == currentCategorization )
-    {
-        return this.lens;
-    }
-    else if ( "film" == currentCategorization )
-    {
-        return this.film;
-    }
-    else if ( "chrome" == currentCategorization )
-    {
-        return this.chrome;
-    }
-    else if ( "format" == currentCategorization )
-    {
-        return this.format;
-    }
-    else if ( "year" == currentCategorization )
-    {
-        return this.year;
-    }
-    else if ( "month" == currentCategorization )
-    {
-        return this.month;
-    }
-    else if ( "direction" == currentCategorization )
-    {
-        return this.direction;
-    }
-    else if ( "rating" == currentCategorization )
-    {
-        return this.rating;
-    }
-    else
-    {
-        return "undefined";
-    }
+    var theCategoryValue = 'Unknown';
+    
+    if ( "subject" == currentCategorization ) theCategoryValue = this.subject;
+    else if ( "season" == currentCategorization ) theCategoryValue = this.season;
+    else if ( "camera" == currentCategorization ) theCategoryValue = this.camera;
+    else if ( "lens" == currentCategorization ) theCategoryValue = this.lens;
+    else if ( "film" == currentCategorization ) theCategoryValue = this.film;
+    else if ( "chrome" == currentCategorization ) theCategoryValue = this.chrome;
+    else if ( "format" == currentCategorization ) theCategoryValue = this.format;
+    else if ( "year" == currentCategorization ) theCategoryValue = this.year;
+    else if ( "month" == currentCategorization ) theCategoryValue = this.month;
+    else if ( "direction" == currentCategorization ) theCategoryValue = this.direction;
+    else if ( "rating" == currentCategorization ) theCategoryValue = this.rating;
+    else if ( "orientation" == currentCategorization ) theCategoryValue = this.orientation;
+    
+    if ( theCategoryValue == null )
+        theCategoryValue = "Unknown";
+    
+    return theCategoryValue;
 }
 
 function findCategories()
