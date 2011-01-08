@@ -176,7 +176,6 @@ html>body #menubar a
 #prevnextbuttondiv div
     {
 	border: 1px solid black;
-    border: 1px solid black; /* was below */
     margin-left: auto; /* was below */
     margin-right: auto; /* was below */
     font: bold 13px Verdana;
@@ -370,9 +369,6 @@ ol
     border-radius: 4px 4px 4px 4px;
     -moz-border-radius: 4px 4px 4px 4px;
     -webkit-border-radius: 4px 4px 4px 4px;
-    -moz-box-shadow: 8px 8px 6px #808080;
-    -webkit-box-shadow: 8px 8px 6px #808080;
-    box-shadow: 8px 8px 6px #808080;
 	}
     
 #metadatatable 
@@ -434,10 +430,38 @@ ol
     -webkit-border-radius: 4px 4px 0px 0px;
 }
 
+.roundedBottom
+{
+    border-radius: 0px 0px 4px 4px;
+    -moz-border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius: 0px 0px 4px 4px;
+}
+
+.roundedTop
+{
+    border-radius: 4px 4px 0px 0px;
+    -moz-border-radius: 4px 4px 0px 0px;
+    -webkit-border-radius: 4px 4px 0px 0px;
+}
+
+.roundedBottomBig
+{
+    border-radius: 0px 0px 6px 6px;
+    -moz-border-radius: 0px 0px 6px 6px;
+    -webkit-border-radius: 0px 0px 6px 6px;
+}
+
+.roundedTopBig
+{
+    border-radius: 6px 6px 0px 0px;
+    -moz-border-radius: 6px 6px 0px 0px;
+    -webkit-border-radius: 6px 6px 0px 0px;
+}
+
 .buttondiv
 {
-    margin-top: 3px; 
-    margin-bottom: 3px;
+    /*margin-top: 3px; 
+    margin-bottom: 3px;*/
 }
 
 #menuitems

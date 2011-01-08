@@ -259,10 +259,16 @@ function buildMenu()
         if ( categoryList[index].imageIndexes.length == 1 )
             extra = "image";
             
+        var className = '';
+        if ( index == 0 )
+            className = 'roundedTopBig';
+        else if ( index == categoryList.length - 1 )
+            className = 'roundedBottomBig';
+            
         var adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id', encodeValue(categoryList[index].categoryValue));
-        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedButton\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
+        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow " + className + "\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
                          "\">" +
                          categoryList[index].categoryValue + "</a>\n";
         adiv.firstChild.onclick = switchTo;
@@ -315,7 +321,7 @@ function buildMenu()
     
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
-        adiv.innerHTML = "<a id=\"viewMenuButton\" class=\"popupMenuSource buttonColors withDropShadow roundedButton\">" + viewText + "</a>\n";
+        adiv.innerHTML = "<a id=\"viewMenuButton\" class=\"popupMenuSource buttonColors withDropShadow roundedTopBig\">" + viewText + "</a>\n";
         
         $("#viewitems").append(adiv);
         
@@ -327,7 +333,7 @@ function buildMenu()
     if ( $pivotMenu != null )
     {
         adiv = document.createElement('div');
-        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenuSource buttonColors withDropShadow roundedButton\">" + categorizationText + "</a>\n";
+        adiv.innerHTML = "<a id=\"pivotMenuButton\" class=\"popupMenuSource buttonColors withDropShadow roundedBottomBig\">" + categorizationText + "</a>\n";
         
         $("#viewitems").append(adiv);
         
