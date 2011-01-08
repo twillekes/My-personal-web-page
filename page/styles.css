@@ -367,6 +367,12 @@ ol
 	padding:2px 5px;
 	color:#333;
 	display:none;
+    border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -moz-box-shadow: 8px 8px 6px #808080;
+    -webkit-box-shadow: 8px 8px 6px #808080;
+    box-shadow: 8px 8px 6px #808080;
 	}
     
 #metadatatable 
