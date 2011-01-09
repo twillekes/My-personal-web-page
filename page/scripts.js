@@ -12,6 +12,7 @@ var currentMetadataItem = 0;
 // Master list of images
 var totalNumImages = 0;
 var imageList = new Array();
+var indexList; // Stores the indexes in the currently viewed category
 
 // Master list of articles
 var articleList = new Array();
@@ -516,6 +517,31 @@ function findCategoryIndex(categoryValue)
     return null;
 }
 
+function updateIndexList(categoryValue)
+{
+    indexList = new Array();
+    for ( index in imageList )
+    {
+        if (   !(
+                ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
+                ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
+                ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
+                ) ||
+                ( imageList[index].metadata.isNew && categoryValue != "New" ) ||
+                ( imageList[index].metadata.isDiscarded )
+            )
+            continue;
+            
+        indexList.push(index);
+    }
+    
+    indexList.sort( function(a,b)
+    {
+        //console.log("Date B is "+imageList[b].metadata.theDate+" Date A is "+imageList[a].metadata.theDate);
+        return ( imageList[b].metadata.theDate > imageList[a].metadata.theDate );
+    });
+}
+
 function toImageView_lightbox(categoryValue, imageToShow)
 {
     var theThumbBar =
@@ -535,19 +561,11 @@ function toImageView_lightbox(categoryValue, imageToShow)
         return;
         
     currentCategoryIndex = findCategoryIndex(categoryValue);
-        
-    for ( index in imageList )
+    updateIndexList(categoryValue);
+    for ( i in indexList )
     {
-        if (   !(
-                ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
-                ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
-                ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
-                ) ||
-                ( imageList[index].metadata.isNew && categoryValue != "New" ) ||
-                ( imageList[index].metadata.isDiscarded )
-            )
-            continue;
-            
+        index = indexList[i];
+        
         var thumbFilePath = imageList[index].filePath;
         thumbFilePath     = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
                             thumbFilePath.substring(thumbFilePath.lastIndexOf('.')+1);
@@ -597,18 +615,10 @@ function toImageView_original(categoryValue, imageToShow)
         
     currentCategoryIndex = findCategoryIndex(categoryValue);
     var foundIndex = null;
-        
-    for ( index in imageList )
+    updateIndexList(categoryValue);
+    for ( i in indexList )
     {
-        if (   !(
-                ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
-                ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
-                ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
-                ) ||
-                ( imageList[index].metadata.isNew && categoryValue != "New" ) ||
-                ( imageList[index].metadata.isDiscarded )
-            )
-            continue;
+        index = indexList[i];
             
         var thediv = document.createElement('div');
         thediv.setAttribute('id',imageList[index].filePath);
@@ -1431,6 +1441,21 @@ function metadata( title, subject, isNew, isFavorite, isDiscarded, season, camer
     this.orientation = orientation;
     
     this.getCategoryValue = getCategoryValue;
+                        
+    if ( this.date && this.date != 'Unknown' )
+    {
+        // See if there's a day, if not assume the first of the month
+        var theDate = this.date;
+        if ( theDate.substring(0, theDate.indexOf(',')-1).indexOf(' ') == -1 )
+        {
+            theDate = theDate.substring(0, theDate.indexOf(',')) + ' 1' + theDate.substring(theDate.indexOf(','));
+        }
+        
+        this.theDate = new Date(theDate);
+    }
+    
+    if ( this.theDate == null )
+        this.theDate = new Date('Jan 1, 2003');
 }
 
 function imageRecord( filePath, metadata )
