@@ -12,7 +12,6 @@ var currentMetadataItem = 0;
 // Master list of images
 var totalNumImages = 0;
 var imageList = new Array();
-var indexList; // Stores the indexes in the currently viewed category
 
 // Master list of articles
 var articleList = new Array();
@@ -517,31 +516,6 @@ function findCategoryIndex(categoryValue)
     return null;
 }
 
-function updateIndexList(categoryValue)
-{
-    indexList = new Array();
-    for ( index in imageList )
-    {
-        if (   !(
-                ( categoryValue == imageList[index].metadata.getCategoryValue() ) ||
-                ( categoryValue == "New" && imageList[index].metadata.isNew ) ||
-                ( categoryValue == "Favorites" && imageList[index].metadata.isFavorite )
-                ) ||
-                ( imageList[index].metadata.isNew && categoryValue != "New" ) ||
-                ( imageList[index].metadata.isDiscarded )
-            )
-            continue;
-            
-        indexList.push(index);
-    }
-    
-    indexList.sort( function(a,b)
-    {
-        //console.log("Date B is "+imageList[b].metadata.theDate+" Date A is "+imageList[a].metadata.theDate);
-        return ( imageList[b].metadata.theDate > imageList[a].metadata.theDate );
-    });
-}
-
 function toImageView_lightbox(categoryValue, imageToShow)
 {
     var theThumbBar =
@@ -561,11 +535,9 @@ function toImageView_lightbox(categoryValue, imageToShow)
         return;
         
     currentCategoryIndex = findCategoryIndex(categoryValue);
-    updateIndexList(categoryValue);
-    for ( i in indexList )
+    for ( catIndex in categoryList[currentCategoryIndex].imageIndexes )
     {
-        index = indexList[i];
-        
+        var index = categoryList[currentCategoryIndex].imageIndexes[catIndex];
         var thumbFilePath = imageList[index].filePath;
         thumbFilePath     = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
                             thumbFilePath.substring(thumbFilePath.lastIndexOf('.')+1);
@@ -615,10 +587,9 @@ function toImageView_original(categoryValue, imageToShow)
         
     currentCategoryIndex = findCategoryIndex(categoryValue);
     var foundIndex = null;
-    updateIndexList(categoryValue);
-    for ( i in indexList )
+    for ( catIndex in categoryList[currentCategoryIndex].imageIndexes )
     {
-        index = indexList[i];
+        var index = categoryList[currentCategoryIndex].imageIndexes[catIndex];
             
         var thediv = document.createElement('div');
         thediv.setAttribute('id',imageList[index].filePath);
@@ -1263,50 +1234,10 @@ function showRandomWelcomeImage( shouldStopFirst )
 
 function showRandomImage( categoryValue )
 {
-    var numImages = 0;
-    if ( categoryValue == "New" )
-    {
-        numImages = categoryList[findCategoryIndex("New")].imageIndexes.length;
-    }
-    else if ( categoryValue == "Favorites" )
-    {
-        numImages = categoryList[findCategoryIndex("Favorites")].imageIndexes.length;
-    }
-    else
-    {
-        for ( catRecordIndex in categoryList )
-        {
-            if ( categoryValue == categoryList[catRecordIndex].categoryValue )
-            {
-                numImages = categoryList[catRecordIndex].imageIndexes.length;
-            }
-        }
-    }
-    
+    var catIndex = findCategoryIndex(categoryValue);
+    var numImages = categoryList[catIndex].imageIndexes.length;    
     var index = Math.floor( Math.random() * numImages );
-    var foundIndex = 0;
-    for ( imageIndex in imageList )
-    {
-        if ( 
-                ( imageList[imageIndex].metadata.getCategoryValue() == categoryValue ) ||
-                ( imageList[imageIndex].metadata.isNew && categoryValue == "New" ) ||
-                ( imageList[imageIndex].metadata.isFavorite && categoryValue == "Favorites" )
-            )
-        {
-            if ( foundIndex == index )
-            {
-                showImage(imageIndex);
-                break;
-            }
-            else
-            {
-                foundIndex++;
-            }
-        }
-    }
-   
-    // This would probably be disconcerting to users 
-//    timerId = setTimeout( function () { showRandomImage( categoryValue ) }, welcomeImageChangeTimeout );
+    showImage(categoryList[catIndex].imageIndexes[index]);
 }
 
 // ******************************************************************
@@ -1555,10 +1486,14 @@ function findCategories()
     categoryList.push(newCatRecord);
     categoryList.reverse();
     
-//    for ( index in categoryList )
-//    {
-//        //console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
-//    }
+    for ( index in categoryList )
+    {
+        //console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
+        categoryList[index].imageIndexes.sort( function(a,b)
+        {
+            return ( imageList[b].metadata.theDate > imageList[a].metadata.theDate );
+        });
+    }
 }
 
 function stopTimerEvents()
