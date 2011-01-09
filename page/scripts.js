@@ -119,17 +119,13 @@ function completeInitialization()
     findCategories();
     buildPivotMenu();
     buildMenu();
-    syncToUrl();
+    syncToUrl(parent.location.hash.substring(1));
     
     $(window).resize( function() { adjustCurrentImageSize(); } );
     
     $.history.init( function(hash)
     {
-        if(hash == "" || hash == currentHash)
-            return;
-            
-        // restore the state from hash
-        syncToUrl();
+        syncToUrl(hash);
     } );
 }
 
@@ -139,15 +135,12 @@ function setCurrentHash(theHash)
     jQuery.history.load(theHash);
 }
 
-function syncToUrl()
+function syncToUrl(theHash)
 {
-    if ( (parent.location.hash == "" && currentHash == "") ||
-          parent.location.hash == "#"+currentHash )
-    {
+    if ( (theHash == "" && currentHash == "") || theHash == currentHash )
         return;
-    }
 
-    loadParameters = getParams();
+    loadParameters = getParams(theHash);
     
     var imageToShow = null;
     var catValToShow = null;
@@ -227,21 +220,21 @@ function syncToUrl()
     toWelcomeView();    
 }
 
-function getParams()
+function getParams(theParamString)
 {
-    var theParamString = parent.location.hash;
-    var idx = theParamString.indexOf('#');
-    
-    if ( theParamString == "" && idx == -1 )
+    var idx = 0;
+    if ( theParamString == "" )
     {
-        theParamString = document.URL;
+        theParamString = unescape(document.URL);
         idx = theParamString.indexOf('?');
         if ( idx == -1 )
             return null;
+            
+        idx++;
     }
                 
     var tempParams = new Object();
-    var pairs = theParamString.substring(idx+1,document.URL.length).split('&');
+    var pairs = theParamString.substring(idx,theParamString.length).split('&');
     var numItems = 0;
     for (var i=0; i<pairs.length; i++)
     {
@@ -293,14 +286,10 @@ function buildMenu()
     }
     
     // "About" button
-    var theClass = 'buttonColors';
-    if ( currentView == "about" )
-        theClass = 'buttonSelectedColors'
-        
     adiv = document.createElement('div');
     adiv.setAttribute('class', 'buttondiv');
     adiv.setAttribute('id','about');
-    adiv.innerHTML = "<a class=\"tooltip " + theClass + " withDropShadow roundedButton\" title=\"About the photographer and photographs\">About</a>\n";
+    adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedButton\" title=\"About the photographer and photographs\">About</a>\n";
     adiv.firstChild.onclick = showAboutView;
     $("#otheritems").append(adiv);
     
