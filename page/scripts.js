@@ -563,9 +563,9 @@ function getImageDisplayHTML(topLevelDivName)
         topLevelDivName = 'imagedisplayarea';
         
     var theImageDisplayArea =
-     '      <div id=\"' + topLevelDivName + '\">\n\
+     '      <div id=\"prevnextbuttondiv\"></div>\n\
+            <div id=\"' + topLevelDivName + '\">\n\
                 <div class=\"centeredImage\">\n\
-                    <div id=\"prevnextbuttondiv\"></div>\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                     <div id=\"metadatadiv\"></div>\n\

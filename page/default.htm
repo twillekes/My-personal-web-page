@@ -71,7 +71,12 @@
 	}
 #imagedisplayarea
 	{
-	height: expression(document.body.clientHeight + "px");
+	height: expression(document.body.clientHeight - (document.body.clientHeight * 8 / 100) + "px");
+	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 28 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
+	}
+#prevnextbuttondiv
+	{
+	height: expression(document.body.clientHeight - (document.body.clientHeight * 92 / 100) + "px");
 	width: expression(document.body.clientWidth - ( (document.body.clientWidth * 28 / 100) + (document.body.clientWidth * 1 / 100 * 2) ) + "px");
 	}
 </style>
