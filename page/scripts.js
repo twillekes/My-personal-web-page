@@ -452,7 +452,7 @@ function toWelcomeView()
 function getImageDisplayHTML(topLevelDivName)
 {
     if ( topLevelDivName == null )
-        topLevelDivName = 'imagedisplaydiv';
+        topLevelDivName = 'imagedisplayarea';
         
     var theImageDisplayArea =
      '      <div id=\"' + topLevelDivName + '\">\n\
