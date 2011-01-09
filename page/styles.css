@@ -128,16 +128,20 @@ html>body #articleList a
     {
     /*\*/
     position: absolute;
-    top: 1%;
+    top: 0%;
     right: 16%;
     bottom: 1%;
     left: 16%;
     /*height: 102%;*/
     /* Exclude all previous props for Mac IE5 */
-    margin: 1% 16% 1% 16%; /* Cater for Mac IE5 */
+    margin: 0% 16% 1% 16%; /* Cater for Mac IE5 */
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
+#imagetitlediv
+{
+    margin-top: 1em;
+}
 #menubar
     {
     position: absolute;

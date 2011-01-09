@@ -50,6 +50,8 @@ var supportUrlHash = true;
 var viewText = "View as...";
 var categorizationText = "View by...";
 
+var metadataAnimationDuration = 250; // msec
+
 /*
 
 Image Metadata Summary
@@ -119,7 +121,7 @@ function completeInitialization()
     findCategories();
     buildPivotMenu();
     buildMenu();
-    syncToUrl(parent.location.hash.substring(1));
+    //syncToUrl(unescape(parent.location.hash.substring(1))); // This will get called in history.init below
     
     $(window).resize( function() { adjustCurrentImageSize(); } );
     
@@ -151,7 +153,9 @@ function syncToUrl(theHash)
     {
         for ( index in loadParameters )
         {
-           if ( index == "showImage" )
+            //console.log("Parameter name "+index+" is "+loadParameters[index]);
+            //alert("Parameter name "+index+" is "+loadParameters[index]);
+            if ( index == "showImage" )
             {
                 imageToShow = unescape(loadParameters[index]);
             }
@@ -453,25 +457,6 @@ function toWelcomeView()
     setCurrentHash("showCat="+currentCategorization);
 }
 
-function getImageDisplayHTML(topLevelDivName)
-{
-    if ( topLevelDivName == null )
-        topLevelDivName = 'imagedisplayarea';
-        
-    var theImageDisplayArea =
-     '      <div id=\"' + topLevelDivName + '\">\n\
-                <div class=\"centeredImage\">\n\
-                    <div id=\"imagetitlediv\"></div>\n\
-                    <div id=\"imagedisplaydiv\"></div>\n\
-                    <div id=\"prevnextbuttondiv\"></div>\n\
-                    <div id=\"metadatadiv\"></div>\n\
-                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
-                </div>\n\
-            </div>\n';  
-            
-    return theImageDisplayArea;
-}
-
 function encodeValue(value)
 {
     if ( value == null )
@@ -570,6 +555,25 @@ function toImageView_lightbox(categoryValue, imageToShow)
     setCurrentHash( "showCat=" + escape(currentCategorization) +
                     "&showCatVal=" + escape(categoryList[currentCategoryIndex].categoryValue) +
                     "&showMode=Lightbox" );
+}
+
+function getImageDisplayHTML(topLevelDivName)
+{
+    if ( topLevelDivName == null )
+        topLevelDivName = 'imagedisplayarea';
+        
+    var theImageDisplayArea =
+     '      <div id=\"' + topLevelDivName + '\">\n\
+                <div class=\"centeredImage\">\n\
+                    <div id=\"prevnextbuttondiv\"></div>\n\
+                    <div id=\"imagetitlediv\"></div>\n\
+                    <div id=\"imagedisplaydiv\"></div>\n\
+                    <div id=\"metadatadiv\"></div>\n\
+                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                </div>\n\
+            </div>\n';  
+            
+    return theImageDisplayArea;
 }
 
 function toImageView_original(categoryValue, imageToShow)
@@ -976,14 +980,14 @@ function imageLoaded( theImage, index )
     {
         if ( !isSafari() )
         {
-            $div.slideDown(1000); // This was jerky in Safari, hence the hand-waving with height
+            $div.slideDown(metadataAnimationDuration); // This was jerky in Safari, hence the hand-waving with height
         }
         else
         {
             $div.show();
             var theHeight = $div.height();
             $div.css( { height: 0 } );
-            $div.animate( { height: theHeight }, { duration: 1000 } );
+            $div.animate( { height: theHeight }, { duration: metadataAnimationDuration } );
         }
     }
     
@@ -1061,14 +1065,14 @@ function toggleMetadata()
     {
         if ( !isSafari() )
         {
-            $div.slideDown(1000); // This is jerky in Safari
+            $div.slideDown(metadataAnimationDuration); // This is jerky in Safari
         }
         else
         {
             $div.show();
             var theHeight = $div.height();
             $div.css( { height: 0 } );
-            $div.animate( { height: theHeight }, { duration: 1000 } );
+            $div.animate( { height: theHeight }, { duration: metadataAnimationDuration } );
         }
 
         $('#infobuttondiv').html('Hide Info');
@@ -1076,7 +1080,7 @@ function toggleMetadata()
     }
     else
     {
-        $div.slideUp(1000);
+        $div.slideUp(metadataAnimationDuration);
         $('#infobuttondiv').html('Show Info');
         showingMetadata = false;
     }
