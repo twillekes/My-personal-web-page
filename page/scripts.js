@@ -405,7 +405,7 @@ function toSingleImageView(filePath)
     stopTimerEvents();
     
     var theElement = document.getElementById("contentplaceholder");
-    theElement.innerHTML = getImageDisplayHTML();
+    theElement.innerHTML = getImageDisplayHTML('singleimagedisplayarea');
 
     showImage(findImage(filePath).index);
     currentView = "single";
@@ -449,10 +449,13 @@ function toWelcomeView()
     setCurrentHash("showCat="+currentCategorization);
 }
 
-function getImageDisplayHTML()
+function getImageDisplayHTML(topLevelDivName)
 {
+    if ( topLevelDivName == null )
+        topLevelDivName = 'imagedisplaydiv';
+        
     var theImageDisplayArea =
-     '      <div id=\"imagedisplayarea\">\n\
+     '      <div id=\"' + topLevelDivName + '\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
@@ -1182,9 +1185,9 @@ function showRandomWelcomeImage( shouldStopFirst )
     
     var theImage = new Image();
     theImage.onload = function () {
-        var theHTML = "<img src=\"" + this.src +
+        var theHTML = "<a href=\"javascript:toSingleImageView('" + imageList[index].filePath + "')\"><img src=\"" + this.src +
             "\" id=\"displayedwelcomeimage\" class=\"withDropShadow\" style=\"height: 0; position: relative;\" origWidth=\""
-            + this.width + "\" origHeight=\"" + this.height + "\"/>";
+            + this.width + "\" origHeight=\"" + this.height + "\" theindex=\"" + index + "\"/></a>";
             
         $("#welcomeimagedisplaydiv").html(theHTML);
         
@@ -1210,6 +1213,7 @@ function showRandomWelcomeImage( shouldStopFirst )
         }
         
         var $imageDiv = $("#displayedwelcomeimage");
+        
         $imageDiv.offset( { top: theHeight/2+$("#welcome").offset().top+25 } ); // ... fudge
         $imageDiv.animate( { height: theHeight, top: "-="+(theHeight/2) }, { duration: 2000 , complete: function ()
         {

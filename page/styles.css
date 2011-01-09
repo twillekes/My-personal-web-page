@@ -28,6 +28,10 @@ div
     /*\*/ margin: 0; /* Put back for all the rest */
     /*\*/ overflow: auto; /* no need for Mac IE5 to see this */
     }
+#welcomeimagedisplaydiv img
+{
+    border: 0;
+}
 #articleList a
     {
     background-color: #E6E6E6; /* was below */
@@ -96,7 +100,7 @@ html>body #articleList a
     margin-right: auto;
 }
 
-#singleImage
+#singleimagedisplayarea
     {
     /*\*/
     position: absolute;
