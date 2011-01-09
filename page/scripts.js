@@ -110,17 +110,33 @@ function initializePage()
         isLocal = 1;
         
     loadImages(isLocal);
+}
+
+// This function is called after all the page metadata is loaded
+// It builds the UI based on that data and hooks up remaining event observers
+function completeInitialization()
+{
+    findCategories();
+    buildPivotMenu();
+    buildMenu();
+    syncToUrl();
     
     $(window).resize( function() { adjustCurrentImageSize(); } );
     
-    if ( supportUrlHash )
-        $(window).bind( 'hashchange', function(e) { syncToUrl(); } );
+    $.history.init( function(hash)
+    {
+        if(hash == "" || hash == currentHash)
+            return;
+            
+        // restore the state from hash
+        syncToUrl();
+    } );
 }
 
 function setCurrentHash(theHash)
 {
     currentHash = theHash;
-    parent.location.hash = currentHash;
+    jQuery.history.load(theHash);
 }
 
 function syncToUrl()
@@ -375,7 +391,6 @@ function switchTo()
 {
     toImageView(this.innerHTML);
     $(this).removeClass('buttonColors').addClass('buttonSelectedColors');
-    this.wasClicked = true;
 }
 
 
@@ -393,8 +408,7 @@ function setThumbView(theHTML)
 
 function showAboutView()
 {
-    showArticleAt('words/about.htm');
-    this.wasClicked = true;
+    showArticleAt('words/about.htm',false);
     updateSelectedButton('about');
     currentView = 'about';
     setCurrentHash('showAbout');
@@ -687,12 +701,14 @@ function toWordView()
         
     setCurrentHash("showArticles");
     currentView = "words";
-    this.wasClicked = true;
     updateSelectedButton("words");
 }
 
-function showArticleAt( articleFilePath )
+function showArticleAt( articleFilePath, setHash )
 {
+    if ( setHash = null )
+        setHash = true;
+        
     var theHTML =
      "\
             <div id=\"titlearea\">\n\
@@ -720,7 +736,8 @@ function showArticleAt( articleFilePath )
         }
         });
     
-    setCurrentHash("showArticle=" + escape(articleList[articleFilePath].title));
+    if ( setHash )
+        setCurrentHash("showArticle=" + articleList[articleFilePath].title);
 }
 
 // ******************************************************************
@@ -735,9 +752,8 @@ this.initializeTooltips = function(changeBackground, tagName)
     if (tagName == null)
         tagName = "a";
 
-    $(tagName + ".tooltip").hover(function(e) {
-        this.wasClicked = false; // Initialize
-        
+    $(tagName + ".tooltip").hover(function(e)
+    {        
         $("#tooltip").remove();
         
         if ( this.title == "" )
@@ -763,7 +779,8 @@ this.initializeTooltips = function(changeBackground, tagName)
             $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
         }
     },
-	function() {
+	function()
+    {
         if ( this.t != "" )
             this.title = this.t;
         
@@ -773,11 +790,11 @@ this.initializeTooltips = function(changeBackground, tagName)
         if ( changeBackground )
         {
             $(this).removeClass('buttonHoveredColors')
-            if ( !this.wasClicked )
-                $(this).addClass('buttonColors');
+            $(this).addClass('buttonColors');
         }
 	});
-    $(tagName + ".tooltip").mousemove(function(e) {
+    $(tagName + ".tooltip").mousemove(function(e)
+    {
         var loc = getTipLocation(e);
 
         $("#tooltip")
@@ -808,7 +825,8 @@ function getTipLocation(e)
 
 function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
 {
-    $('#'+ buttonDivName + '.popupMenuSource').hover(function(e) {
+    $('#'+ buttonDivName + '.popupMenuSource').hover(function(e)
+    {
         if ( this.$popupMenu == null )
         {
             this.$popupMenu = $("<div id='popupMenu_" + buttonDivName + "' class=\"popupMenu withDropShadow roundedButton\" style=\"width: 100px;\"></div>");
@@ -825,14 +843,16 @@ function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
         
         $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
     },
-	function(e) {
+	function(e)
+    {
         if ( !isInRect( { left: e.pageX, top: e.pageY }, this.loc ) )
             this.$popupMenu.hide();
 
         $(this).removeClass('buttonHoveredColors').addClass('buttonColors');
 	});
     
-    $theMenuDiv.children().click(function() {
+    $theMenuDiv.children().click(function()
+    {
         $("#popupMenu_"+buttonDivName).remove();
         $theMenuDiv.children().removeClass('buttonSelectedColors').addClass('buttonColors');
         $(this).addClass('buttonSelectedColors');
@@ -850,18 +870,10 @@ function initializePopupMenuItems($theMenuDiv, rect, $popupMenu)
     });
     
     $theMenuDiv.children().hover(function(e) {
-        if ( this.hovering )
-            return;
-            
-        this.hovering = true;
         $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
     },
     function(e) {
-        if ( !this.hovering )
-            return;
-            
         $(this).removeClass('buttonOveredColors').addClass('buttonColors');
-        this.hovering = false;
     });
 }
 
@@ -872,7 +884,7 @@ function getPopupLocation(buttonDivName, $theMenuDiv)
     if ( rightExtent > $(window).width() )
         buttonX -= (rightExtent - $(window).width());
         
-    var buttonY = $('#'+buttonDivName).offset().top + 10;
+    var buttonY = $('#'+buttonDivName).offset().top + 5;
     var topExtent = buttonY + $theMenuDiv.height();
     if ( topExtent > $(window).height() )
         buttonY -= (topExtent - $(window).height());
@@ -1337,11 +1349,7 @@ function loadMetadata(metadataItem)
             }
             else
             {
-                // This is where initialization is completed...
-                findCategories();
-                buildPivotMenu();
-                buildMenu();
-                syncToUrl();
+                completeInitialization();
                 return;
             }
         },
