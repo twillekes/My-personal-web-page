@@ -566,7 +566,7 @@ function getImageDisplayHTML(topLevelDivName, prevNextButtonDivClass)
         prevNextButtonDivClass = 'prevnextbuttondiv_withThumbar';
         
     var theImageDisplayArea =
-     '      <div id=\"prevnextbuttondiv\" class=\"' + prevNextButtonDivClass + '\"></div>\n\
+     '      <div id=\"prevnextbuttondiv\" class=\"' + prevNextButtonDivClass + ' centeredImage\"></div>\n\
             <div id=\"' + topLevelDivName + '\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
