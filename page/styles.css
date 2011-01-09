@@ -145,7 +145,7 @@ html>body #articleList a
 #menubar
     {
     position: absolute;
-    top: 5%;
+    top: 3%;
     bottom: 11%;
     left: 0;
     width: 15%;
@@ -278,14 +278,15 @@ html>body #prevnextbuttondiv div
     position: absolute;
     top: 1%;
     right: 0;
-    bottom: 95%;
+    bottom: 92%;
     overflow: auto;
     width: 15%;
+    margin-top: 1em;
     }
 #thumbbar
     {
     position: absolute;
-    top:  6%;
+    top:  8%;
     right: 0;
     bottom: 1%;
     overflow: auto;
