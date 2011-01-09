@@ -176,7 +176,7 @@ html>body #menubar a
     color: white;
 }*/
 
-#prevnextbuttondiv
+.prevnextbuttondiv_withThumbar
 {
     position: absolute;
     top: 0%;
@@ -186,7 +186,19 @@ html>body #menubar a
     margin: 1% 16% 92% 16%;
     /*\*/ margin: 0; /* */
     height: 5%;
-
+    margin-left: auto;
+    margin-right: auto;
+}
+.prevnextbuttondiv_withoutThumbar
+{
+    position: absolute;
+    top: 0%;
+    /*\*/right: 0%;
+    bottom: 92%;
+    left: 16%;   /* Exclude right and left props for Mac IE5 */
+    margin: 1% 0% 92% 16%;
+    /*\*/ margin: 0; /* */
+    height: 5%;
     margin-left: auto;
     margin-right: auto;
 }

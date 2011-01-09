@@ -412,7 +412,7 @@ function toSingleImageView(filePath)
     stopTimerEvents();
     
     var theElement = document.getElementById("contentplaceholder");
-    theElement.innerHTML = getImageDisplayHTML('singleimagedisplayarea');
+    theElement.innerHTML = getImageDisplayHTML('singleimagedisplayarea','prevnextbuttondiv_withoutThumbar');
 
     showImage(findImage(filePath).index);
     currentView = "single";
@@ -557,13 +557,16 @@ function toImageView_lightbox(categoryValue, imageToShow)
                     "&showMode=Lightbox" );
 }
 
-function getImageDisplayHTML(topLevelDivName)
+function getImageDisplayHTML(topLevelDivName, prevNextButtonDivClass)
 {
     if ( topLevelDivName == null )
         topLevelDivName = 'imagedisplayarea';
         
+    if ( prevNextButtonDivClass == null )
+        prevNextButtonDivClass = 'prevnextbuttondiv_withThumbar';
+        
     var theImageDisplayArea =
-     '      <div id=\"prevnextbuttondiv\"></div>\n\
+     '      <div id=\"prevnextbuttondiv\" class=\"' + prevNextButtonDivClass + '\"></div>\n\
             <div id=\"' + topLevelDivName + '\">\n\
                 <div class=\"centeredImage\">\n\
                     <div id=\"imagetitlediv\"></div>\n\
