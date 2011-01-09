@@ -412,6 +412,7 @@ function toSingleImageView(filePath)
 
     showImage(findImage(filePath).index);
     currentView = "single";
+    updateSelectedButton(); // Don't show anything selected in single image view
     return;
 }
 
@@ -500,7 +501,10 @@ function toImageView(categoryValue, imageToShow)
 function updateSelectedButton(divName)
 {
     if ( $currentlySelectedButton != null )
+    {
         $currentlySelectedButton.removeClass('buttonSelectedColors').addClass('buttonColors');
+        $currentlySelectedButton = null;
+    }
     
     if ( divName != null )
     {
