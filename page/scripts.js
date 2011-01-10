@@ -648,7 +648,7 @@ function toImageView_original(categoryValue, imageToShow)
         
         thediv.innerHTML = '<img src=\"' + thumbFilePath +
                            '\" onclick=\"showImage('  + index + 
-                           ');\" class=\"thumbnailImage noOutline withDropShadow\"/>\n';
+                           ',true);\" class=\"thumbnailImage noOutline withDropShadow\"/>\n';
         
         theElement.appendChild(thediv);
         
@@ -961,8 +961,11 @@ function hideImage()
     }
 }
 
-function showImage( index )
+function showImage( index, byUser )
 {
+    if ( byUser == null )
+        byUser = false;
+        
     stopTimerEvents();
 
     hideImage();
@@ -987,11 +990,11 @@ function showImage( index )
     }
     
     var theImage = new Image();
-    theImage.onload = function() { imageLoaded(theImage,index); }
+    theImage.onload = function() { imageLoaded(theImage,index,byUser); }
     theImage.src = imageList[index].filePath;
 }
 
-function imageLoaded( theImage, index )
+function imageLoaded( theImage, index, byUser )
 {
     var filePath = imageList[index].filePath;
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
@@ -1009,6 +1012,10 @@ function imageLoaded( theImage, index )
             theElement.childNodes[0].setAttribute('class', 'thumbnailImage withOutline noDropShadow' );
             
         currentlySelectedImage = new currentlySelectedImageRecord( filePath );
+        
+        // Scroll the div
+        if ( !byUser )
+            document.getElementById('thumbbar').scrollTop = theElement.offsetTop;
     }
     
     addPrevNextButtons();
