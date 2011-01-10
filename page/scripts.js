@@ -38,6 +38,7 @@ var showingMetadata = false;
 var $currentlySelectedButton = null;
 var $viewMenu = null;
 var $pivotMenu = null;
+var $categoryPopupMenu = null;
 
 // URL monitoring
 var currentHash = null;
@@ -579,11 +580,33 @@ function getImageDisplayHTML(topLevelDivName, prevNextButtonDivClass)
     return theImageDisplayArea;
 }
 
+function buildCategoryPopupMenu(categoryValue)
+{
+    $categoryPopupMenu = $('<div id=\"categoryPopupMenu\"></div>');
+    for ( index in categoryList )
+    {
+        if ( categoryList[index].imageIndexes.length == 0 )
+            continue;
+            
+        var className = 'buttonColors';
+        if ( categoryValue == categoryList[index].categoryValue )
+            className = 'buttonSelectedColors';
+        
+        if ( index == 0 )
+            className += ' roundedTopBig';
+        else if ( index == categoryList.length - 1 )
+            className += ' roundedBottomBig';
+            
+        $categoryPopupMenu.append( $("<a class=\"popupMenuButton "
+                                     + className + "\">" + categoryList[index].categoryValue + "</a>\n") );
+    }
+}
+
 function toImageView_original(categoryValue, imageToShow)
 {
     var theCategoryNameArea =
     '       <div id=\"categorynamearea\">\n\
-                <h3  style=\"text-align: center; margin: 0 0 0 0;\">' + categoryValue + '</h3>\n\
+                <a id=\"categoryPopupMenuButton\" class=\"popupMenuSource buttonColors withDropShadow roundedButton\">' + categoryValue + '</a>\n\
             </div>\n';
     
     var theThumbBar =
@@ -597,6 +620,12 @@ function toImageView_original(categoryValue, imageToShow)
      
     var theElement = document.getElementById("contentplaceholder");
     theElement.innerHTML = theHTML;
+
+    buildCategoryPopupMenu(categoryValue);
+    setupPopupMenu('categoryPopupMenuButton', $categoryPopupMenu, function(theHTML){
+        toImageView(theHTML);
+    }, true );
+
     
     theElement = document.getElementById("thumbdisplaydiv2");
     if ( null == theElement )
@@ -823,20 +852,23 @@ function getTipLocation(e)
     return { top: topValue, left: leftValue };
 }
 
-function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler )
+function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler, popToLeft )
 {
+    if ( popToLeft == null )
+        popToLeft = false;
+        
     $('#'+ buttonDivName + '.popupMenuSource').hover(function(e)
     {
         if ( this.$popupMenu == null )
         {
-            this.$popupMenu = $("<div id='popupMenu_" + buttonDivName + "' class=\"popupMenu withDropShadow roundedButton\" style=\"width: 100px;\"></div>");
+            this.$popupMenu = $("<div id='popupMenu_" + buttonDivName + "' class=\"popupMenu roundedButton\" style=\"width: 100px;\"></div>");
             this.$popupMenu.append($theMenuDiv);
         
             $("body").append(this.$popupMenu);
         }
         this.$popupMenu.show();
         
-        this.loc = getPopupLocation(buttonDivName, $theMenuDiv);
+        this.loc = getPopupLocation(buttonDivName, $theMenuDiv, popToLeft);
         this.$popupMenu.offset({left:this.loc.left,top:this.loc.top});
         
         initializePopupMenuItems($theMenuDiv, this.loc, this.$popupMenu);
@@ -877,14 +909,19 @@ function initializePopupMenuItems($theMenuDiv, rect, $popupMenu)
     });
 }
 
-function getPopupLocation(buttonDivName, $theMenuDiv)
+function getPopupLocation(buttonDivName, $theMenuDiv, popToLeft)
 {
-    var buttonX = $('#'+buttonDivName).offset().left+$('#'+buttonDivName).width();
+    var buttonX = $('#'+buttonDivName).offset().left;
+    if ( !popToLeft )
+        buttonX += $('#'+buttonDivName).outerWidth();
+    else
+        buttonX -= $theMenuDiv.outerWidth();
+        
     var rightExtent = buttonX + $theMenuDiv.width();
     if ( rightExtent > $(window).width() )
         buttonX -= (rightExtent - $(window).width());
         
-    var buttonY = $('#'+buttonDivName).offset().top + 5;
+    var buttonY = $('#'+buttonDivName).offset().top;
     var topExtent = buttonY + $theMenuDiv.height();
     if ( topExtent > $(window).height() )
         buttonY -= (topExtent - $(window).height());

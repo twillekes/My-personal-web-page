@@ -145,7 +145,7 @@ html>body #articleList a
 #menubar
     {
     position: absolute;
-    top: 3%;
+    top: 2%;
     bottom: 11%;
     left: 0;
     width: 15%;
@@ -276,17 +276,34 @@ html>body #prevnextbuttondiv div
 #categorynamearea
     {
     position: absolute;
-    top: 1%;
+    top: 0%;
     right: 0;
-    bottom: 92%;
+    bottom: 90%;
     overflow: auto;
     width: 15%;
     margin-top: 1em;
+    overflow: hidden;
+    }
+#categorynamearea a
+    {
+	border: 1px solid black;
+    margin-left: auto; /* was below */
+    margin-right: auto; /* was below */
+    font: bold 13px Verdana;
+    padding: 2px;
+    padding-left: 4px;
+    display: block;
+    width: 66%;
+    text-decoration: none;
+    border-bottom: 1px solid black;
+    text-align: center;
+    overflow: hidden;
+    cursor: pointer;
     }
 #thumbbar
     {
     position: absolute;
-    top:  8%;
+    top:  10%;
     right: 0;
     bottom: 1%;
     overflow: auto;
