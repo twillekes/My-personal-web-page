@@ -953,7 +953,10 @@ function hideImage()
             return;
         
         if ( isIE7OrLower() )
-            theElement.childNodes[0].setAttribute( 'class', 'thumbnailImage noBorder' );
+        {
+            //theElement.childNodes[0].setAttribute( 'class', 'thumbnailImage noBorder' );
+            theElement.childNodes[0].style.border = '0';
+        }
         else
             theElement.childNodes[0].setAttribute('class', 'thumbnailImage noOutline withDropShadow' );
 
@@ -1007,7 +1010,10 @@ function imageLoaded( theImage, index, byUser )
     if ( theElement != null )
     {
         if ( isIE7OrLower() )
-            theElement.childNodes[0].setAttribute('class', 'thumbnailImage withBorder' );
+        {
+            //theElement.childNodes[0].setAttribute('class', 'thumbnailImage withBorder' ); // Doesn't work on IE6
+            theElement.childNodes[0].style.border = '7px solid #606060';
+        }
         else
             theElement.childNodes[0].setAttribute('class', 'thumbnailImage withOutline noDropShadow' );
             

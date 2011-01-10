@@ -283,6 +283,7 @@ html>body #prevnextbuttondiv div
     width: 15%;
     margin-top: 1em;
     overflow: hidden;
+    text-align: center;
     }
 #categorynamearea a
     {
