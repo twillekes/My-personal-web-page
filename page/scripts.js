@@ -639,8 +639,6 @@ function toImageView_original(categoryValue, imageToShow)
             
         var thediv = document.createElement('div');
         thediv.setAttribute('id',imageList[index].filePath);
-        thediv.setAttribute('title',imageList[index].metadata.title);
-        thediv.setAttribute('class','tooltip');
         
         var thumbFilePath = imageList[index].filePath;
         thumbFilePath     = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
@@ -648,7 +646,8 @@ function toImageView_original(categoryValue, imageToShow)
         
         thediv.innerHTML = '<img src=\"' + thumbFilePath +
                            '\" onclick=\"showImage('  + index + 
-                           ',true);\" class=\"thumbnailImage noOutline withDropShadow\"/>\n';
+                           ',true);\" class=\"tooltip thumbnailImage noOutline withDropShadow\" title=\"'
+                           + imageList[index].metadata.title + '\"/>\n';
         
         theElement.appendChild(thediv);
         
@@ -658,7 +657,7 @@ function toImageView_original(categoryValue, imageToShow)
         }
     }
     
-    initializeTooltips(false,"div");
+    initializeTooltips(false,"img");
     
     if ( foundIndex == null )
         showRandomImage(categoryValue);
