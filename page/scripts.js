@@ -283,8 +283,7 @@ function buildMenu()
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id', encodeValue(categoryList[index].categoryValue));
         adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow " + className + "\" title=\"" + categoryList[index].imageIndexes.length + " " + extra +
-                         "\">" +
-                         categoryList[index].categoryValue + "</a>\n";
+                         "\">" + categoryList[index].categoryValue + "</a>\n";
         adiv.firstChild.onclick = switchTo;
         
         $("#menuitems").append(adiv);
@@ -638,16 +637,16 @@ function toImageView_original(categoryValue, imageToShow)
         var index = categoryList[currentCategoryIndex].imageIndexes[catIndex];
             
         var thediv = document.createElement('div');
-        thediv.setAttribute('id',imageList[index].filePath);
         
         var thumbFilePath = imageList[index].filePath;
         thumbFilePath     = thumbFilePath.substring(0,thumbFilePath.lastIndexOf('.'))+'_thumb.'+
                             thumbFilePath.substring(thumbFilePath.lastIndexOf('.')+1);
         
-        thediv.innerHTML = '<img src=\"' + thumbFilePath +
-                           '\" onclick=\"showImage('  + index + 
-                           ',true);\" class=\"tooltip thumbnailImage noOutline withDropShadow\" title=\"'
-                           + imageList[index].metadata.title + '\"/>\n';
+        thediv.innerHTML = '<a href=\"javascript:showImage(' + index +
+                           ',true)\" class=\"tooltip\" title=\"'
+                           + imageList[index].metadata.title + '\"><img src=\"' + thumbFilePath +
+                           '\" class=\"thumbnailImage withDropShadow noOutline\" id=\"'
+                           + imageList[index].filePath + '\"/></a>\n';
         
         theElement.appendChild(thediv);
         
@@ -657,7 +656,7 @@ function toImageView_original(categoryValue, imageToShow)
         }
     }
     
-    initializeTooltips(false,"img");
+    initializeTooltips(false);
     
     if ( foundIndex == null )
         showRandomImage(categoryValue);
@@ -953,11 +952,11 @@ function hideImage()
         
         if ( isIE7OrLower() )
         {
-            //theElement.childNodes[0].setAttribute( 'class', 'thumbnailImage noBorder' );
-            theElement.childNodes[0].style.border = '0';
+            //theElement.setAttribute( 'class', 'thumbnailImage noBorder' );
+            theElement.style.border = '0';
         }
         else
-            theElement.childNodes[0].setAttribute('class', 'thumbnailImage noOutline withDropShadow' );
+            theElement.setAttribute('class', 'thumbnailImage noOutline withDropShadow' );
 
         currentlySelectedImage = null;
     }
@@ -1010,17 +1009,17 @@ function imageLoaded( theImage, index, byUser )
     {
         if ( isIE7OrLower() )
         {
-            //theElement.childNodes[0].setAttribute('class', 'thumbnailImage withBorder' ); // Doesn't work on IE6
-            theElement.childNodes[0].style.border = '7px solid #606060';
+            //theElement.setAttribute('class', 'thumbnailImage withBorder' ); // Doesn't work on IE6
+            theElement.style.border = '7px solid #606060';
         }
         else
-            theElement.childNodes[0].setAttribute('class', 'thumbnailImage withOutline noDropShadow' );
+            theElement.setAttribute('class', 'thumbnailImage withOutline noDropShadow' );
             
         currentlySelectedImage = new currentlySelectedImageRecord( filePath );
         
         // Scroll the div
         if ( !byUser )
-            document.getElementById('thumbbar').scrollTop = theElement.offsetTop;
+            document.getElementById('thumbbar').scrollTop = theElement.offsetTop - 7;
     }
     
     addPrevNextButtons();
