@@ -80,6 +80,17 @@ Image information:
 - Filters
 - Discarded (yes/no)
 
+Refactor:
+- Menu object
+  - Popup menu object
+- View object
+  - Welcome
+  - Single image
+  - Image plus thumbs
+  - Lightbox
+- Move HTML out of JS
+- Move styles out of JS
+
 */
 
 // ******************************************************************
@@ -354,7 +365,7 @@ function buildMenu()
         } );
     }
         
-    initializeTooltips(true);
+    initializeButtonHover();
 }
 
 function buildPivotMenu()
@@ -545,8 +556,6 @@ function toImageView_lightbox(categoryValue, imageToShow)
         theElement.appendChild(thediv);
     }
     
-    //initializeTooltips(); Sometimes lightbox wasn't get the title when class="lightbox tooltip"
-        
     // Box em
     $('a.lightbox').lightBox({
         overlayOpacity: 0.6
@@ -655,8 +664,6 @@ function toImageView_original(categoryValue, imageToShow)
             foundIndex = index;
         }
     }
-    
-    initializeTooltips(false);
     
     if ( foundIndex == null )
         showRandomImage(categoryValue);
@@ -771,84 +778,20 @@ function showArticleAt( articleFilePath, setHash )
 // Tooltip and popup menu support
 // ******************************************************************
 
-this.initializeTooltips = function(changeBackground, tagName)
+this.initializeButtonHover = function()
 {
     if (isIE6()) // Lots of weirdness with this function in IE6
         return;
         
-    if (tagName == null)
-        tagName = "a";
-
-    $(tagName + ".tooltip").hover(function(e)
+    $("a.tooltip").hover(function(e)
     {        
-        $("#tooltip").remove();
-        
-        if ( this.title == "" )
-        {
-            //alert("ERROR: No title for "+this.innerHTML);
-            //console.log("ERROR: No title for "+this.innerHTML);
-            return;
-        }
-            
-        this.t = this.title;
-        this.title = "";
-        $("body").append("<p id='tooltip'>" + unescape(this.t) + "</p>");
-
-        var loc = getTipLocation(e);
-
-        $("#tooltip")
-            .css("top", loc.top + "px")
-            .css("left", loc.left + "px")
-            .fadeIn("fast");
-        
-        if ( changeBackground )
-        {
-            $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
-        }
+        $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
     },
 	function()
     {
-        if ( this.t != "" )
-            this.title = this.t;
-        
-	    this.t = "";
-	    $("#tooltip").remove();
-        
-        if ( changeBackground )
-        {
-            $(this).removeClass('buttonHoveredColors')
-            $(this).addClass('buttonColors');
-        }
+        $(this).removeClass('buttonHoveredColors').addClass('buttonColors');
 	});
-    $(tagName + ".tooltip").mousemove(function(e)
-    {
-        var loc = getTipLocation(e);
-
-        $("#tooltip")
-            .css("top", loc.top + "px")
-            .css("left", loc.left + "px");
-    });
 };
-
-function getTipLocation(e)
-{
-    yOffset = 0;
-    xOffset = 10;
-    
-    var leftValue = e.pageX + xOffset;
-    var tipWidth = $("#tooltip").width();
-    var rightExtent = leftValue + tipWidth + 15;
-    if (rightExtent > $(window).width())
-        leftValue -= (rightExtent - $(window).width());
-
-    var topValue = e.pageY - yOffset;
-    var tipHeight = $("#tooltip").height();
-    var topExtent = topValue + tipHeight + 15;
-    if (topExtent > $(window).height())
-        topValue -= (topExtent - $(window).height());
-        
-    return { top: topValue, left: leftValue };
-}
 
 function setupPopupMenu( buttonDivName, $theMenuDiv, clickHandler, popToLeft )
 {
