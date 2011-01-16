@@ -780,9 +780,6 @@ function showArticleAt( articleFilePath, setHash )
 
 this.initializeButtonHover = function()
 {
-    if (isIE6()) // Lots of weirdness with this function in IE6
-        return;
-        
     $("a.tooltip").hover(function(e)
     {        
         $(this).removeClass('buttonColors').addClass('buttonHoveredColors');
