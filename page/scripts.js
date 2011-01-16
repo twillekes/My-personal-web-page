@@ -449,9 +449,8 @@ function toWelcomeView()
             <!--\n\
              Front page mode\n\
               -->\n\
-            <div id=\"titlearea\">\n\
-                <h1 style=\"text-align: center; margin: 0; padding: 0;\">Tom Willekes</h1>\n\
-                <h2 style=\"text-align: center; margin: 0; padding: 0;\">Landscape and Nature Photography</h2>\n\
+            <div id=\"titlearea\" class="centeredImage">\n\
+                <img src="TitleText.jpg" width="650"/>\n\
             </div>\n\
             <div id=\"welcome\">\n\
                 <div class=\"centeredImage\" >\n\

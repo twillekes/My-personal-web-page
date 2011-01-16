@@ -5,7 +5,7 @@ body
     {
     margin: 0; /* margin and padding only necessary to cater for Mac IE5 */
     padding: 0;
-    background-image: url("GreenLeafs.jpg");
+    background: #A0A0A0;
     /*\*/	overflow: hidden; /* because Mac IE5 don't understand */
     font-family: Arial, Helvetica, sans-serif;
     /*text-shadow: 0.1em 0.1em gray;*/
@@ -352,7 +352,7 @@ html>body #prevnextbuttondiv div
 #titlearea
     {
     position: absolute;
-    top: 1%;
+    top: 0%;
     /*\*/right: 0%;
     bottom: 95%;
     left: 16%;   /* Exclude right and left props for Mac IE5 */
