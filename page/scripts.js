@@ -450,7 +450,7 @@ function toWelcomeView()
              Front page mode\n\
               -->\n\
             <div id=\"titlearea\" class="centeredImage">\n\
-                <img src="TitleText.jpg" width="650"/>\n\
+                <img src="TitleText.jpg"/>\n\
             </div>\n\
             <div id=\"welcome\">\n\
                 <div class=\"centeredImage\" >\n\
