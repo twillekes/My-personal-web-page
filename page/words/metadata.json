@@ -3,7 +3,6 @@
     "type" : "words",
     "items":
     [
-        { "filename" : "about.htm", "title" : "About", "doNotShow" : 1 },
         { "filename" : "seasons.htm", "title" : "Seasons", "doNotShow" : 1 }
     ]
 }

@@ -300,13 +300,7 @@ function buildMenu()
         $("#menuitems").append(adiv);
     }
     
-    // "About" button
-    adiv = document.createElement('div');
-    adiv.setAttribute('class', 'buttondiv');
-    adiv.setAttribute('id','about');
-    adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedButton\" title=\"About the photographer and photographs\">About</a>\n";
-    adiv.firstChild.onclick = showAboutView;
-    $("#otheritems").append(adiv);
+    var roundness = 'roundedBottomBig';
     
     if ( totalNumArticles > 0 )
     {
@@ -319,11 +313,23 @@ function buildMenu()
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id','words');
-        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedButton\" title=\"" + textToShow + "\">Words</a>\n";
+        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedTopBig\" title=\"" + textToShow + "\">Words</a>\n";
         adiv.firstChild.onclick = toWordView;
         
         $("#otheritems").append(adiv);
     }
+    else
+    {
+        roundness = 'roundedButton';
+    }
+    
+    // "About" button
+    adiv = document.createElement('div');
+    adiv.setAttribute('class', 'buttondiv');
+    adiv.setAttribute('id','about');
+    adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow " + roundness + "\" title=\"About the photographer and photographs\">About</a>\n";
+    adiv.firstChild.onclick = showAboutView;
+    $("#otheritems").append(adiv);
     
     if ( supportLightbox )
     {
@@ -412,7 +418,7 @@ function setThumbView(theHTML)
 
 function showAboutView()
 {
-    showArticleAt('words/about.htm',false);
+    showArticleAt('words/about.htm','About');
     updateSelectedButton('about');
     currentView = 'about';
     setCurrentHash('showAbout');
@@ -737,15 +743,19 @@ function toWordView()
     updateSelectedButton("words");
 }
 
-function showArticleAt( articleFilePath, setHash )
+function showArticleAt( articleFilePath, theTitle )
 {
-    if ( setHash = null )
+    var setHash = false;
+    if ( theTitle == null )
+    {
         setHash = true;
+        theTitle = articleList[articleFilePath].title;
+    }
         
     var theHTML =
      "\
             <div id=\"titlearea\">\n\
-                <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + articleList[articleFilePath].title + "</h1>\n\
+                <h1 style=\"text-align: center; margin: 0; padding: 0;\">" + theTitle + "</h1>\n\
             </div>\n\
             <div id=\"article\" style=\"text-align: center;\">\n\
                 <div id=\"articleWrapper\"></div>\n\
@@ -770,7 +780,7 @@ function showArticleAt( articleFilePath, setHash )
         });
     
     if ( setHash )
-        setCurrentHash("showArticle=" + articleList[articleFilePath].title);
+        setCurrentHash("showArticle=" + theTitle);
 }
 
 // ******************************************************************
