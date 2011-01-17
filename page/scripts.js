@@ -313,7 +313,7 @@ function buildMenu()
         adiv = document.createElement('div');
         adiv.setAttribute('class', 'buttondiv');
         adiv.setAttribute('id','words');
-        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedTopBig\" title=\"" + textToShow + "\">Words</a>\n";
+        adiv.innerHTML = "<a class=\"tooltip buttonColors withDropShadow roundedTopBig\" title=\"" + textToShow + "\">Articles</a>\n";
         adiv.firstChild.onclick = toWordView;
         
         $("#otheritems").append(adiv);
