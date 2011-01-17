@@ -5,7 +5,7 @@ body
     {
     margin: 0; /* margin and padding only necessary to cater for Mac IE5 */
     padding: 0;
-    background: #A0A0A0;
+    background: #A2A2A2;
     /*\*/	overflow: hidden; /* because Mac IE5 don't understand */
     font-family: Arial, Helvetica, sans-serif;
     /*text-shadow: 0.1em 0.1em gray;*/
