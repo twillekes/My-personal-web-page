@@ -210,6 +210,11 @@ function syncToUrl(theHash)
                     
                 buildMenu();
             }
+            else if ( index == "showStats" )
+            {
+                toStatsView();
+                return;
+            }
             else
             {
                 //alert("ERROR: Unknown load parameter: "+index+" value "+loadParameters[index]);
@@ -586,7 +591,7 @@ function getImageDisplayHTML(topLevelDivName, prevNextButtonDivClass)
                     <div id=\"imagetitlediv\"></div>\n\
                     <div id=\"imagedisplaydiv\"></div>\n\
                     <div id=\"metadatadiv\"></div>\n\
-                    <h3 style=\"text-align: center;\">Image Copyright 2003-2010 Tom Willekes</h3>\n\
+                    <h3 style=\"text-align: center;\">Image Copyright 2003-2011 Tom Willekes</h3>\n\
                 </div>\n\
             </div>\n';  
             
@@ -781,6 +786,36 @@ function showArticleAt( articleFilePath, theTitle )
     
     if ( setHash )
         setCurrentHash("showArticle=" + theTitle);
+}
+
+function toStatsView()
+{
+    var originalCategorization = currentCategorization;
+    
+    var $summaryElement = $('<div id=\"article\" style=\"text-align: left;\"/>');
+    $summaryElement.append('<h2>There are a total of ' + totalNumImages + ' images</h2>');
+    for ( __index in categories )
+    {
+        currentCategorization = categories[__index];
+        findCategories(true);
+        
+        $summaryElement.append('<h3>Category: ' + categories[__index] + '</h3>');
+        var $table = $('<table/>');
+        $table.append('<tr><th>Value</th><th>Number of Images</th><th>Percent of Total</th></tr>');
+        for ( categoryValueIndex in categoryList )
+        {
+            $table.append('<tr><td>' + categoryList[categoryValueIndex].categoryValue +
+                                   '</td><td>' + categoryList[categoryValueIndex].imageIndexes.length +
+                                   '</td><td>' + (categoryList[categoryValueIndex].imageIndexes.length*100/totalNumImages).toFixed(1) +
+                                   '%</td></tr>');
+        }
+        $summaryElement.append($table);
+    }
+    
+    $('#contentplaceholder').append($summaryElement);
+    
+    currentCategorization = originalCategorization;
+    findCategories();
 }
 
 // ******************************************************************
@@ -1439,8 +1474,11 @@ function getCategoryValue()
     return theCategoryValue;
 }
 
-function findCategories()
+function findCategories(excludeFixedCats)
 {
+    if ( excludeFixedCats == null )
+        excludeFixedCats = false;
+        
     categoryList = new Array();
     
     var newCatRecord = new categoryRecord("New");
@@ -1448,13 +1486,13 @@ function findCategories()
     
     for ( index in imageList )
     {
-        if ( imageList[index].metadata.isNew == 1 )
+        if ( imageList[index].metadata.isNew == 1 && !excludeFixedCats )
         {
             newCatRecord.imageIndexes.push(index);
             continue;
         }
         
-        if ( imageList[index].metadata.isDiscarded ) 
+        if ( imageList[index].metadata.isDiscarded && !excludeFixedCats ) 
             continue;
             
         var categoryValue = imageList[index].metadata.getCategoryValue();
@@ -1482,7 +1520,7 @@ function findCategories()
             categoryList[foundIndex].imageIndexes.push(index);
         }
         
-        if ( imageList[index].metadata.isFavorite )
+        if ( imageList[index].metadata.isFavorite && !excludeFixedCats )
             favCatRecord.imageIndexes.push(index);
     }
     
@@ -1491,8 +1529,12 @@ function findCategories()
         return ( b.categoryValue > a.categoryValue );
     });
     
-    categoryList.push(favCatRecord);
-    categoryList.push(newCatRecord);
+    if ( !excludeFixedCats )
+    {
+        categoryList.push(favCatRecord);
+        categoryList.push(newCatRecord);
+    }
+    
     categoryList.reverse();
     
     for ( index in categoryList )
