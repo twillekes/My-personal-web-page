@@ -52,6 +52,7 @@ var viewText = "View as...";
 var categorizationText = "View by...";
 
 var metadataAnimationDuration = 250; // msec
+var imageFadeInDuration = 250;
 
 /*
 
@@ -985,7 +986,7 @@ function imageLoaded( theImage, index, byUser )
     var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
                   theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"withDropShadow\"/>";
                   
-    $("#imagedisplaydiv").hide().html(theHTML).fadeIn(1000);
+    $("#imagedisplaydiv").hide().html(theHTML).fadeIn(imageFadeInDuration);
     adjustCurrentImageSize();
     
     theElement = document.getElementById(filePath);
