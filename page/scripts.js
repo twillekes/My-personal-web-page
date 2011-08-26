@@ -1229,6 +1229,19 @@ function showRandomWelcomeImage( shouldStopFirst )
     var index = Math.floor( Math.random() * totalNumImages );
     
     var theImage = new Image();
+	theImage.onload = function () {
+        var theHTML = "<a href=\"javascript:toSingleImageView('" + imageList[index].filePath + "')\"><img src=\"" + this.src +
+            "\" id=\"displayedwelcomeimage\" class=\"withDropShadow\" style=\"position: relative;\" theindex=\"" + index + "\"/></a>";
+            
+        $("#welcomeimagedisplaydiv").hide().html(theHTML).fadeIn(1000);
+		timerId = setTimeout( function () {
+					   $("#displayedwelcomeimage").show().fadeOut(1000, function () {
+							timerId = null;
+							showRandomWelcomeImage(false);
+					   });
+		}, welcomeImageChangeTimeout );
+	};
+	/* For funky in/out animation...
     theImage.onload = function () {
         var theHTML = "<a href=\"javascript:toSingleImageView('" + imageList[index].filePath + "')\"><img src=\"" + this.src +
             "\" id=\"displayedwelcomeimage\" class=\"withDropShadow\" style=\"height: 0; position: relative;\" origWidth=\""
@@ -1277,6 +1290,8 @@ function showRandomWelcomeImage( shouldStopFirst )
                         }, welcomeImageChangeTimeout );
         } } );
     }
+	*/
+	
     theImage.src = imageList[index].filePath;
 
 }
