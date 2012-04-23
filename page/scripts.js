@@ -10,8 +10,13 @@ var metadataList = new Array();
 var currentMetadataItem = 0;
 
 // Master list of images
-var totalNumImages = 0;
-var imageList = new Array();
+// An array of imageRecord instances
+//		imageRecord has two properties: filePath and metadata
+//		metadata has properties: title, subject, isNew, isFavorite, isDiscarded,
+//		season, camera, lens, filters, film, chrome, format, year, month, date, 
+//		direction, rating, caption, orientation
+var totalNumImages = imageList.length;
+//var imageList = new Array();
 
 // Master list of articles
 var articleList = new Array();
@@ -119,12 +124,17 @@ function initializePage()
 {
     var isMobile = isMobilePlatform();
         
-    var isLocal = 0;
+    //var isLocal = 0;
     var idx = document.URL.indexOf('file:');
-    if ( idx != -1 )
-        isLocal = 1;
+    if ( idx != -1 ) {
+        //isLocal = 1;
+    	$.each(imageList, function (i) {
+    		this.filePath = this.localFilePath;
+    	});
+    }
         
-    loadImages(isLocal);
+    //loadImages(isLocal);
+    completeInitialization();
 }
 
 // This function is called after all the page metadata is loaded
@@ -1431,7 +1441,7 @@ function metadata( title, subject, isNew, isFavorite, isDiscarded, season, camer
     this.caption = caption;
     this.orientation = orientation;
     
-    this.getCategoryValue = getCategoryValue;
+    //this.getCategoryValue = getCategoryValue;
                         
     if ( this.date && this.date != 'Unknown' )
     {
@@ -1472,7 +1482,24 @@ function currentlySelectedImageRecord( filePath )
     this.filePath = filePath;
 }
 
-function getCategoryValue()
+//function getCategoryValue()
+//{
+//    if ( currentCategorization == null )
+//    {
+//        //alert("ERROR: No categorization in getCategoryValue");
+//        //console.log("ERROR: No categorization in getCategoryValue");
+//        return "Unknown";
+//    }
+//    
+//    var memberName = "this." + currentCategorization; // This evaluates it into this.subject, this.season, this.camera etc...
+//    var theCategoryValue = eval(memberName); // This gets the actual value of the member variable, i.e. houses, winter, nikon, etc...
+//    
+//    if ( theCategoryValue == null )
+//        theCategoryValue = "Unknown";
+//    
+//    return theCategoryValue;
+//}
+function getCategoryValue(metadata)
 {
     if ( currentCategorization == null )
     {
@@ -1481,8 +1508,7 @@ function getCategoryValue()
         return "Unknown";
     }
     
-    var memberName = "this." + currentCategorization; // This evaluates it into this.subject, this.season, this.camera etc...
-    var theCategoryValue = eval(memberName); // This gets the actual value of the member variable, i.e. houses, winter, nikon, etc...
+    var theCategoryValue = metadata[currentCategorization];
     
     if ( theCategoryValue == null )
         theCategoryValue = "Unknown";
@@ -1492,75 +1518,76 @@ function getCategoryValue()
 
 function findCategories(excludeFixedCats)
 {
-    if ( excludeFixedCats == null )
-        excludeFixedCats = false;
-        
-    categoryList = new Array();
-    
-    var newCatRecord = new categoryRecord("New");
-    var favCatRecord = new categoryRecord("Favorites");
-    
-    for ( index in imageList )
-    {
-        if ( imageList[index].metadata.isNew == 1 && !excludeFixedCats )
-        {
-            newCatRecord.imageIndexes.push(index);
-            continue;
-        }
-        
-        if ( imageList[index].metadata.isDiscarded && !excludeFixedCats ) 
-            continue;
-            
-        var categoryValue = imageList[index].metadata.getCategoryValue();
-            
-        var found = 0;
-        var foundIndex;
-        for ( catIndex in categoryList )
-        {
-            if ( categoryList[catIndex].categoryValue == categoryValue )
-            {
-                found = 1;
-                foundIndex = catIndex;
-                break;
-            }
-        }
-        
-        if ( !found )
-        {
-            catRecord = new categoryRecord(categoryValue);
-            catRecord.imageIndexes.push(index);
-            categoryList.push(catRecord);
-        }
-        else
-        {
-            categoryList[foundIndex].imageIndexes.push(index);
-        }
-        
-        if ( imageList[index].metadata.isFavorite && !excludeFixedCats )
-            favCatRecord.imageIndexes.push(index);
-    }
-    
-    categoryList.sort( function(a,b)
-    {
-        return ( b.categoryValue > a.categoryValue );
-    });
-    
-    if ( !excludeFixedCats )
-    {
-        categoryList.push(favCatRecord);
-        categoryList.push(newCatRecord);
-    }
-    
-    categoryList.reverse();
-    
-    for ( index in categoryList )
-    {
-        //console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
-        categoryList[index].imageIndexes.sort( function(a,b)
-        {
-            return ( imageList[b].metadata.theDate > imageList[a].metadata.theDate );
-        });
-    }
+	categoryList = categoryDictionary[currentCategorization];
+//    if ( excludeFixedCats == null )
+//        excludeFixedCats = false;
+//        
+//    categoryList = new Array();
+//    
+//    var newCatRecord = new categoryRecord("New");
+//    var favCatRecord = new categoryRecord("Favorites");
+//    
+//    for ( index in imageList )
+//    {
+//        if ( imageList[index].metadata.isNew == 1 && !excludeFixedCats )
+//        {
+//            newCatRecord.imageIndexes.push(index);
+//            continue;
+//        }
+//        
+//        if ( imageList[index].metadata.isDiscarded && !excludeFixedCats ) 
+//            continue;
+//            
+//        var categoryValue = getCategoryValue(imageList[index].metadata);
+//            
+//        var found = 0;
+//        var foundIndex;
+//        for ( catIndex in categoryList )
+//        {
+//            if ( categoryList[catIndex].categoryValue == categoryValue )
+//            {
+//                found = 1;
+//                foundIndex = catIndex;
+//                break;
+//            }
+//        }
+//        
+//        if ( !found )
+//        {
+//            catRecord = new categoryRecord(categoryValue);
+//            catRecord.imageIndexes.push(index);
+//            categoryList.push(catRecord);
+//        }
+//        else
+//        {
+//            categoryList[foundIndex].imageIndexes.push(index);
+//        }
+//        
+//        if ( imageList[index].metadata.isFavorite && !excludeFixedCats )
+//            favCatRecord.imageIndexes.push(index);
+//    }
+//    
+//    categoryList.sort( function(a,b)
+//    {
+//        return ( b.categoryValue > a.categoryValue );
+//    });
+//    
+//    if ( !excludeFixedCats )
+//    {
+//        categoryList.push(favCatRecord);
+//        categoryList.push(newCatRecord);
+//    }
+//    
+//    categoryList.reverse();
+//    
+//    for ( index in categoryList )
+//    {
+//        //console.log("Category "+categoryList[index].categoryValue+" has "+categoryList[index].imageIndexes.length+" elements");
+//        categoryList[index].imageIndexes.sort( function(a,b)
+//        {
+//            return ( imageList[b].metadata.theDate > imageList[a].metadata.theDate );
+//        });
+//    }
 }
 
 function stopTimerEvents()
