@@ -19,8 +19,8 @@ var totalNumImages = imageList.length;
 //var imageList = new Array();
 
 // Master list of articles
-var articleList = new Array();
-var totalNumArticles = 0;
+//var articleList = new Array();
+var totalNumArticles = articleList.length;
 
 // Category management
 // "Categorization" means the way the images are sliced and diced (e.g. by subject, by season, by camera)
@@ -132,6 +132,13 @@ function initializePage()
     		this.filePath = this.localFilePath;
     	});
     }
+    
+    for (var i = 0; i < articleList.length; i++) {
+    	if (articleList[i].doNotShow == "1") {
+    		articleList.splice(i,1);
+    	}
+    }
+    totalNumArticles = articleList.length;
         
     //loadImages(isLocal);
     completeInitialization();
@@ -699,7 +706,7 @@ function showArticle( articleTitle )
         var idx = articleList[index].title.indexOf(articleTitle);
         if ( idx != -1 )
         {
-            showArticleAt(index);
+            showArticleAtIndex(index);
             return 1;
         }
     }
@@ -736,7 +743,7 @@ function toWordView()
     for ( index in articleList )
     {
         var adiv = document.createElement('div');
-        adiv.innerHTML = "<a href=\"javascript:showArticleAt('" + index +
+        adiv.innerHTML = "<a href=\"javascript:showArticleAtIndex('" + index +
                          "');\" id=\"articleListItem\">" + articleList[index].title + "</a>";
         
         $("#articleListItems").append(adiv);
@@ -759,14 +766,18 @@ function toWordView()
     updateSelectedButton("words");
 }
 
-function showArticleAt( articleFilePath, theTitle )
+function showArticleAtIndex(index) {
+	if (index > articleList.length-1) {
+		return;
+	}
+	showArticleAt(articleList[index].filename, articleList[index].title, true);
+}
+
+function showArticleAt( articleFilePath, theTitle, setHash )
 {
-    var setHash = false;
-    if ( theTitle == null )
-    {
-        setHash = true;
-        theTitle = articleList[articleFilePath].title;
-    }
+	if (setHash == null) {
+		setHash = false;
+	}
         
     var theHTML =
      "\
@@ -1344,79 +1355,79 @@ function findImage(filePath)
     return { imageTitle : imageTitle, filePath : newFilePath, index : foundIndex };
 }
 
-function loadImages(isLocal)
-{
-    $.getJSON(locationsFileName,
-        function(json)
-        {
-            var theIndex = 0;
-            $.each(json.items,
-                function(i,item)
-                {
-                    if ( (isLocal && item.type == "local") || 
-                         (!isLocal && item.type != "local") ||
-                         (item.type == null) )
-                        metadataList[theIndex++] = item.metadataPath;
-                }
-            );
-       
-            currentMetadataItem = 0;
-            loadMetadata( 0 );
-        }
-     );
-}
-
-function loadMetadata(metadataItem)
-{
-    var metadataFilePath = metadataList[metadataItem];
-
-    $.ajax({
-        url: metadataFilePath + "/metadata.json",
-        dataType: "json",
-        success: function(json) {
-            $.each(json.items,
-                function(i,item)
-                {
-                    if ( json.type != "words" )
-                    {
-                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite, item.isDiscarded,
-                                               item.season, item.camera, item.lens, item.filters, item.film,
-                                               item.chrome, item.format, item.year, item.month, item.date,
-                                               item.direction, item.rating, item.caption, item.orientation );
-                        var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
-                        imageList[totalNumImages++] = ir;
-                    }
-                    else
-                    {
-                        if ( item.isNotReady == null || !item.isNotReady )
-                        {
-                            var art = new article( item.title, item.doNotShow );
-                            articleList[metadataFilePath+"/"+item.filename] = art;
-                            if ( !item.doNotShow )
-                                totalNumArticles++; // ".length" doesn't work for associative arrays
-                        }
-
-                    }
-                }
-            );
-                
-            currentMetadataItem++;
-            if ( currentMetadataItem < metadataList.length )
-            {
-                loadMetadata(currentMetadataItem);
-            }
-            else
-            {
-                completeInitialization();
-                return;
-            }
-        },
-        error: function(request, status, error) {
-            //alert("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
-            //console.log("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
-        }
-    });
-}
+//function loadImages(isLocal)
+//{
+//    $.getJSON(locationsFileName,
+//        function(json)
+//        {
+//            var theIndex = 0;
+//            $.each(json.items,
+//                function(i,item)
+//                {
+//                    if ( (isLocal && item.type == "local") || 
+//                         (!isLocal && item.type != "local") ||
+//                         (item.type == null) )
+//                        metadataList[theIndex++] = item.metadataPath;
+//                }
+//            );
+//       
+//            currentMetadataItem = 0;
+//            loadMetadata( 0 );
+//        }
+//     );
+//}
+//
+//function loadMetadata(metadataItem)
+//{
+//    var metadataFilePath = metadataList[metadataItem];
+//
+//    $.ajax({
+//        url: metadataFilePath + "/metadata.json",
+//        dataType: "json",
+//        success: function(json) {
+//            $.each(json.items,
+//                function(i,item)
+//                {
+//                    if ( json.type != "words" )
+//                    {
+//                        var md = new metadata( item.title, item.subject, item.isNew, item.isFavorite, item.isDiscarded,
+//                                               item.season, item.camera, item.lens, item.filters, item.film,
+//                                               item.chrome, item.format, item.year, item.month, item.date,
+//                                               item.direction, item.rating, item.caption, item.orientation );
+//                        var ir = new imageRecord( metadataFilePath + "/" + item.filename, md );
+//                        imageList[totalNumImages++] = ir;
+//                    }
+//                    else
+//                    {
+//                        if ( item.isNotReady == null || !item.isNotReady )
+//                        {
+//                            var art = new article( item.title, item.doNotShow );
+//                            articleList[metadataFilePath+"/"+item.filename] = art;
+//                            if ( !item.doNotShow )
+//                                totalNumArticles++; // ".length" doesn't work for associative arrays
+//                        }
+//
+//                    }
+//                }
+//            );
+//                
+//            currentMetadataItem++;
+//            if ( currentMetadataItem < metadataList.length )
+//            {
+//                loadMetadata(currentMetadataItem);
+//            }
+//            else
+//            {
+//                completeInitialization();
+//                return;
+//            }
+//        },
+//        error: function(request, status, error) {
+//            //alert("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
+//            //console.log("ERROR: Fetch of "+metadataFilePath+"/metadata.json failed with status "+status+" and error "+error);
+//        }
+//    });
+//}
 
 function metadata( title, subject, isNew, isFavorite, isDiscarded, season, camera, lens, filters,
                    film, chrome, format, year, month, date, direction, rating, caption, orientation )
