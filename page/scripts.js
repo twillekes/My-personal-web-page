@@ -578,8 +578,9 @@ function toImageView_lightbox(categoryValue, imageToShow)
         
         var thediv = document.createElement('li');
         thediv.innerHTML = 
-            "<a href=\"" + imageList[index].filePath + "\" title=\"" + imageList[index].metadata.title +
-            "\" class=\"lightbox\"><img src=\"" + thumbFilePath + "\" /></a>\n"
+            "<a href=\"" + imageList[index].filePath + "?uniq=" + (new Date).getTime() +
+            "\" title=\"" + imageList[index].metadata.title +
+            "\" class=\"lightbox\"><img src=\"" + thumbFilePath + "?uniq=" + (new Date).getTime() + "\" /></a>\n"
         
         theElement.appendChild(thediv);
     }
@@ -682,6 +683,7 @@ function toImageView_original(categoryValue, imageToShow)
         thediv.innerHTML = '<a href=\"javascript:showImage(' + index +
                            ',true)\" class=\"tooltip\" title=\"'
                            + imageList[index].metadata.title + '\"><img src=\"' + thumbFilePath +
+                           "?uniq=" + (new Date).getTime() +
                            '\" class=\"thumbnailImage withDropShadow noOutline\" id=\"'
                            + imageList[index].filePath + '\"/></a>\n';
         
@@ -1004,7 +1006,8 @@ function showImage( index, byUser )
 function imageLoaded( theImage, index, byUser )
 {
     var filePath = imageList[index].filePath;
-    var theHTML = "<img src=\"" + filePath + "\" id=\"displayedimage\" origHeight=\"" +
+    var theHTML = "<img src=\"" + filePath + "?uniq=" + (new Date).getTime() +
+    			  "\" id=\"displayedimage\" origHeight=\"" +
                   theImage.height + "\" origWidth=\"" + theImage.width + "\" class=\"withDropShadow\"/>";
                   
     $("#imagedisplaydiv").hide().html(theHTML).fadeIn(imageFadeInDuration);
@@ -1251,7 +1254,8 @@ function showRandomWelcomeImage( shouldStopFirst )
     
     var theImage = new Image();
 	theImage.onload = function () {
-        var theHTML = "<a href=\"javascript:toSingleImageView('" + imageList[index].filePath + "')\"><img src=\"" + this.src +
+        var theHTML = "<a href=\"javascript:toSingleImageView('" + imageList[index].filePath + "')\"><img src=\"" +
+        	this.src + "?uniq=" + (new Date).getTime() +
             "\" id=\"displayedwelcomeimage\" class=\"withDropShadow\" style=\"position: relative;\" theindex=\"" + index + "\"/></a>";
             
         $("#welcomeimagedisplaydiv").hide().html(theHTML).fadeIn(1000);
